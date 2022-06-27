@@ -411,6 +411,48 @@ static void CreateNutContents(ObjNode *theNut)
 		theNut->NutContents = NUT_CONTENTS_BUDDY;			// put Buddy Bug in there instead of green clover
 	}
 
+		/* REPLACE M0NEY IF ALREADY HAVE M0NEY */
+
+	if ((theNut->NutContents == NUT_CONTENTS_MONEY) && (gMoney > 0))
+	{
+		theNut->NutContents = NUT_CONTENTS_FREELIFE;		// put free life in there instead of money
+	}
+
+		/* REPLACE LIFE IF ALREADY HAVE THREE LIVES */
+
+	if ((theNut->NutContents == NUT_CONTENTS_FREELIFE) && (gNumLives > 3))
+	{
+		theNut->NutContents = NUT_CONTENTS_SHIELD;			// put shield in there instead of free life
+	}
+
+		/* REPLACE SHIELD IF ALREADY HAVE SHIELD */
+
+	if ((theNut->NutContents == NUT_CONTENTS_SHIELD) && (gShieldTimer > 0.0f))	// see if shielded
+	{
+		theNut->NutContents = NUT_CONTENTS_BALLTIME;		// put mushroom in there instead of shield
+	}
+
+		/* REPLACE BALL TIME IF ALREADY HAVE MAX BALL TIME */
+
+	if ((theNut->NutContents == NUT_CONTENTS_BALLTIME) && (gBallTimer >= 1.0f))
+	{
+		theNut->NutContents = NUT_CONTENTS_HEALTH;			// put berry in there instead of mushroom
+	}
+
+		/* REPLACE HEALTH IF ALREADY HAVE MAX HEALTH */
+
+	if ((theNut->NutContents == NUT_CONTENTS_HEALTH) && (gMyHealth >= 1.0f))
+	{
+		theNut->NutContents = NUT_CONTENTS_BALLTIME;		// put mushroom in there instead of berry
+	}
+
+		/* REPLACE HEALTH AND BALL TIME IF ALREADY HAVE MAX HEALTH AND BALL TIME */
+
+	if ((theNut->NutContents == NUT_CONTENTS_BALLTIME) && (gBallTimer >= 1.0f))
+	{
+		theNut->NutContents = NUT_CONTENTS_TICK;			// put tick in there instead of mushroom
+	}
+
 
 			/* CREATE THE CONTENTS */
 
