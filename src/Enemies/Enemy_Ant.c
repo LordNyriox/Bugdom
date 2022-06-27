@@ -10,6 +10,8 @@
 /****************************/
 
 #include "game.h"
+#include <stdlib.h>		// rand
+#include <time.h>		// srand
 
 
 /****************************/
@@ -133,6 +135,8 @@ Boolean AddEnemy_Ant(TerrainItemEntryType *itemPtr, long x, long z)
 ObjNode	*newObj;
 Boolean	rockThrower;
 
+	srand(time(NULL));
+
 	if (gNumEnemies >= MAX_ENEMIES)								// keep from getting absurd
 		return(false);
 	if (gNumEnemyOfKind[ENEMY_KIND_ANT] >= MAX_ANTS)
@@ -141,7 +145,10 @@ Boolean	rockThrower;
 
 			/* MAKE ANT */
 
-	rockThrower = itemPtr->parm[0] == 1;						// see if rock thrower
+	if (!(itemPtr->parm[0] & 1))								// see if rock thrower
+		rockThrower = (rand()>(RAND_MAX/2)?1:0);				// random boolean value
+	else
+		rockThrower = itemPtr->parm[0] == 1;					// is rock thrower
 
 	newObj = MakeAntObject(x, z, true, rockThrower);
 	newObj->TerrainItemPtr = itemPtr;
