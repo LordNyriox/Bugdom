@@ -75,9 +75,6 @@ void InitItemsManager(void)
 }
 
 
-
-
-
 #pragma mark -
 
 
@@ -154,16 +151,16 @@ Boolean AddClover(TerrainItemEntryType *itemPtr, long  x, long z)
 ObjNode	*newObj;
 int		n;
 float	s;
-	
+
 	if (gLevelType != LEVEL_TYPE_LAWN)
 		DoFatalAlert("AddClover: not on this level!");
-				
+
 	n = itemPtr->parm[0];
 	if (n > 1)
 		DoFatalAlert("AddClover: illegal clover type");
-				
-	gNewObjectDefinition.group 		= LAWN2_MGroupNum_Clover;	
-	gNewObjectDefinition.type 		= LAWN2_MObjType_Clover + n;	
+
+	gNewObjectDefinition.group 		= LAWN2_MGroupNum_Clover;
+	gNewObjectDefinition.type 		= LAWN2_MObjType_Clover + n;
 	gNewObjectDefinition.coord.x 	= x;
 	gNewObjectDefinition.coord.y 	= GetTerrainHeightAtCoord(x,z,FLOOR);
 	if (gRecentTerrainNormal[FLOOR].y < .85f)			// if on slope then sink it a little
@@ -203,28 +200,28 @@ ObjNode	*newObj;
 	n = itemPtr->parm[0];
 	if (n > 1)
 		DoFatalAlert("AddGrass: illegal grass type");
-			
+
 	switch(gLevelType)
 	{
 		case	LEVEL_TYPE_LAWN:
-				gNewObjectDefinition.type 	= LAWN2_MObjType_Grass + n;	
-				gNewObjectDefinition.group 	= MODEL_GROUP_LEVELSPECIFIC2;	
+				gNewObjectDefinition.type 	= LAWN2_MObjType_Grass + n;
+				gNewObjectDefinition.group 	= MODEL_GROUP_LEVELSPECIFIC2;
 				break;
 
 		case	LEVEL_TYPE_FOREST:
-				gNewObjectDefinition.type 	= FOREST_MObjType_Grass + n;	
-				gNewObjectDefinition.group 	= MODEL_GROUP_LEVELSPECIFIC;	
+				gNewObjectDefinition.type 	= FOREST_MObjType_Grass + n;
+				gNewObjectDefinition.group 	= MODEL_GROUP_LEVELSPECIFIC;
 				break;
 
 		case	LEVEL_TYPE_NIGHT:
-				gNewObjectDefinition.type 	= NIGHT_MObjType_Grass + n;	
-				gNewObjectDefinition.group 	= MODEL_GROUP_LEVELSPECIFIC;	
+				gNewObjectDefinition.type 	= NIGHT_MObjType_Grass + n;
+				gNewObjectDefinition.group 	= MODEL_GROUP_LEVELSPECIFIC;
 				break;
-	
+
 		default:
 				DoFatalAlert("AddGrass: not on this level, buddy!");
 	}
-			
+
 	gNewObjectDefinition.coord.x 	= x;
 	gNewObjectDefinition.coord.y 	= GetTerrainHeightAtCoord(x,z,FLOOR);
 	if (gRecentTerrainNormal[FLOOR].y < .85)			// if on slope then sink it a little
@@ -256,10 +253,10 @@ ObjNode	*newObj;
 Boolean AddWeed(TerrainItemEntryType *itemPtr, long  x, long z)
 {
 ObjNode	*newObj;
-	
-			
-	gNewObjectDefinition.group 		= LAWN2_MGroupNum_Weed;	
-	gNewObjectDefinition.type 		= LAWN2_MObjType_Weed + itemPtr->parm[0];	
+
+
+	gNewObjectDefinition.group 		= LAWN2_MGroupNum_Weed;
+	gNewObjectDefinition.type 		= LAWN2_MObjType_Weed + itemPtr->parm[0];
 	gNewObjectDefinition.coord.x 	= x;
 	gNewObjectDefinition.coord.y 	= GetTerrainHeightAtCoord(x,z,FLOOR);
 	if (gRecentTerrainNormal[FLOOR].y < .85)			// if on slope then sink it a little
@@ -286,16 +283,15 @@ ObjNode	*newObj;
 }
 
 
-
 /************************* ADD SUNFLOWER *********************************/
 
 Boolean AddSunFlower(TerrainItemEntryType *itemPtr, long  x, long z)
 {
 ObjNode	*newObj;
-	
-			
-	gNewObjectDefinition.group 		= LAWN2_MGroupNum_Sunflower;	
-	gNewObjectDefinition.type 		= LAWN2_MObjType_Sunflower;	
+
+
+	gNewObjectDefinition.group 		= LAWN2_MGroupNum_Sunflower;
+	gNewObjectDefinition.type 		= LAWN2_MObjType_Sunflower;
 	gNewObjectDefinition.coord.x 	= x;
 	gNewObjectDefinition.coord.y 	= GetTerrainHeightAtCoord(x,z,FLOOR);
 	gNewObjectDefinition.coord.z 	= z;
@@ -318,16 +314,14 @@ ObjNode	*newObj;
 }
 
 
-
-
 /************************* ADD COSMO *********************************/
 
 Boolean AddCosmo(TerrainItemEntryType *itemPtr, long  x, long z)
 {
 ObjNode	*newObj;
-	
-			
-	gNewObjectDefinition.group 		= LAWN2_MGroupNum_Cosmo;	
+
+
+	gNewObjectDefinition.group 		= LAWN2_MGroupNum_Cosmo;
 	gNewObjectDefinition.type 		= LAWN2_MObjType_Cosmo;
 	gNewObjectDefinition.coord.x 	= x;
 	gNewObjectDefinition.coord.y 	= GetTerrainHeightAtCoord(x,z,FLOOR);
@@ -358,8 +352,8 @@ ObjNode	*newObj;
 Boolean AddPoppy(TerrainItemEntryType *itemPtr, long  x, long z)
 {
 ObjNode	*newObj;
-			
-	gNewObjectDefinition.group 		= LAWN2_MGroupNum_Poppy;	
+
+	gNewObjectDefinition.group 		= LAWN2_MGroupNum_Poppy;
 	gNewObjectDefinition.type 		= LAWN2_MObjType_Poppy;
 	gNewObjectDefinition.coord.x 	= x;
 	gNewObjectDefinition.coord.y 	= GetTerrainHeightAtCoord(x,z,FLOOR);
@@ -391,9 +385,9 @@ ObjNode	*newObj;
 Boolean AddWallEnd(TerrainItemEntryType *itemPtr, long  x, long z)
 {
 ObjNode	*newObj;
-	
-			
-	gNewObjectDefinition.group 		= GLOBAL1_MGroupNum_WallEnd;	
+
+
+	gNewObjectDefinition.group 		= GLOBAL1_MGroupNum_WallEnd;
 	gNewObjectDefinition.type 		= GLOBAL1_MObjType_WallEnd;
 	gNewObjectDefinition.coord.x 	= x;
 	gNewObjectDefinition.coord.y 	= GetTerrainHeightAtCoord(x,z,FLOOR) - 30.0f;
@@ -402,9 +396,9 @@ ObjNode	*newObj;
 	gNewObjectDefinition.slot 		= 104;
 	gNewObjectDefinition.moveCall 	= MoveStaticObject;
 	gNewObjectDefinition.rot 		= 0;
-	
+
 	if (gLevelType == LEVEL_TYPE_POND)
-		gNewObjectDefinition.scale 		= 1.5;	
+		gNewObjectDefinition.scale 		= 1.5;
 	else
 		gNewObjectDefinition.scale 		= .7;
 	newObj = MakeNewDisplayGroupObject(&gNewObjectDefinition);
@@ -434,15 +428,15 @@ Boolean AddTree(TerrainItemEntryType *itemPtr, long  x, long z)
 ObjNode	*newObj;
 float	y;
 CollisionBoxType *boxPtr;
-	
+
 	if (gLevelType != LEVEL_TYPE_FOREST)
 		DoFatalAlert("AddTree: not on this level, Bud");
 
 			/***************/
 			/* CREATE TREE */
 			/***************/
-			
-	gNewObjectDefinition.group 		= FOREST_MGroupNum_Tree;	
+
+	gNewObjectDefinition.group 		= FOREST_MGroupNum_Tree;
 	gNewObjectDefinition.type 	= FOREST_MObjType_Tree;
 	gNewObjectDefinition.coord.x 	= x;
 	gNewObjectDefinition.coord.y 	= y = GetTerrainHeightAtCoord(x,z,FLOOR);
@@ -460,17 +454,17 @@ CollisionBoxType *boxPtr;
 
 	newObj->CType = CTYPE_MISC;
 	newObj->CBits = CBITS_ALLSOLID;
-	
+
 			/******************************/
-			/* BUILD TREE COLLISION BOXES */			
+			/* BUILD TREE COLLISION BOXES */
 			/******************************/
-	
+
 	AllocateCollisionBoxMemory(newObj, 7);							// alloc 7 collision boxes
 
-	boxPtr = newObj->CollisionBoxes;			
+	boxPtr = newObj->CollisionBoxes;
 
 				/* TRUNK */
-				
+
 	boxPtr[0].left 		= x - (25*TREE_SCALE);
 	boxPtr[0].right 	= x + (25*TREE_SCALE);
 	boxPtr[0].top 		= y + (616*TREE_SCALE);
@@ -479,7 +473,7 @@ CollisionBoxType *boxPtr;
 	boxPtr[0].front 	= z + (25*TREE_SCALE);
 
 				/* TOP X-SPAN */
-				
+
 	boxPtr[1].left 		= x - (218*TREE_SCALE);
 	boxPtr[1].right 	= x + (218*TREE_SCALE);
 	boxPtr[1].top 		= y + (568*TREE_SCALE);
@@ -488,7 +482,7 @@ CollisionBoxType *boxPtr;
 	boxPtr[1].front 	= z + (5*TREE_SCALE);
 
 				/* TOP Z-SPAN */
-				
+
 	boxPtr[2].left 		= x - (5*TREE_SCALE);
 	boxPtr[2].right 	= x + (5*TREE_SCALE);
 	boxPtr[2].top 		= y + (568*TREE_SCALE);
@@ -497,7 +491,7 @@ CollisionBoxType *boxPtr;
 	boxPtr[2].front 	= z + (218*TREE_SCALE);
 
 				/* MID X-SPAN */
-				
+
 	boxPtr[3].left 		= x - (256*TREE_SCALE);
 	boxPtr[3].right 	= x + (256*TREE_SCALE);
 	boxPtr[3].top 		= y + (409*TREE_SCALE);
@@ -515,7 +509,7 @@ CollisionBoxType *boxPtr;
 	boxPtr[4].front 	= z + (256*TREE_SCALE);
 
 				/* BOTTOM X-SPAN */
-				
+
 	boxPtr[5].left 		= x - (283*TREE_SCALE);
 	boxPtr[5].right 	= x + (283*TREE_SCALE);
 	boxPtr[5].top 		= y + (232*TREE_SCALE);
@@ -524,7 +518,7 @@ CollisionBoxType *boxPtr;
 	boxPtr[5].front 	= z + (5*TREE_SCALE);
 
 				/* BOTTOM Z-SPAN */
-				
+
 	boxPtr[6].left 		= x - (5*TREE_SCALE);
 	boxPtr[6].right 	= x + (5*TREE_SCALE);
 	boxPtr[6].top 		= y + (232*TREE_SCALE);
@@ -533,7 +527,7 @@ CollisionBoxType *boxPtr;
 	boxPtr[6].front 	= z + (283*TREE_SCALE);
 
 	KeepOldCollisionBoxes(newObj);							// set old stuff
-	
+
 	return(true);											// item was added
 }
 
@@ -544,15 +538,15 @@ Boolean AddStump(TerrainItemEntryType *itemPtr, long  x, long z)
 ObjNode				*newObj,*hive;
 CollisionBoxType 	*boxPtr;
 float				y;
-	
+
 	if (gLevelType != LEVEL_TYPE_FOREST)
 		DoFatalAlert("AddStump: not on this level, Bud");
 
 			/***************/
 			/* CREATE STUMP */
 			/***************/
-			
-	gNewObjectDefinition.group 		= FOREST_MGroupNum_Tree;	
+
+	gNewObjectDefinition.group 		= FOREST_MGroupNum_Tree;
 	gNewObjectDefinition.type 		= FOREST_MObjType_Stump;
 	gNewObjectDefinition.coord.x 	= x;
 	gNewObjectDefinition.coord.y 	= y = GetTerrainHeightAtCoord(x,z,FLOOR);
@@ -570,12 +564,12 @@ float				y;
 
 
 			/* SET COLLISION */
-			
+
 	newObj->CType = CTYPE_MISC;
 	newObj->CBits = CBITS_ALLSOLID;
 
 	AllocateCollisionBoxMemory(newObj, 2);							// alloc 2 collision boxes
-	boxPtr = newObj->CollisionBoxes;			
+	boxPtr = newObj->CollisionBoxes;
 
 	boxPtr[0].top 		= y + (386*STUMP_SCALE);
 	boxPtr[0].bottom	= y + (0*STUMP_SCALE);
@@ -597,8 +591,8 @@ float				y;
 			/*************/
 			/* MAKE HIVE */
 			/*************/
-			
-	gNewObjectDefinition.type 		= FOREST_MObjType_Hive;	
+
+	gNewObjectDefinition.type 		= FOREST_MObjType_Hive;
 	gNewObjectDefinition.coord.x 	+= 130*STUMP_SCALE;
 	gNewObjectDefinition.coord.y 	+= 150*STUMP_SCALE;
 	gNewObjectDefinition.scale 		= HIVE_SCALE;
@@ -607,16 +601,16 @@ float				y;
 	{
 		x = gNewObjectDefinition.coord.x;
 		y = gNewObjectDefinition.coord.y;
-		
+
 		newObj->ChainNode = hive;							// connect to chain
-		
+
 		hive->Health = 1.0;									// health of hive
-		
+
 		hive->CType = CTYPE_MISC;
 		hive->CBits = CBITS_ALLSOLID;
 
 		AllocateCollisionBoxMemory(hive, 3);							// alloc 3 collision boxes
-		boxPtr = hive->CollisionBoxes;			
+		boxPtr = hive->CollisionBoxes;
 
 		boxPtr[0].top 		= y + (0*HIVE_SCALE);
 		boxPtr[0].bottom	= y - (113*HIVE_SCALE);
@@ -660,60 +654,60 @@ int		i,n;
 		return;
 
 		/* MAKE HIVE WOBBLE */
-		
+
 	hive->HiveWobbleIndex += fps * 4.0f;
 	if (hive->HiveWobbleStrength > 0.0f)
 	{
 		hive->HiveWobbleStrength -= fps * .01f;
 		if (hive->HiveWobbleStrength < 0.0f)
-			hive->HiveWobbleStrength = 0.0f;		
+			hive->HiveWobbleStrength = 0.0f;
 	}
 
 
 	r = sin(hive->HiveWobbleIndex);
 	r *= hive->HiveWobbleStrength;
-	
+
 	hive->Rot.x = r;
-	
+
 	UpdateObjectTransforms(hive);
-	
-	
+
+
 		/********************/
 		/* SEE IF ON FLAMES */
 		/********************/
-		
+
 	if (hive->HiveBurning)
-	{	
+	{
 		TQ3Point3D	hiveBody;
-		
+
 		hiveBody.x = hive->Coord.x;
 		hiveBody.y = hive->Coord.y - (163 * HIVE_SCALE);
 		hiveBody.z = hive->Coord.z;
-		
-		
+
+
 			/* UPDATE CRACKLE */
 
 		if (hive->EffectChannel == -1)
-		{			
+		{
 			hive->EffectChannel = PlayEffect3D(EFFECT_FIRECRACKLE, &hiveBody);
 		}
 		else
 		{
 			Update3DSoundChannel(EFFECT_FIRECRACKLE, &hive->EffectChannel, &hiveBody);
 		}
-	
-	
+
+
 			/* UPDATE FIRE */
-			
+
 		hive->HiveOnFire -= fps;
 		if (hive->HiveOnFire < 0.0f)
 			gAreaCompleted = true;
-	
+
 		n = 0;
-	
+
 		if (hive->ParticleGroup == -1)
 		{
-new_group:		
+new_group:
 			hive->ParticleGroup = NewParticleGroup(	0,							// magic num
 													PARTICLE_TYPE_FALLINGSPARKS,	// type
 													0,							// flags
@@ -742,17 +736,17 @@ new_group:
 					pt.x = hiveBody.x + (RandomFloat()-.5f) * (60 * HIVE_SCALE);
 					pt.y = hiveBody.y + (RandomFloat()-.5f) * (70 * HIVE_SCALE);
 					pt.z = hiveBody.z + (RandomFloat()-.5f) * (60 * HIVE_SCALE);
-					
+
 					delta.x = (RandomFloat()-.5f) * 20.0f;
 					delta.y = (RandomFloat()-.5f) * 30.0f + 40.0f;
 					delta.z = (RandomFloat()-.5f) * 20.0f;
-					
+
 					if (AddParticleToGroup(hive->ParticleGroup, &pt, &delta, RandomFloat() + 3.0f, FULL_ALPHA) && (n==0))
 						goto new_group;
 				}
 			}
 		}
-	
+
 	}
 }
 
@@ -766,7 +760,7 @@ void RattleHive(ObjNode *hive)
 {
 int	i;
 		/* HURT IT */
-		
+
 	hive->Health -= .02f;
 	if (hive->Health <= 0.0f)			// see if killed it
 	{
@@ -780,22 +774,22 @@ int	i;
 	{
 
 			/* SET IT SWINGING */
-			
+
 		hive->HiveWobbleStrength = .12f;
-		
+
 			/* SPAWN A FEW BEES */
 
 		for (i = 0; i < 3; i++)
 		{
 			TQ3Point3D	p;
-			
+
 			p.x = hive->Coord.x + (RandomFloat()-.5f) * 400.0f;
 			p.y = hive->Coord.y - (163 * HIVE_SCALE) + (RandomFloat()-.5f) * 300.0f;
 			p.z = hive->Coord.z + (20 * HIVE_SCALE) + (RandomFloat()-.5f) * 200.0f;
-			
-			MakeFlyingBee(&p);	
+
+			MakeFlyingBee(&p);
 		}
-	}	
+	}
 
 	gInfobarUpdateBits |= UPDATE_BOSS;
 }
@@ -804,20 +798,18 @@ int	i;
 #pragma mark -
 
 
-
-
 /************************* ADD CATTAIL *********************************/
 
 Boolean AddCatTail(TerrainItemEntryType *itemPtr, long  x, long z)
 {
 ObjNode	*newObj;
-	
+
 	if (gLevelType != LEVEL_TYPE_POND)
 		DoFatalAlert("AddCatTail: not on this level!");
 
-			
-	gNewObjectDefinition.group 		= POND_MGroupNum_CatTail;	
-	gNewObjectDefinition.type 		= POND_MObjType_CatTail;	
+
+	gNewObjectDefinition.group 		= POND_MGroupNum_CatTail;
+	gNewObjectDefinition.type 		= POND_MObjType_CatTail;
 	gNewObjectDefinition.coord.x 	= x;
 	gNewObjectDefinition.coord.y 	= GetTerrainHeightAtCoord(x,z,FLOOR);
 	gNewObjectDefinition.coord.z 	= z;
@@ -840,19 +832,18 @@ ObjNode	*newObj;
 }
 
 
-
 /************************* ADD DUCKWEED *********************************/
 
 Boolean AddDuckWeed(TerrainItemEntryType *itemPtr, long  x, long z)
 {
 ObjNode	*newObj;
-	
+
 	if (gLevelType != LEVEL_TYPE_POND)
 		DoFatalAlert("AddDuckWeed: not on this level!");
 
-			
-	gNewObjectDefinition.group 		= POND_MGroupNum_DuckWeed;	
-	gNewObjectDefinition.type 		= POND_MObjType_DuckWeed;	
+
+	gNewObjectDefinition.group 		= POND_MGroupNum_DuckWeed;
+	gNewObjectDefinition.type 		= POND_MObjType_DuckWeed;
 	gNewObjectDefinition.coord.x 	= x;
 	gNewObjectDefinition.coord.y 	= GetTerrainHeightAtCoord(x,z,FLOOR);
 	gNewObjectDefinition.coord.z 	= z;
@@ -880,13 +871,13 @@ ObjNode	*newObj;
 Boolean AddLilyFlower(TerrainItemEntryType *itemPtr, long  x, long z)
 {
 ObjNode	*newObj;
-	
+
 	if (gLevelType != LEVEL_TYPE_POND)
 		DoFatalAlert("AddLilyFlower: not on this level!");
 
-			
-	gNewObjectDefinition.group 		= POND_MGroupNum_LilyFlower;	
-	gNewObjectDefinition.type 		= POND_MObjType_LilyFlower;	
+
+	gNewObjectDefinition.group 		= POND_MGroupNum_LilyFlower;
+	gNewObjectDefinition.type 		= POND_MObjType_LilyFlower;
 	gNewObjectDefinition.coord.x 	= x;
 	gNewObjectDefinition.coord.y 	= WATER_Y;
 	gNewObjectDefinition.coord.z 	= z;
@@ -909,20 +900,18 @@ ObjNode	*newObj;
 }
 
 
-
-
 /************************* ADD LILY PAD *********************************/
 
 Boolean AddLilyPad(TerrainItemEntryType *itemPtr, long  x, long z)
 {
 ObjNode	*newObj;
-	
+
 	if (gLevelType != LEVEL_TYPE_POND)
 		DoFatalAlert("AddLilyPad: not on this level!");
 
-			
-	gNewObjectDefinition.group 		= POND_MGroupNum_LilyPad;	
-	gNewObjectDefinition.type 		= POND_MObjType_LilyPad;	
+
+	gNewObjectDefinition.group 		= POND_MGroupNum_LilyPad;
+	gNewObjectDefinition.type 		= POND_MObjType_LilyPad;
 	gNewObjectDefinition.coord.x 	= x;
 	gNewObjectDefinition.coord.y 	= WATER_Y;
 	gNewObjectDefinition.coord.z 	= z;
@@ -949,7 +938,7 @@ ObjNode	*newObj;
 Boolean AddPondGrass(TerrainItemEntryType *itemPtr, long  x, long z)
 {
 ObjNode	*newObj;
-	
+
 	if (gLevelType != LEVEL_TYPE_POND)
 		DoFatalAlert("AddPondGrass: not on this level!");
 
@@ -957,9 +946,8 @@ ObjNode	*newObj;
 		DoFatalAlert("AddPondGrass:parm[0] out of range!");
 
 
-			
-	gNewObjectDefinition.group 		= POND_MGroupNum_PondGrass;	
-	gNewObjectDefinition.type 		= POND_MObjType_PondGrass + itemPtr->parm[0];	
+	gNewObjectDefinition.group 		= POND_MGroupNum_PondGrass;
+	gNewObjectDefinition.type 		= POND_MObjType_PondGrass + itemPtr->parm[0];
 	gNewObjectDefinition.coord.x 	= x;
 	gNewObjectDefinition.coord.y 	= GetTerrainHeightAtCoord(x,z,FLOOR);
 	gNewObjectDefinition.coord.z 	= z;
@@ -987,16 +975,16 @@ ObjNode	*newObj;
 Boolean AddReed(TerrainItemEntryType *itemPtr, long  x, long z)
 {
 ObjNode	*newObj;
-	
+
 	if (gLevelType != LEVEL_TYPE_POND)
 		DoFatalAlert("AddReed: not on this level!");
 
 	if (itemPtr->parm[0] > 1)
 		DoFatalAlert("AddReed:parm[0] out of range!");
 
-			
-	gNewObjectDefinition.group 		= POND_MGroupNum_Reed;	
-	gNewObjectDefinition.type 		= POND_MObjType_Reed + itemPtr->parm[0];	
+
+	gNewObjectDefinition.group 		= POND_MGroupNum_Reed;
+	gNewObjectDefinition.type 		= POND_MObjType_Reed + itemPtr->parm[0];
 	gNewObjectDefinition.coord.x 	= x;
 	gNewObjectDefinition.coord.y 	= GetTerrainHeightAtCoord(x,z,FLOOR);
 	gNewObjectDefinition.coord.z 	= z;
@@ -1013,7 +1001,7 @@ ObjNode	*newObj;
 
 	newObj->CType = CTYPE_MISC;
 	newObj->CBits = CBITS_ALLSOLID;
-	
+
 	if (itemPtr->parm[0] == 0)
 		SetObjectCollisionBounds(newObj,1000,0,-35,35,35,-35);
 	else
@@ -1039,10 +1027,10 @@ Boolean AddBentAntPipe(TerrainItemEntryType *itemPtr, long  x, long z)
 ObjNode	*newObj;
 TQ3Matrix4x4	m;
 static const TQ3Point3D waterPt = {45*BENT_PIPE_SCALE, 178*BENT_PIPE_SCALE, 45*BENT_PIPE_SCALE};
-	
-			
-	gNewObjectDefinition.group 		= MODEL_GROUP_LEVELSPECIFIC;	
-	gNewObjectDefinition.type 		= ANTHILL_MObjType_BentPipe;	
+
+
+	gNewObjectDefinition.group 		= MODEL_GROUP_LEVELSPECIFIC;
+	gNewObjectDefinition.type 		= ANTHILL_MObjType_BentPipe;
 	gNewObjectDefinition.coord.x 	= x;
 	gNewObjectDefinition.coord.y 	= GetTerrainHeightAtCoord(x,z,FLOOR);
 	gNewObjectDefinition.coord.z 	= z;
@@ -1059,7 +1047,7 @@ static const TQ3Point3D waterPt = {45*BENT_PIPE_SCALE, 178*BENT_PIPE_SCALE, 45*B
 
 
 				/* SET COLLISION */
-					
+
 	newObj->CType = CTYPE_MISC|CTYPE_BLOCKCAMERA;
 	newObj->CBits = CBITS_ALLSOLID;
 	SetObjectCollisionBounds(newObj,300,0,-50,50,50,-50);
@@ -1072,7 +1060,7 @@ static const TQ3Point3D waterPt = {45*BENT_PIPE_SCALE, 178*BENT_PIPE_SCALE, 45*B
 
 
 				/* CALC COORD OF WATER LEAK */
-				
+
 	Q3Matrix4x4_SetRotate_Y(&m, newObj->Rot.y);
 	Q3Point3D_Transform(&waterPt, &m, &newObj->InitCoord);
 	newObj->InitCoord.x += newObj->Coord.x;
@@ -1097,11 +1085,11 @@ Boolean AddHorizAntPipe(TerrainItemEntryType *itemPtr, long  x, long z)
 ObjNode			*newObj;
 TQ3Matrix4x4	m;
 static const TQ3Point3D waterPt = {-58*HORIZ_PIPE_SCALE, 400*HORIZ_PIPE_SCALE, 214*HORIZ_PIPE_SCALE};
-			
+
 					/* MAKE OBJ */
-					
-	gNewObjectDefinition.group 		= MODEL_GROUP_LEVELSPECIFIC;	
-	gNewObjectDefinition.type 		= ANTHILL_MObjType_HorizPipe;	
+
+	gNewObjectDefinition.group 		= MODEL_GROUP_LEVELSPECIFIC;
+	gNewObjectDefinition.type 		= ANTHILL_MObjType_HorizPipe;
 	gNewObjectDefinition.coord.x 	= x;
 	gNewObjectDefinition.coord.y 	= GetTerrainHeightAtCoord(x,z,FLOOR) + ((float)itemPtr->parm[1] * 10.0f);
 	gNewObjectDefinition.coord.z 	= z;
@@ -1118,10 +1106,10 @@ static const TQ3Point3D waterPt = {-58*HORIZ_PIPE_SCALE, 400*HORIZ_PIPE_SCALE, 2
 
 
 				/* SET COLLISION */
-					
+
 	newObj->CType = CTYPE_MISC|CTYPE_BLOCKCAMERA;
 	newObj->CBits = CBITS_ALLSOLID;
-	
+
 	if (itemPtr->parm[0] & 1)
 		SetObjectCollisionBounds(newObj,300,0,-100,100,500,-500);
 	else
@@ -1136,7 +1124,7 @@ static const TQ3Point3D waterPt = {-58*HORIZ_PIPE_SCALE, 400*HORIZ_PIPE_SCALE, 2
 
 
 				/* CALC COORD OF WATER LEAK */
-				
+
 	Q3Matrix4x4_SetRotate_Y(&m, newObj->Rot.y);
 	Q3Point3D_Transform(&waterPt, &m, &newObj->InitCoord);
 	newObj->InitCoord.x += newObj->Coord.x;
@@ -1161,7 +1149,7 @@ long	i;
 
 
 		/* SEE IF ACTIVATE VALVE PIPE */
-		
+
 	if (theNode->ValvePipe)
 		if (gValveIsOpen[theNode->ValveID])
 			theNode->SpewWater = true;
@@ -1174,21 +1162,20 @@ long	i;
 	if (theNode->SpewWater)
 	{
 				/* UPDATE WATER EFFECT */
-				
+
 		if (theNode->EffectChannel == -1)
 			theNode->EffectChannel = PlayEffect3D(EFFECT_WATERLEAK, &theNode->InitCoord);
 		else
 			Update3DSoundChannel(EFFECT_WATERLEAK, &theNode->EffectChannel, &theNode->InitCoord);
-	
+
 		theNode->SpewWaterTimer += gFramesPerSecondFrac;			// check timer
 		if (theNode->SpewWaterTimer > .05f)
 		{
 			theNode->SpewWaterTimer = 0;
-			
-			
-			
+
+
 				/* MAKE PARTICLE GROUP */
-				
+
 			if (theNode->ParticleGroup == -1)
 			{
 				theNode->ParticleGroup = NewParticleGroup(0,						// magic num
@@ -1201,14 +1188,14 @@ long	i;
 														.6,							// fade rate
 														PARTICLE_TEXTURE_PATCHY);	// texture
 			}
-			
-			
+
+
 					/* ADD PARTICLES */
-					
+
 			if (theNode->ParticleGroup != -1)
 			{
 				TQ3Vector3D	delta;
-				
+
 				for (i = 0; i < 3; i++)
 				{
 					delta.x = (RandomFloat()-.5f) * 150.0f;
@@ -1219,12 +1206,12 @@ long	i;
 			}
 		}
 	}
-	
+
 		/* NOT SPEWING, SO STOP SOUND IF ANY */
-		
+
 	else
 		StopAChannel(&theNode->EffectChannel);
-	
+
 }
 
 
@@ -1235,11 +1222,11 @@ long	i;
 Boolean AddWoodPost(TerrainItemEntryType *itemPtr, long  x, long z)
 {
 ObjNode	*newObj;
-				
+
 	if (gLevelType != LEVEL_TYPE_FOREST)
 		DoFatalAlert("AddWoodPost: not on this level!");
-				
-	gNewObjectDefinition.group 		= MODEL_GROUP_LEVELSPECIFIC;	
+
+	gNewObjectDefinition.group 		= MODEL_GROUP_LEVELSPECIFIC;
 	gNewObjectDefinition.type 		= FOREST_MObjType_WoodPost;
 	gNewObjectDefinition.coord.x 	= x;
 	gNewObjectDefinition.coord.y 	= GetTerrainHeightAtCoord(x,z,FLOOR) - 30.0f;
@@ -1261,17 +1248,5 @@ ObjNode	*newObj;
 
 	return(true);													// item was added
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 

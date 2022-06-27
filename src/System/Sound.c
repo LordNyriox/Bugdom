@@ -172,16 +172,16 @@ OSErr		iErr;
 			/******************/
 
 			/* MAKE MUSIC CHANNEL */
-			
+
 	SndNewChannel(&gMusicChannel,sampledSynth,initStereo,nil);
 
 
 			/* ALL OTHER CHANNELS */
-				
+
 	for (gMaxChannels = 0; gMaxChannels < MAX_CHANNELS; gMaxChannels++)
 	{
 			/* NEW SOUND CHANNEL */
-			
+
 		iErr = SndNewChannel(&gSndChannel[gMaxChannels],sampledSynth,0,/*NewSndCallBackUPP(CallBackFn)*/nil);
 		if (iErr)												// if err, stop allocating channels
 			break;
@@ -310,7 +310,7 @@ short		c = *channelNum;
 	myErr = SndChannelStatus(gSndChannel[c],sizeof(SCStatus),&theStatus);	// get channel info
 	if (myErr == noErr && theStatus.scChannelBusy)					// if channel busy, then stop it
 	{
-		mySndCmd.cmd = flushCmd;	
+		mySndCmd.cmd = flushCmd;
 		mySndCmd.param1 = 0;
 		mySndCmd.param2 = 0;
 		myErr = SndDoImmediate(gSndChannel[c], &mySndCmd);
@@ -320,11 +320,11 @@ short		c = *channelNum;
 		mySndCmd.param2 = 0;
 		myErr = SndDoImmediate(gSndChannel[c], &mySndCmd);
 	}
-	
+
 	*channelNum = -1;
-	
-	gChannelInfo[c].effectNum = -1;	
-	
+
+	gChannelInfo[c].effectNum = -1;
+
 }
 
 
@@ -337,7 +337,7 @@ short		i;
 	for (i=0; i < gMaxChannels; i++)
 	{
 		short	c;
-		
+
 		c = i;
 		StopAChannel(&c);
 	}
@@ -360,7 +360,6 @@ void PauseAllChannels(Boolean pause)
 		SndDoImmediate(gMusicChannel, &cmd);
 	}
 }
-
 
 
 /****************** UPDATE GLOBAL VOLUME ************************/
@@ -421,7 +420,7 @@ OSErr	iErr;
 		return;
 
 		/* ZAP ANY EXISTING SONG */
-		
+
 	gCurrentSong 	= songNum;
 	gLoopSongFlag 	= loopFlag;
 	KillSong();
@@ -457,26 +456,25 @@ OSErr	iErr;
 
 
 	gCurrentSong = songNum;
-	
-	
+
+
 				/*******************/
 				/* START STREAMING */
 				/*******************/
-		
+
 		/* RESET CHANNEL TO DEFAULT VALUES */
 
 	mySndCmd.cmd = volumeCmd;										// set sound playback volume
 	mySndCmd.param1 = 0;
 	mySndCmd.param2 = (volume<<16) | volume;
 	SndDoImmediate(gMusicChannel, &mySndCmd);
-					
+
 	mySndCmd.cmd 		= freqCmd;									// modify the rate to change the frequency 
 	mySndCmd.param1 	= 0;
 	mySndCmd.param2 	= kMiddleC;
 	SndDoImmediate(gMusicChannel, &mySndCmd);
-					
-			
-			
+
+
 			/* START PLAYING FROM FILE */
 
 	iErr = SndStartFilePlay(
@@ -513,9 +511,9 @@ OSErr	iErr;
 
 
 			/* SEE IF WANT TO MUTE THE MUSIC */
-			
-//	if (gMuteMusicFlag)													
-//		SndPauseFilePlay(gMusicChannel);						// pause it	
+
+//	if (gMuteMusicFlag)
+//		SndPauseFilePlay(gMusicChannel);						// pause it
 }
 
 /***************** SONG COMPLETION PROC *********************/
@@ -571,10 +569,9 @@ u_long					leftVol, rightVol;
 
 	if (theChan != -1)
 		gChannelInfo[theChan].volumeAdjust = 1.0;			// full volume adjust
-						
-	return(theChan);									// return channel #	
-}
 
+	return(theChan);									// return channel #
+}
 
 
 /***************************** PLAY EFFECT PARMS 3D ***************************/
@@ -597,15 +594,14 @@ u_long			leftVol, rightVol;
 
 
 				/* PLAY EFFECT */
-				
+
 	theChan = PlayEffect_Parms(effectNum, leftVol, rightVol, rateMultiplier);
-	
+
 	if (theChan != -1)
 		gChannelInfo[theChan].volumeAdjust = volumeAdjust;	// remember volume adjuster
 
-	return(theChan);									// return channel #	
+	return(theChan);									// return channel #
 }
-
 
 
 /************************* UPDATE 3D SOUND CHANNEL ***********************/
@@ -625,16 +621,16 @@ short			c;
 		return(true);
 
 			/* MAKE SURE THE SAME SOUND IS STILL ON THIS CHANNEL */
-			
+
 	if (effectNum != gChannelInfo[c].effectNum)
 	{
 		*channel = -1;
 		return(true);
 	}
-	
+
 
 			/* SEE IF SOUND HAS COMPLETED */
-			
+
 #if 0	// Source port removal
 	if (!gChannelInfo[c].isLooping)										// loopers wont complete, duh.
 #endif
@@ -659,10 +655,9 @@ short			c;
 		}
 
 		ChangeChannelVolume(c, leftVol, rightVol);
-	}	
+	}
 	return(false);
 }
-
 
 
 #pragma mark -
@@ -758,14 +753,14 @@ u_long			lv2,rv2;
 	sound->lastLoudness = leftVolume + rightVolume;
 
 	lv2 = (float)leftVolume * gGlobalVolume;							// amplify by global volume
-	rv2 = (float)rightVolume * gGlobalVolume;					
+	rv2 = (float)rightVolume * gGlobalVolume;
 
 
 					/* GET IT GOING */
 
-	chanPtr = gSndChannel[theChan];						
-	
-	mySndCmd.cmd = flushCmd;	
+	chanPtr = gSndChannel[theChan];
+
+	mySndCmd.cmd = flushCmd;
 	mySndCmd.param1 = 0;
 	mySndCmd.param2 = 0;
 	myErr = SndDoImmediate(chanPtr, &mySndCmd);
@@ -790,29 +785,28 @@ u_long			lv2,rv2;
 	myErr = SndDoImmediate(chanPtr, &mySndCmd);
 	if (myErr)
 		return(-1);
-	
+
 	mySndCmd.cmd = volumeCmd;										// set sound playback volume
 	mySndCmd.param1 = 0;
 	mySndCmd.param2 = (rv2<<16) | lv2;
 	SndDoImmediate(chanPtr, &mySndCmd);
-	
+
 	mySndCmd.cmd 		= freqCmd;									// set frequency 
 	mySndCmd.param1 	= 0;
-	mySndCmd.param2 	= rateMultiplier;	
+	mySndCmd.param2 	= rateMultiplier;
 	SndDoImmediate(chanPtr, &mySndCmd);
 
 
 			/* SET MY INFO */
-			
+
 	gChannelInfo[theChan].effectNum 	= effectNum;		// remember what effect is playing on this channel
 	gChannelInfo[theChan].leftVolume 	= leftVolume;		// remember requested volume (not the adjusted volume!)
-	gChannelInfo[theChan].rightVolume 	= rightVolume;	
-	return(theChan);										// return channel #	
+	gChannelInfo[theChan].rightVolume 	= rightVolume;
+	return(theChan);										// return channel #
 }
 
 
 #pragma mark -
-
 
 
 /*************** CHANGE CHANNEL VOLUME **************/
@@ -830,9 +824,9 @@ u_long			lv2,rv2;
 		return;
 
 	lv2 = leftVol * gGlobalVolume;				// amplify by global volume
-	rv2 = rightVol * gGlobalVolume;			
+	rv2 = rightVol * gGlobalVolume;
 
-	chanPtr = gSndChannel[channel];						// get the actual channel ptr				
+	chanPtr = gSndChannel[channel];						// get the actual channel ptr
 
 	mySndCmd.cmd = volumeCmd;							// set sound playback volume
 	mySndCmd.param1 = 0;
@@ -842,7 +836,6 @@ u_long			lv2,rv2;
 	gChannelInfo[channel].leftVolume = leftVol;				// remember requested volume (not the adjusted volume!)
 	gChannelInfo[channel].rightVolume = rightVol;
 }
-
 
 
 /******************** TOGGLE MUSIC *********************/
@@ -862,11 +855,11 @@ void ToggleMusic(void)
 void DoSoundMaintenance(void)
 {
 	if (!gEnteringName)
-	{	
+	{
 					/* SEE IF TOGGLE MUSIC */
 
 		if (GetNewKeyState(kKey_ToggleMusic))
-			ToggleMusic();			
+			ToggleMusic();
 	}
 
 				/* SEE IF STREAMED MUSIC STOPPED - SO RESET */
@@ -878,7 +871,6 @@ void DoSoundMaintenance(void)
 			KillSong();
 	}
 }
-
 
 
 /******************** FIND SILENT CHANNEL *************************/
@@ -899,10 +891,10 @@ SCStatus	theStatus;
 			return(theChan);
 		}
 	}
-	
+
 			/* NO FREE CHANNELS */
-	
-	return(-1);										
+
+	return(-1);
 }
 
 
@@ -915,7 +907,6 @@ SCStatus	theStatus;
 	SndChannelStatus(gSndChannel[chanNum],sizeof(SCStatus),&theStatus);	// get channel info
 	return (theStatus.scChannelBusy);
 }
-
 
 
 /******************** CALC 3D EFFECT VOLUME *********************/
@@ -935,9 +926,9 @@ u_long	maxLeft,maxRight;
 	}
 
 	dist 	= Q3Point3D_Distance(where, &gEarCoords);		// calc dist to sound for pane 0
-		
+
 			/* DO VOLUME CALCS */
-			
+
 	refDist = kEffectsTable[effectNum].refDistance;			// get ref dist
 
 	dist -= refDist;
@@ -949,10 +940,10 @@ u_long	maxLeft,maxRight;
 		if (volumeFactor > 1.0f)
 			volumeFactor = 1.0f;
 	}
-	
-	volume = (float)FULL_CHANNEL_VOLUME * volumeFactor * volAdjust;	
-	
-				
+
+	volume = (float)FULL_CHANNEL_VOLUME * volumeFactor * volAdjust;
+
+
 	if (volume < 6)							// if really quiet, then just turn it off
 	{
 		*leftVolOut = *rightVolOut = 0;
@@ -962,36 +953,36 @@ u_long	maxLeft,maxRight;
 			/************************/
 			/* DO STEREO SEPARATION */
 			/************************/
-	
-	else		
+
+	else
 	{
 		float		volF = (float)volume;
-		
+
 		if (volF > 256.0f)
 		{
 //			printf("Sfx %d volume %f clipped\n", effectNum, volF);
 			volF = 256.0f;
 		}
-		
+
 		TQ3Vector2D	earToSound,lookVec;
 		float		dot,cross;
-		
+
 		maxLeft = maxRight = 0;
-		
+
 			/* CALC VECTOR TO SOUND */
-			
+
 		earToSound.x = where->x - gEarCoords.x;
 		earToSound.y = where->z - gEarCoords.z;
 		FastNormalizeVector2D(earToSound.x, earToSound.y, &earToSound);
-		
-		
+
+
 			/* CALC EYE LOOK VECTOR */
-			
+
 		FastNormalizeVector2D(gEyeVector.x, gEyeVector.z, &lookVec);
-			
+
 
 			/* DOT PRODUCT  TELLS US HOW MUCH STEREO SHIFT */
-			
+
 		dot = 1.0f - fabs(Q3Vector2D_Dot(&earToSound,  &lookVec));
 		if (dot < 0.0f)
 			dot = 0.0f;
@@ -1001,12 +992,12 @@ u_long	maxLeft,maxRight;
 
 
 			/* CROSS PRODUCT TELLS US WHICH SIDE */
-			
+
 		cross = Q3Vector2D_Cross(&earToSound,  &lookVec);
-		
-		
+
+
 				/* DO LEFT/RIGHT CALC */
-				
+
 		if (cross > 0.0f)
 		{
 			left 	= volF + (volF * dot);
@@ -1017,18 +1008,18 @@ u_long	maxLeft,maxRight;
 			right 	= volF + (volF * dot);
 			left 	= volF - (volF * dot);
 		}
-		
-		
+
+
 				/* KEEP MAX */
-				
+
 		if (left > maxLeft)
 			maxLeft = left;
 		if (right > maxRight)
 			maxRight = right;
-				
+
 	}
 
 	*leftVolOut = maxLeft;
-	*rightVolOut = maxRight;		
+	*rightVolOut = maxRight;
 }
 

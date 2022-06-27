@@ -48,7 +48,7 @@ static void MoveSpiderOnSpline(ObjNode *theNode);
 #define	SPIDER_WALK_SPEED		300.0f
 #define	SPIDER_KNOCKDOWN_SPEED	1400.0f					// speed ball needs to go to knock this down
 
-#define	SPIDER_HEALTH			.3f		
+#define	SPIDER_HEALTH			.3f
 #define	SPIDER_DAMAGE			0.2f
 
 #define	SPIDER_SCALE			.9f
@@ -69,7 +69,6 @@ enum
 };
 
 #define	SPIDER_FOOT_OFFSET		55.0f
-
 
 
 #define	THREAD_YOFF			100.0f
@@ -113,13 +112,13 @@ static const Byte type[] =
 				/*********************/
 				/* CREATE THE SPIDER */
 				/*********************/
-				
+
 	newObj = MakeEnemySkeleton(SKELETON_TYPE_SPIDER,x,z,SPIDER_SCALE);
 	if (newObj == nil)
 		return(false);
 	newObj->TerrainItemPtr = itemPtr;
 
-	
+
 				/* SET BETTER INFO */
 
 	newObj->Coord.y 	+= SPIDER_START_YOFF;					// start spider up high
@@ -128,9 +127,9 @@ static const Byte type[] =
 	newObj->Health 		= SPIDER_HEALTH;
 	newObj->Damage 		= SPIDER_DAMAGE;
 	newObj->Kind 		= ENEMY_KIND_SPIDER;
-	
+
 				/* SET COLLISION INFO */
-				
+
 	newObj->CBits = ALL_SOLID_SIDES;
 	newObj->CBits		= CBITS_NOTTOP;
 	newObj->CType = 0;											// no collision yet
@@ -141,7 +140,7 @@ static const Byte type[] =
 				/* CREATE THE THREAD */
 				/*********************/
 
-	gNewObjectDefinition.group 		= MODEL_GROUP_LEVELSPECIFIC;	
+	gNewObjectDefinition.group 		= MODEL_GROUP_LEVELSPECIFIC;
 	gNewObjectDefinition.type 		= type[gLevelType];
 	gNewObjectDefinition.coord.y 	+= THREAD_YOFF;
 	gNewObjectDefinition.flags 		= STATUS_BIT_HIDDEN;			// initially its hidden
@@ -157,14 +156,13 @@ static const Byte type[] =
 
 
 				/* MAKE SHADOW */
-				
+
 	AttachShadowToObject(newObj, 8, 8, false);
 
 	gNumEnemies++;
 	gNumEnemyOfKind[ENEMY_KIND_SPIDER]++;
 	return(true);
 }
-
 
 
 /********************* MOVE SPIDER **************************/
@@ -190,7 +188,7 @@ static	void(*myMoveTable[])(ObjNode *) =
 	}
 
 	GetObjectInfo(theNode);
-	
+
 	myMoveTable[theNode->Skeleton->AnimNum](theNode);
 }
 
@@ -200,7 +198,7 @@ static	void(*myMoveTable[])(ObjNode *) =
 static void  MoveSpider_Waiting(ObjNode *theNode)
 {
 			/* SEE IF DROP DOWN */
-			
+
 	if (CalcQuickDistance(gCoord.x, gCoord.z, gMyCoord.x, gMyCoord.z) < SPIDER_DROP_DIST)
 	{
 		theNode->StatusBits &= ~STATUS_BIT_HIDDEN;					// not hidden anymore
@@ -213,7 +211,6 @@ static void  MoveSpider_Waiting(ObjNode *theNode)
 	}
 	UpdateEnemy(theNode);
 }
-
 
 
 /********************** MOVE SPIDER: DROP ******************************/
@@ -229,13 +226,13 @@ ObjNode	*threadObj;
 
 	gDelta.y = -((gCoord.y - y)*1.7f + 100.0f);					// drop speed slows as approaches ground
 	gCoord.y += gDelta.y * gFramesPerSecondFrac;
-	
+
 
 			/* SEE IF HIT GROUND */
-			
+
 	if ((gCoord.y - SPIDER_FOOT_OFFSET) <= y)
 	{
-		gCoord.y = y + SPIDER_FOOT_OFFSET;	
+		gCoord.y = y + SPIDER_FOOT_OFFSET;
 		MorphToSkeletonAnim(theNode->Skeleton, SPIDER_ANIM_WALK, 5);
 		if (threadObj)
 		{
@@ -243,19 +240,19 @@ ObjNode	*threadObj;
 			theNode->ChainNode = nil;						// detach from chain
 		}
 	}
-	
+
 			/* SLOWLY ROTATE TOWARD PLAYER */
-			
-	TurnObjectTowardTarget(theNode, &gCoord, gMyCoord.x, gMyCoord.z, SPIDER_TURN_SPEED, false);			
-	
-	
+
+	TurnObjectTowardTarget(theNode, &gCoord, gMyCoord.x, gMyCoord.z, SPIDER_TURN_SPEED, false);
+
+
 	UpdateEnemy(theNode);
 
 
 			/* UPDATE THREAD */
-			
+
 	if (threadObj)
-		threadObj->Coord.y = gCoord.y + THREAD_YOFF;	
+		threadObj->Coord.y = gCoord.y + THREAD_YOFF;
 	UpdateObjectTransforms(threadObj);
 }
 
@@ -267,15 +264,15 @@ float		r,fps,aim,speed;
 Boolean		canWeb;
 
 	fps = gFramesPerSecondFrac;
-		
+
 	speed = SPIDER_WALK_SPEED;
-		
+
 	theNode->Skeleton->AnimSpeed = speed * .004f;				// keep anim synced with max walk speed
 	theNode->Speed = speed;
 
 			/* MOVE TOWARD PLAYER */
-			
-	aim = TurnObjectTowardTarget(theNode, &gCoord, gMyCoord.x, gMyCoord.z, SPIDER_TURN_SPEED, false);			
+
+	aim = TurnObjectTowardTarget(theNode, &gCoord, gMyCoord.x, gMyCoord.z, SPIDER_TURN_SPEED, false);
 
 	r = theNode->Rot.y;
 	gDelta.x = -sin(r) * speed;
@@ -286,44 +283,44 @@ Boolean		canWeb;
 				/**********************/
 				/* DO ENEMY COLLISION */
 				/**********************/
-				
+
 	if (DoEnemyCollisionDetect(theNode,DEFAULT_ENEMY_COLLISION_CTYPES))
 		return;
 
 			/*********************************/
 			/* SEE IF CLOSE ENOUGH TO ATTACK */
 			/*********************************/
-			
+
 	canWeb = true;
 	if (gPlayerMode == PLAYER_MODE_BUG)										// if player already webbed then dont do it again
 		if (gPlayerObj->Skeleton->AnimNum == PLAYER_ANIM_WEBBED)
 			canWeb = false;
-			
+
 			/* SEE IF SHOOT WEB */
-			
+
 	if (canWeb)
 	{
 		if (aim < 1.0f)
 		{
 			if (CalcQuickDistance(gCoord.x, gCoord.z, gMyCoord.x, gMyCoord.z) < SPIDER_ATTACK_DIST)
 			{
-				MorphToSkeletonAnim(theNode->Skeleton, SPIDER_ANIM_ATTACK, 2.0);				
+				MorphToSkeletonAnim(theNode->Skeleton, SPIDER_ANIM_ATTACK, 2.0);
 				theNode->ShootWeb = false;
 			}
 		}
 	}
 			/* SEE IF POUNCE */
-			
+
 	else
 	{
 		if (CalcQuickDistance(gCoord.x, gCoord.z, gMyCoord.x, gMyCoord.z) < SPIDER_ATTACK_DIST)
 		{
 			StartSpiderJump(theNode);
 		}
-	}	
+	}
 
-	
-	UpdateEnemy(theNode);		
+
+	UpdateEnemy(theNode);
 }
 
 
@@ -335,28 +332,28 @@ static void  MoveSpider_Spit(ObjNode *theNode)
 			/********************/
 			/* SEE IF SHOOT WEB */
 			/********************/
-			
+
 	if (theNode->ShootWeb)
 	{
 		theNode->ShootWeb = false;
-	
+
 		SpiderShootWeb(theNode);
 	}
 
 			/* SEE IF DONE WITH ANIM */
-			
+
 	if (theNode->Skeleton->AnimHasStopped)
 	{
-		SetSkeletonAnim(theNode->Skeleton, SPIDER_ANIM_WALK);	
+		SetSkeletonAnim(theNode->Skeleton, SPIDER_ANIM_WALK);
 	}
 
 
 				/* DO ENEMY COLLISION */
-				
+
 	if (DoEnemyCollisionDetect(theNode,DEFAULT_ENEMY_COLLISION_CTYPES))
 		return;
 
-	UpdateEnemy(theNode);		
+	UpdateEnemy(theNode);
 }
 
 
@@ -366,14 +363,14 @@ static void  MoveSpider_FallOnButt(ObjNode *theNode)
 {
 	if (theNode->StatusBits & STATUS_BIT_ONGROUND)			// if on ground, add friction
 		ApplyFrictionToDeltas(140.0,&gDelta);
-		
+
 	gDelta.y -= ENEMY_GRAVITY*gFramesPerSecondFrac;				// add gravity
 
 	MoveEnemy(theNode);
 
 
 				/* SEE IF DONE */
-			
+
 	theNode->ButtTimer -= gFramesPerSecondFrac;
 	if (theNode->ButtTimer <= 0.0)
 	{
@@ -381,19 +378,19 @@ static void  MoveSpider_FallOnButt(ObjNode *theNode)
 	}
 
 				/* DO ENEMY COLLISION */
-				
+
 	if (DoEnemyCollisionDetect(theNode,DEFAULT_ENEMY_COLLISION_CTYPES))
 		return;
 
 
-	UpdateEnemy(theNode);		
+	UpdateEnemy(theNode);
 }
 
 
 /********************** MOVE SPIDER: DEATH ******************************/
 
 static void  MoveSpider_Death(ObjNode *theNode)
-{	
+{
 			/* SEE IF GONE */
 
 	if (theNode->StatusBits & STATUS_BIT_ISCULLED)		// if was culled on last frame and is far enough away, then delete it
@@ -407,7 +404,7 @@ static void  MoveSpider_Death(ObjNode *theNode)
 
 
 				/* MOVE IT */
-				
+
 	if (theNode->StatusBits & STATUS_BIT_ONGROUND)			// if on ground, add friction
 		ApplyFrictionToDeltas(60.0,&gDelta);
 	gDelta.y -= ENEMY_GRAVITY*gFramesPerSecondFrac;				// add gravity
@@ -415,14 +412,14 @@ static void  MoveSpider_Death(ObjNode *theNode)
 
 
 				/* DO ENEMY COLLISION */
-				
+
 	if (DoEnemyCollisionDetect(theNode,DEATH_ENEMY_COLLISION_CTYPES))
 		return;
 
 
 				/* UPDATE */
-			
-	UpdateEnemy(theNode);		
+
+	UpdateEnemy(theNode);
 
 }
 
@@ -438,7 +435,7 @@ static void  MoveSpider_GetOffButt(ObjNode *theNode)
 
 
 				/* SEE IF DONE */
-			
+
 	if (theNode->Skeleton->AnimHasStopped)
 	{
 		SetSkeletonAnim(theNode->Skeleton, SPIDER_ANIM_WALK);
@@ -446,13 +443,12 @@ static void  MoveSpider_GetOffButt(ObjNode *theNode)
 
 
 				/* DO ENEMY COLLISION */
-				
+
 	if (DoEnemyCollisionDetect(theNode,DEFAULT_ENEMY_COLLISION_CTYPES))
 		return;
 
 
-
-	UpdateEnemy(theNode);		
+	UpdateEnemy(theNode);
 }
 
 
@@ -463,33 +459,29 @@ static void MoveSpider_Jump(ObjNode *theNode)
 float	fps;
 
 	fps = gFramesPerSecondFrac;
-		
+
 	gDelta.y -= ENEMY_GRAVITY * fps;					// gravity
 	MoveEnemy(theNode);
-	
-	
+
+
 				/* DO ENEMY COLLISION */
-				
+
 	if (DoEnemyCollisionDetect(theNode,DEFAULT_ENEMY_COLLISION_CTYPES))
 		return;
 
 
 			/* SEE IF LANDED */
-				
+
 	if (theNode->StatusBits & STATUS_BIT_ONGROUND)
 	{
 		gDelta.y = 0;
 		gDelta.x = 0;
-		gDelta.z = 0;		
-		MorphToSkeletonAnim(theNode->Skeleton, SPIDER_ANIM_WALK, 5);	
+		gDelta.z = 0;
+		MorphToSkeletonAnim(theNode->Skeleton, SPIDER_ANIM_WALK, 5);
 	}
-	
-	UpdateEnemy(theNode);		
+
+	UpdateEnemy(theNode);
 }
-
-
-
-
 
 
 #pragma mark -
@@ -504,7 +496,6 @@ static void MoveThread(ObjNode *theNode)
 		return;
 	}
 }
-
 
 
 /********************* SPIDER SHOOT WEB ************************/
@@ -535,8 +526,8 @@ static const Byte type[] =
 
 	FindCoordOnJoint(theEnemy, 0, &inPt, &gNewObjectDefinition.coord);	// get coord of mouth
 
-	gNewObjectDefinition.group 		= MODEL_GROUP_LEVELSPECIFIC;	
-	gNewObjectDefinition.type 		= type[gLevelType];	
+	gNewObjectDefinition.group 		= MODEL_GROUP_LEVELSPECIFIC;
+	gNewObjectDefinition.type 		= type[gLevelType];
 	gNewObjectDefinition.flags 		= STATUS_BIT_NULLSHADER | STATUS_BIT_GLOW | STATUS_BIT_ROTXZY | STATUS_BIT_KEEPBACKFACES;
 	gNewObjectDefinition.slot 		= TRIGGER_SLOT;
 	gNewObjectDefinition.moveCall 	= MoveWebBullet;
@@ -576,38 +567,38 @@ float	t;
 
 	if (TrackTerrainItem(theNode))						// just check to see if it's gone
 	{
-del:	
+del:
 		DeleteObject(theNode);
 		return;
 	}
 
 			/* SEE IF BURNED OUT */
-			
+
 	theNode->Health -= fps;
 	if (theNode->Health <= 0.0f)
 		goto del;
 
 
 	GetObjectInfo(theNode);
-	
+
 	gCoord.x += gDelta.x * fps;
 	gCoord.y += gDelta.y * fps;
 	gCoord.z += gDelta.z * fps;
 
-	t = theNode->SpecialF[3] += fps * .5f;	
+	t = theNode->SpecialF[3] += fps * .5f;
 	theNode->Scale.x = t;
 	theNode->Scale.y = t;
 	theNode->Scale.z = t;
-	
+
 	theNode->Rot.z += fps*2.0f;
-	
-	
+
+
 			/* FADE OUT */
-			
+
 	t = theNode->Health * 3.0f;
 	if (t < 1.0f)
 		MakeObjectTransparent(theNode, t);
-	
+
 	UpdateObject(theNode);
 }
 
@@ -633,13 +624,13 @@ static const Byte type[] =
 
 	(void) whoNode;
 	(void) sideBits;
-	
+
 	DeleteObject(theNode);												// delete the web bullet
 
 			/****************************/
 			/* PUT PLAYER INTO WEB MODE */
 			/****************************/
-						
+
 	if (gPlayerMode == PLAYER_MODE_BALL)								// see if turn into bug
 		InitPlayer_Bug(gPlayerObj, &gPlayerObj->Coord, gPlayerObj->Rot.y, PLAYER_ANIM_WEBBED);
 	else
@@ -651,10 +642,10 @@ static const Byte type[] =
 	}
 
 			/* CREATE THE SPHERE */
-		
-	gNewObjectDefinition.coord 		= gPlayerObj->Coord;	
-	gNewObjectDefinition.group 		= MODEL_GROUP_LEVELSPECIFIC;	
-	gNewObjectDefinition.type 		= type[gLevelType];	
+
+	gNewObjectDefinition.coord 		= gPlayerObj->Coord;
+	gNewObjectDefinition.group 		= MODEL_GROUP_LEVELSPECIFIC;
+	gNewObjectDefinition.type 		= type[gLevelType];
 	gNewObjectDefinition.flags 		= STATUS_BIT_NULLSHADER | STATUS_BIT_GLOW | STATUS_BIT_KEEPBACKFACES_2PASS;
 	gNewObjectDefinition.slot 		= SLOT_OF_DUMB+20;
 	gNewObjectDefinition.moveCall 	= MoveWebSphere;
@@ -681,29 +672,29 @@ Boolean	gotout = false;
 			/* SEE IF PLAYER GOT OUT */
 			/*************************/
 
-	
+
 		/* SEE IF PLAYER IS BALL OR NOT IN CORRECT ANIM */
-			
+
 	if (gPlayerMode == PLAYER_MODE_BALL)
 		gotout = true;
 	else
-	if (gPlayerObj->Skeleton->AnimNum != PLAYER_ANIM_WEBBED)		
+	if (gPlayerObj->Skeleton->AnimNum != PLAYER_ANIM_WEBBED)
 		gotout = true;
 
 
 			/* SEE IF SPHERE TIMES OUT */
-	
+
 	else
 	if (theNode->Health <= 0.0f)
 	{
-		if (gPlayerMode == PLAYER_MODE_BUG)								
+		if (gPlayerMode == PLAYER_MODE_BUG)
 			MorphToSkeletonAnim(gPlayerObj->Skeleton, PLAYER_ANIM_STAND, 3);
 		gotout = true;
 	}
 
 
 			/* IF OUT, THEN BLOW UP SPHERE */
-			
+
 	if (gotout)
 	{
 		QD3D_ExplodeGeometry(theNode, 700.0f, PARTICLE_MODE_BOUNCE|PARTICLE_MODE_NULLSHADER, 1, .6);
@@ -713,13 +704,13 @@ Boolean	gotout = false;
 			/*******************/
 			/* UPDATE & WOBBLE */
 			/*******************/
-			
+
 	theNode->Coord = gMyCoord;
-	
+
 	theNode->Scale.x = WEB_SPHERE_SCALE + sin(theNode->SpecialF[0] += fps*6.0f) * .1f;
 	theNode->Scale.y = WEB_SPHERE_SCALE + cos(theNode->SpecialF[1] += fps*8.0f) * .1f;
 	theNode->Scale.z = WEB_SPHERE_SCALE + sin(theNode->SpecialF[2] += fps*5.0f) * .1f;
-	
+
 	UpdateObjectTransforms(theNode);
 }
 
@@ -738,18 +729,18 @@ Boolean	killed = false;
 				/************************/
 				/* HURT & KNOCK ON BUTT */
 				/************************/
-				
+
 	if (me->Speed > SPIDER_KNOCKDOWN_SPEED)
-	{	
+	{
 				/*****************/
 				/* KNOCK ON BUTT */
 				/*****************/
-					
+
 		killed = KnockSpiderOnButt(enemy, me->Delta.x * .8f, me->Delta.y * .8f + 250.0f, me->Delta.z * .8f, .6);
 
 		PlayEffect_Parms3D(EFFECT_POUND, &gCoord, kMiddleC+2, 2.0);
 	}
-	
+
 	return(killed);
 }
 
@@ -763,14 +754,14 @@ Boolean KnockSpiderOnButt(ObjNode *enemy, float dx, float dy, float dz, float da
 {
 	if (enemy->Skeleton->AnimNum == SPIDER_ANIM_FALLONBUTT)		// see if already in butt mode
 		return(false);
-		
+
 		/* IF ON SPLINE, DETACH */
-		
+
 	DetachEnemyFromSpline(enemy, MoveSpider);
 
 
 			/* GET IT MOVING */
-		
+
 	enemy->Delta.x = dx;
 	enemy->Delta.y = dy;
 	enemy->Delta.z = dz;
@@ -780,17 +771,17 @@ Boolean KnockSpiderOnButt(ObjNode *enemy, float dx, float dy, float dz, float da
 
 
 		/* SLOW DOWN PLAYER */
-		
+
 	gDelta.x *= .2f;
 	gDelta.y *= .2f;
 	gDelta.z *= .2f;
 
 
 		/* HURT & SEE IF KILLED */
-			
+
 	if (EnemyGotHurt(enemy, damage))
 		return(true);
-		
+
 	return(false);
 }
 
@@ -802,20 +793,20 @@ Boolean KnockSpiderOnButt(ObjNode *enemy, float dx, float dy, float dz, float da
 
 Boolean KillSpider(ObjNode *theNode)
 {
-	
+
 		/* IF ON SPLINE, DETACH */
-		
+
 	DetachEnemyFromSpline(theNode, MoveSpider);
 
 
 			/* DEACTIVATE */
-			
+
 	theNode->TerrainItemPtr = nil;				// dont ever come back
 	theNode->CType = CTYPE_MISC;
-	
-	if (theNode->Skeleton->AnimNum != SPIDER_ANIM_DIE)			
-		SetSkeletonAnim(theNode->Skeleton, SPIDER_ANIM_DIE);	
-	
+
+	if (theNode->Skeleton->AnimNum != SPIDER_ANIM_DIE)
+		SetSkeletonAnim(theNode->Skeleton, SPIDER_ANIM_DIE);
+
 	return(false);
 }
 
@@ -831,8 +822,6 @@ static void StartSpiderJump(ObjNode *theNode)
 }
 
 
-
-
 #pragma mark -
 
 /************************ PRIME MOSQUITO SPIDER *************************/
@@ -844,29 +833,29 @@ float			x,z,placement;
 
 			/* GET SPLINE INFO */
 
-	placement = itemPtr->placement;	
+	placement = itemPtr->placement;
 	GetCoordOnSpline(&(*gSplineList)[splineNum], placement, &x, &z);
 
 
 				/* MAKE DEFAULT SKELETON ENEMY */
-				
+
 	newObj = MakeEnemySkeleton(SKELETON_TYPE_SPIDER,x,z, SPIDER_SCALE);
 	if (newObj == nil)
 		return(false);
-		
+
 	DetachObject(newObj);										// detach this object from the linked list
-		
+
 	newObj->SplineItemPtr = itemPtr;
 	newObj->SplineNum = splineNum;
-	
+
 	SetSkeletonAnim(newObj->Skeleton, SPIDER_ANIM_WALK);
-	
+
 
 				/* SET BETTER INFO */
-			
+
 	newObj->StatusBits		|= STATUS_BIT_ONSPLINE;
 	newObj->SplinePlacement = placement;
-	newObj->Coord.y 		+= SPIDER_FOOT_OFFSET;			
+	newObj->Coord.y 		+= SPIDER_FOOT_OFFSET;
 	newObj->SplineMoveCall 	= MoveSpiderOnSpline;				// set move call
 	newObj->Health 			= SPIDER_HEALTH;
 	newObj->Damage 			= SPIDER_DAMAGE;
@@ -874,20 +863,20 @@ float			x,z,placement;
 	newObj->CType			|= CTYPE_KICKABLE|CTYPE_AUTOTARGET;	// these can be kicked
 	newObj->CBits		= CBITS_NOTTOP;
 
-	
+
 				/* SET COLLISION INFO */
-				
+
 	SetObjectCollisionBounds(newObj, 40,-SPIDER_FOOT_OFFSET,-90,90,90,-90);
 
 
 				/* MAKE SHADOW */
-				
+
 	shadowObj = AttachShadowToObject(newObj, 8, 8, false);
 	DetachObject(shadowObj);									// detach this object from the linked list
 
 
 			/* ADD SPLINE OBJECT TO SPLINE OBJECT LIST */
-			
+
 	AddToSplineObjectList(newObj);
 
 	return(true);
@@ -915,43 +904,38 @@ Boolean isVisible;
 			/***************************/
 			/* UPDATE STUFF IF VISIBLE */
 			/***************************/
-			
+
 	if (isVisible)
 	{
 		theNode->Skeleton->AnimSpeed = .9;
-		
+
 		theNode->Rot.y = CalcYAngleFromPointToPoint(theNode->Rot.y, theNode->OldCoord.x, theNode->OldCoord.z,			// calc y rot aim
-												theNode->Coord.x, theNode->Coord.z);		
+												theNode->Coord.x, theNode->Coord.z);
 
 		theNode->Coord.y = GetTerrainHeightAtCoord(theNode->Coord.x, theNode->Coord.z, FLOOR) + SPIDER_FOOT_OFFSET;	// calc y coord
 
 		UpdateObjectTransforms(theNode);																// update transforms
 		CalcObjectBoxFromNode(theNode);																	// update collision box
-		UpdateShadow(theNode);																			// update shadow		
-		
+		UpdateShadow(theNode);																			// update shadow
+
 				/*********************************/
 				/* SEE IF CLOSE ENOUGH TO ATTACK */
 				/*********************************/
-				
+
 		if (CalcQuickDistance(theNode->Coord.x, theNode->Coord.z, gMyCoord.x, gMyCoord.z) < SPIDER_ATTACK_DIST)
 		{
 					/* REMOVE FROM SPLINE */
-					
+
 			DetachEnemyFromSpline(theNode, MoveSpider);
-		}		
+		}
 	}
-	
+
 			/* NOT VISIBLE */
 	else
 	{
 //		if (theNode->ShadowNode)									// hide shadow
-//			theNode->ShadowNode->StatusBits |= STATUS_BIT_HIDDEN;	
+//			theNode->ShadowNode->StatusBits |= STATUS_BIT_HIDDEN;
 	}
 }
-
-
-
-
-
 
 

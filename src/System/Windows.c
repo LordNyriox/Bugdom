@@ -108,7 +108,6 @@ void GammaOn(void)
 }
 
 
-
 /******************** MAKE FADE EVENT *********************/
 //
 // INPUT:	fadeIn = true if want fade IN, otherwise fade OUT.
@@ -122,7 +121,7 @@ ObjNode		*thisNodePtr;
 		/* SCAN FOR OLD FADE EVENTS STILL IN LIST */
 
 	thisNodePtr = gFirstNodePtr;
-	
+
 	while (thisNodePtr)
 	{
 		if ((thisNodePtr->Slot == SLOT_OF_DUMB) &&
@@ -136,7 +135,7 @@ ObjNode		*thisNodePtr;
 
 
 		/* MAKE NEW FADE EVENT */
-			
+
 	gNewObjectDefinition.genre = EVENT_GENRE;
 	gNewObjectDefinition.coord.x = 0;
 	gNewObjectDefinition.coord.y = 0;
@@ -166,9 +165,9 @@ ObjNode		*thisNodePtr;
 static void MoveFadeEvent(ObjNode *theNode)
 {
 float	fps = gFramesPerSecondFrac;
-		
+
 			/* SEE IF FADE IN */
-			
+
 	if (theNode->Flag[0])
 	{
 		if (gGammaFadeFactor >= 1.0f)										// see if @ 100%
@@ -181,7 +180,7 @@ float	fps = gFramesPerSecondFrac;
 		if (gGammaFadeFactor >= 1.0f)										// see if @ 100%
 			gGammaFadeFactor = 1.0f;
 	}
-	
+
 			/* FADE OUT */
 	else
 	{
@@ -206,7 +205,6 @@ void GameScreenToBlack(void)
 }
 
 #pragma mark -
-
 
 
 void QD3D_OnWindowResized(int windowWidth, int windowHeight)

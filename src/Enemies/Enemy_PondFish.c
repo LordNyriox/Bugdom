@@ -41,7 +41,7 @@ static void PondFish_ContinueEatingPlayer(ObjNode *fish);
 #define PONDFISH_TURN_SPEED		1.8f
 #define	PONDFISH_TARGET_SCALE	120.0f
 
-#define	PONDFISH_HEALTH		1.0f		
+#define	PONDFISH_HEALTH		1.0f
 #define	PONDFISH_DAMAGE		0.04f
 
 #define	PONDFISH_SCALE		2.0f
@@ -89,23 +89,23 @@ ObjNode	*newObj;
 
 
 				/* MAKE DEFAULT SKELETON ENEMY */
-				
+
 	newObj = MakeEnemySkeleton(SKELETON_TYPE_PONDFISH,x,z,PONDFISH_SCALE+RandomFloat()*.3f);
 	if (newObj == nil)
 		return(false);
 	newObj->TerrainItemPtr = itemPtr;
-	
+
 
 				/* SET BETTER INFO */
-			
-		
-	newObj->Coord.y 	= PONDFISH_Y;			
+
+
+	newObj->Coord.y 	= PONDFISH_Y;
 	newObj->MoveCall 	= MovePondFish;							// set move call
 	newObj->Health 		= PONDFISH_HEALTH;
 	newObj->Damage 		= PONDFISH_DAMAGE;
 	newObj->Kind 		= ENEMY_KIND_PONDFISH;
 	newObj->Mode		= PONDFISH_MODE_WAIT;
-	
+
 				/* SET COLLISION INFO */
 				//
 				// NOTE:  nothing ever collides against the fish
@@ -122,7 +122,6 @@ ObjNode	*newObj;
 	gNumEnemyOfKind[ENEMY_KIND_PONDFISH]++;
 	return(true);
 }
-
 
 
 /********************* MOVE PONDFISH **************************/
@@ -143,9 +142,9 @@ static	void(*myMoveTable[])(ObjNode *) =
 	}
 
 	GetObjectInfo(theNode);
-	
+
 	theNode->AttackTimer -= gFramesPerSecondFrac;		// dec this timer
-	
+
 	myMoveTable[theNode->Skeleton->AnimNum](theNode);
 }
 
@@ -162,10 +161,10 @@ float	dist,r,aim;
 
 	if (theNode->Mode == PONDFISH_MODE_WAIT)
 	{
-		TurnObjectTowardTarget(theNode, &gCoord, gMyCoord.x, gMyCoord.z, PONDFISH_TURN_SPEED, false);			
+		TurnObjectTowardTarget(theNode, &gCoord, gMyCoord.x, gMyCoord.z, PONDFISH_TURN_SPEED, false);
 
 				/* SEE IF DO RANDOM JUMP */
-				
+
 		if ((theNode->RandomJumpTimer -= gFramesPerSecondFrac) < 0.0f)
 		{
 			theNode->RandomJumpTimer = 2.0f + RandomFloat()*2.0f;
@@ -175,13 +174,13 @@ float	dist,r,aim;
 
 
 			/* SEE IF PLAYER IS IN THE WATER AND IS CLOSE */
-			
+
 		if (gPlayerObj->StatusBits & STATUS_BIT_UNDERWATER)
 		{
 			dist = CalcQuickDistance(gMyCoord.x, gMyCoord.z, gCoord.x, gCoord.z);
 			if (dist < PONDFISH_CHASE_DIST)
 			{
-				theNode->Mode = PONDFISH_MODE_CHASE;			
+				theNode->Mode = PONDFISH_MODE_CHASE;
 			}
 		}
 	}
@@ -190,34 +189,34 @@ float	dist,r,aim;
 				/***********/
 	else
 	{
-		aim = TurnObjectTowardTarget(theNode, &gCoord, gMyCoord.x, gMyCoord.z, PONDFISH_TURN_SPEED, true);			
+		aim = TurnObjectTowardTarget(theNode, &gCoord, gMyCoord.x, gMyCoord.z, PONDFISH_TURN_SPEED, true);
 
-		
+
 				/* MOVE FORWARD */
-				
+
 		r = theNode->Rot.y;
 		gDelta.x = -sin(r) * PONDFISH_CHASESPEED;
-		gDelta.z = -cos(r) * PONDFISH_CHASESPEED;		
+		gDelta.z = -cos(r) * PONDFISH_CHASESPEED;
 		MoveEnemy(theNode);
 
 
 				/* MAKE SURE NOT TOO SHALLOW */
-				
+
 		if ((GetTerrainHeightAtCoord(gCoord.x, gCoord.z, FLOOR) + 350.0f) > WATER_Y)
 		{
-			gCoord.x = theNode->OldCoord.x;		
-			gCoord.z = theNode->OldCoord.z;		
+			gCoord.x = theNode->OldCoord.x;
+			gCoord.z = theNode->OldCoord.z;
 		}
 
 
 			/* SEE IF PLAYER IS STILL IN THE WATER AND IS CLOSE */
-			
+
 		if (gPlayerObj->StatusBits & STATUS_BIT_UNDERWATER)
 		{
 			dist = CalcQuickDistance(gMyCoord.x, gMyCoord.z, gCoord.x, gCoord.z);
 			if (dist > PONDFISH_CHASE_DIST)
 			{
-				theNode->Mode = PONDFISH_MODE_WAIT;			
+				theNode->Mode = PONDFISH_MODE_WAIT;
 			}
 					/* ALSO SEE IF CLOSE ENOUGH TO ATTACK */
 			else
@@ -228,7 +227,7 @@ float	dist,r,aim;
 					if (theNode->AttackTimer < 0.0f)
 					{
 						theNode->TweakJumps = true;
-attack:					
+attack:
 						MorphToSkeletonAnim(theNode->Skeleton, PONDFISH_ANIM_JUMPATTACK, 6.0);
 						theNode->JumpNow = false;
 						theNode->IsJumping = false;
@@ -239,8 +238,8 @@ attack:
 	}
 
 			/* UPDATE POND FISH */
-			
-	UpdatePondFish(theNode);	
+
+	UpdatePondFish(theNode);
 }
 
 
@@ -249,17 +248,17 @@ attack:
 static void  MovePondFish_JumpAttack(ObjNode *theNode)
 {
 
-	TurnObjectTowardTarget(theNode, &gCoord, gMyCoord.x, gMyCoord.z, PONDFISH_TURN_SPEED, false);			
+	TurnObjectTowardTarget(theNode, &gCoord, gMyCoord.x, gMyCoord.z, PONDFISH_TURN_SPEED, false);
 
 			/*************************/
 			/* SEE IF START LEAP NOW */
 			/*************************/
-			
+
 	if (theNode->JumpNow)
 	{
 		theNode->JumpNow = false;
 		theNode->IsJumping = true;
-		
+
 			/* CALC JUMP AIM DELTA */
 		gDelta.x = 0;
 		gDelta.y = PONDFISH_JUMPSPEED;
@@ -269,48 +268,48 @@ static void  MovePondFish_JumpAttack(ObjNode *theNode)
 		MakeRipple(gCoord.x, WATER_Y, gCoord.z, 7.0);
 		MakeRipple(gCoord.x, WATER_Y, gCoord.z, 5.0);
 	}
-	
+
 			/****************/
 			/* PROCESS JUMP */
 			/****************/
-			
+
 	else
 	if (theNode->IsJumping)
 	{
 		float dx,dz;
-		
+
 			/* TWEAK TOWARD PLAYER */
-			
+
 		if (theNode->TweakJumps)
 		{
 			TQ3Point3D	mouthPt,playerPt;
-			
+
 			FindCoordOnJoint(theNode, PONDFISH_JOINT_HEAD, &gPondFishMouthOff, &mouthPt);	// get coord of mouth
 
 			if (gPlayerObj->Skeleton)
 				FindCoordOfJoint(gPlayerObj, BUG_LIMB_NUM_PELVIS, &playerPt);				// get coord of player pelvis
 			else
 				playerPt = gPlayerObj->Coord;												// Source port fix: fall back to node coord if player has no skeleton (ball mode)
-				
+
 			dx = playerPt.x - mouthPt.x;
 			dz = playerPt.z - mouthPt.z;
 
 			gDelta.x = dx*(gFramesPerSecond*.5f);
 			gDelta.z = dz*(gFramesPerSecond*.5f);
-		}		
-		
-		
+		}
+
+
 			/* DO GRAVITY & SEE IF SPLASHDOWN */
-					
-		gDelta.y -= 3400.0f * gFramesPerSecondFrac;					// gravity	
+
+		gDelta.y -= 3400.0f * gFramesPerSecondFrac;					// gravity
 		MoveEnemy(theNode);
 
 				/* MAKE SURE NOT TOO SHALLOW */
-				
+
 		if ((GetTerrainHeightAtCoord(gCoord.x, gCoord.z, FLOOR) + 350.0f) > WATER_Y)
 		{
-			gCoord.x = theNode->OldCoord.x;		
-			gCoord.z = theNode->OldCoord.z;		
+			gCoord.x = theNode->OldCoord.x;
+			gCoord.z = theNode->OldCoord.z;
 		}
 
 		if ((gCoord.y < PONDFISH_Y) && (gDelta.y < 0.0f))			// see if hit water
@@ -322,7 +321,7 @@ static void  MovePondFish_JumpAttack(ObjNode *theNode)
 			if (theNode->EatPlayer)
 				MorphToSkeletonAnim(theNode->Skeleton, PONDFISH_ANIM_MOUTHFULL, 4);
 			else
-				MorphToSkeletonAnim(theNode->Skeleton, PONDFISH_ANIM_WAIT, 4);				
+				MorphToSkeletonAnim(theNode->Skeleton, PONDFISH_ANIM_WAIT, 4);
 			theNode->IsJumping = false;
 			MakeSplash(gCoord.x, WATER_Y-100.0f, gCoord.z, 1.0f, 4);
 			MakeRipple(gCoord.x, WATER_Y, gCoord.z, 7.0);
@@ -330,14 +329,14 @@ static void  MovePondFish_JumpAttack(ObjNode *theNode)
 			theNode->AttackTimer = 2.0f + RandomFloat()*2.0f;	// dont attack for n more seconds at least
 		}
 	}
-	
+
 		/*****************************/
 		/* WAITING FOR JUMP TO START */
 		/*****************************/
 
 	else
 	{
-		ApplyFrictionToDeltas(100.0,&gDelta);	
+		ApplyFrictionToDeltas(100.0,&gDelta);
 		MoveEnemy(theNode);
 	}
 
@@ -351,8 +350,8 @@ static void  MovePondFish_JumpAttack(ObjNode *theNode)
 
 
 			/* UPDATE */
-			
-	UpdatePondFish(theNode);	
+
+	UpdatePondFish(theNode);
 }
 
 
@@ -366,7 +365,7 @@ static void UpdatePondFish(ObjNode *theNode)
 		/* ADD WATER RIPPLE */
 
 	if ((theNode->Mode != PONDFISH_MODE_WAIT) && (!theNode->IsJumping))
-	{		
+	{
 		theNode->RippleTimer += gFramesPerSecondFrac;
 		if (theNode->RippleTimer > .20f)
 		{
@@ -374,12 +373,11 @@ static void UpdatePondFish(ObjNode *theNode)
 			MakeRipple(gCoord.x, WATER_Y, gCoord.z, 2.0);
 		}
 	}
-	
+
 	UpdateEnemy(theNode);
 }
 
 #pragma mark -
-
 
 
 /********************** SEE IF FISH EATS PLAYER *************************/
@@ -394,22 +392,22 @@ TQ3Point3D	pt;
 	if (gPlayerMode == PLAYER_MODE_BALL)					// can only eat the bug, not the ball
 		return;
 
-	
+
 			/* GET COORD OF MOUTH */
-			
+
 	FindCoordOnJoint(fish, PONDFISH_JOINT_HEAD, &gPondFishMouthOff, &pt);
 
 
 		/* SEE IF POINT IS INSIDE PLAYER */
-			
-			
+
+
 	if (DoSimpleBoxCollisionAgainstPlayer(pt.y+15.0f, pt.y-15.0f, pt.x-15.0f, pt.x+15.0f,
 										pt.z+15.0f, pt.z-15.0f))
 	{
 		gCurrentEatingFish = fish;
 		MorphToSkeletonAnim(gPlayerObj->Skeleton, PLAYER_ANIM_BEINGEATEN, 7);
 		gPlayerObj->CType = 0;							// no more collision
-		fish->EatPlayer = true;	
+		fish->EatPlayer = true;
 		fish->EatenTimer = 3;							// start timer
 		PondFish_ContinueEatingPlayer(fish);
 	}
@@ -424,28 +422,13 @@ TQ3Point3D	pt;
 static void PondFish_ContinueEatingPlayer(ObjNode *fish)
 {
 		/* SEE IF EATEN TIMER HAS TIMED OUT */
-		
-	fish->EatenTimer -= gFramesPerSecondFrac;	
+
+	fish->EatenTimer -= gFramesPerSecondFrac;
 	if (fish->EatenTimer < 0.0f)
-	{	
+	{
 		fish->EatPlayer = false;
-		KillPlayer(false);	
+		KillPlayer(false);
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

@@ -144,17 +144,17 @@ enum
 
 Boolean HandleTrigger(ObjNode *triggerNode, ObjNode *whoNode, Byte side)
 {
-	
-	
+
+
 		/* SEE IF THIS TRIGGER CAN ONLY BE TRIGGERED BY PLAYER */
-		
+
 	if (triggerNode->CType & CTYPE_PLAYERTRIGGERONLY)
 		if (whoNode != gPlayerObj)
 			return(true);
 
 
 			/* CHECK SIDES */
-			
+
 	if (side & SIDE_BITS_BACK)
 	{
 		if (triggerNode->TriggerSides & SIDE_BITS_FRONT)		// if my back hit, then must be front-triggerable
@@ -242,20 +242,20 @@ Boolean			canBlow;
 		/* SEE IF NUT HAS DETONATED */
 
 	if ((gLevelType == LEVEL_TYPE_HIVE) && (canBlow))
-	{		
+	{
 		if (gDetonatorBlown[id])						// see if blown
 			return(true);								// dont add cuz its blown
 	}
 
 
 				/* CREATE OBJECT */
-				
+
 	where.y = GetTerrainHeightAtCoord(x,z,FLOOR);
 	where.x = x;
 	where.z = z;
 
-	gNewObjectDefinition.group 		= GLOBAL1_MGroupNum_Nut;	
-	gNewObjectDefinition.type 		= GLOBAL1_MObjType_Nut;									
+	gNewObjectDefinition.group 		= GLOBAL1_MGroupNum_Nut;
+	gNewObjectDefinition.type 		= GLOBAL1_MObjType_Nut;
 	gNewObjectDefinition.coord		= where;
 	gNewObjectDefinition.flags 		= gAutoFadeStatusBits;
 	gNewObjectDefinition.slot 		= TRIGGER_SLOT;
@@ -267,9 +267,9 @@ Boolean			canBlow;
 		return false;
 
 	newObj->TerrainItemPtr = itemPtr;						// keep ptr to item list
-	
+
 	newObj->NutContents 	= contents;						// remember what's in this nut
-	
+
 	if (gRealLevel == LEVEL_NUM_BEACH)			// **hack to fix problem with Level 4 map which has all regenerating nuts
 		newObj->RegenerateNut = false;
 	else
@@ -290,12 +290,12 @@ Boolean			canBlow;
 
 
 			/* SET COLLISION INFO */
-			
+
 	SetObjectCollisionBounds(newObj,110,0,-60,60,60,-60);
 
 
 			/* MAKE SHADOW */
-			
+
 	AttachShadowToObject(newObj, 5, 5, false);
 
 
@@ -308,7 +308,7 @@ Boolean			canBlow;
 static void MoveNut(ObjNode *theNode)
 {
 		/* SEE IF GONE */
-		
+
 	if (TrackTerrainItem(theNode))							// just check to see if it's gone
 	{
 		DeleteObject(theNode);
@@ -318,19 +318,19 @@ static void MoveNut(ObjNode *theNode)
 
 
 		/* SEE IF BLOWN UP ON HIVE LEVEL */
-		
+
 	if (gLevelType == LEVEL_TYPE_HIVE)
 	{
 		if (theNode->DetonateNut)							// see if this nut can be detonated
 		{
 			Byte	id = theNode->NutDetonatorID;			// get detonator ID#
-			
+
 			if (gDetonatorBlown[id])						// see if blown
 			{
 				QD3D_ExplodeGeometry(theNode, 500, 0, 1, .4);
 				theNode->TerrainItemPtr = nil;				// dont ever come back
-				DeleteObject(theNode);		
-				return;		
+				DeleteObject(theNode);
+				return;
 			}
 		}
 	}
@@ -346,30 +346,30 @@ static Boolean DoTrig_Nut(ObjNode *theNode, ObjNode *whoNode, Byte sideBits)
 {
 	if (!(sideBits & SIDE_BITS_BOTTOM))					// if hit on side, slow me down
 	{
-		gDelta.x *= .2f;				
+		gDelta.x *= .2f;
 		gDelta.z *= .2f;
 	}
 
 			/********************************/
 			/* IF BALL, THEN SMASH OPEN NOW */
 			/********************************/
-			
-	if (gPlayerMode == PLAYER_MODE_BALL)	
+
+	if (gPlayerMode == PLAYER_MODE_BALL)
 	{
 		if (whoNode->Speed > 800.0f)					// gotta be going fast enough
 		{
 			CreateNutContents(theNode);					// create the powerup that's in the nut
-			
+
 					/* EXPLODE SHELL */
-					
+
 			QD3D_ExplodeGeometry(theNode, 500, 0, 1, .4);
 			if (!theNode->RegenerateNut)
 				theNode->TerrainItemPtr = nil;			// dont ever come back
 			PlayEffect3D(EFFECT_POP, &theNode->Coord);
-			DeleteObject(theNode);				
+			DeleteObject(theNode);
 		}
 	}
-	
+
 	return(true);
 }
 
@@ -379,9 +379,9 @@ static Boolean DoTrig_Nut(ObjNode *theNode, ObjNode *whoNode, Byte sideBits)
 void KickNut(ObjNode *kickerObj, ObjNode *nutObj)
 {
 	(void) kickerObj;
-	
+
 	CreateNutContents(nutObj);						// create the item inside the nut
-			
+
 	QD3D_ExplodeGeometry(nutObj, 500, 0, 1, .4);	// explode the shell
 	if (!nutObj->RegenerateNut)
 		nutObj->TerrainItemPtr = nil;				// dont ever come back
@@ -398,7 +398,7 @@ void KickNut(ObjNode *kickerObj, ObjNode *nutObj)
 static void CreateNutContents(ObjNode *theNut)
 {
 		/* SPECIAL CHECK FOR BUDDY BUG IF ALREADY HAVE BUDDY BUG */
-		
+
 	if ((theNut->NutContents == NUT_CONTENTS_BUDDY) && (gMyBuddy))
 	{
 		theNut->NutContents = NUT_CONTENTS_GREENCLOVER;		// put green clover in there instead of Buddy Bug
@@ -406,17 +406,17 @@ static void CreateNutContents(ObjNode *theNut)
 
 
 			/* CREATE THE CONTENTS */
-			
+
 	switch(theNut->NutContents)
 	{
 		case	NUT_CONTENTS_BUDDY:
 				CreateMyBuddy(theNut->Coord.x, theNut->Coord.z);
 				break;
-				
+
 		case	NUT_CONTENTS_TICK:
 				MakeTickEnemy(&theNut->Coord);
 				break;
-				
+
 		default:
 				MakePowerup(theNut);
 	}
@@ -452,11 +452,10 @@ float	h;
 		h = 11;
 	else
 		h = itemPtr->parm[1];
-	
 
 
-	gNewObjectDefinition.group 		= HIVE_MGroupNum_Platform;	
-	gNewObjectDefinition.type 		= HIVE_MObjType_BrickPlatform + (int)isMetal;	
+	gNewObjectDefinition.group 		= HIVE_MGroupNum_Platform;
+	gNewObjectDefinition.type 		= HIVE_MObjType_BrickPlatform + (int)isMetal;
 	gNewObjectDefinition.coord.x 	= x;
 //	gNewObjectDefinition.coord.y 	= GetTerrainHeightAtCoord(x,z,FLOOR) + 50.0f + (h * 4.5f);
 	gNewObjectDefinition.coord.y 	= (h * -50.0f);
@@ -464,22 +463,22 @@ float	h;
 	gNewObjectDefinition.flags 		= 0;
 	gNewObjectDefinition.slot 		= TRIGGER_SLOT;
 	if (isMetal)
-		gNewObjectDefinition.moveCall 	= MoveStaticObject;	
+		gNewObjectDefinition.moveCall 	= MoveStaticObject;
 	else
-		gNewObjectDefinition.moveCall 	= MoveHoneycombPlatform;	
-	
+		gNewObjectDefinition.moveCall 	= MoveHoneycombPlatform;
+
 	if (isSmall)
 		gNewObjectDefinition.scale 		= HONEYCOMB_PLATFORM_SCALE2;
 	else
 		gNewObjectDefinition.scale 		= HONEYCOMB_PLATFORM_SCALE;
-	
+
 	gNewObjectDefinition.rot 		= 0;
 	newObj = MakeNewDisplayGroupObject(&gNewObjectDefinition);
 	if (newObj == nil)
 		return(false);
 
 	newObj->TerrainItemPtr = itemPtr;						// keep ptr to item list
-		
+
 	newObj->ResurfacePlatform = itemPtr->parm[3] & 1;		// see if resurface
 
 			/* SET TRIGGER STUFF */
@@ -491,9 +490,9 @@ float	h;
 		newObj->CBits 			= CBITS_ALLSOLID;
 		newObj->TriggerSides 	= SIDE_BITS_TOP;				// side(s) to activate it
 		newObj->Kind 			= TRIGTYPE_HONEYCOMBPLATFORM;
-	
+
 		newObj->Mode 			= HONEYCOMB_PLATFORM_MODE_NORMAL;
-	}	
+	}
 	else
 	{
 		newObj->CType 			= CTYPE_BLOCKSHADOW|CTYPE_MISC|CTYPE_IMPENETRABLE|CTYPE_IMPENETRABLE2;
@@ -501,7 +500,7 @@ float	h;
 	}
 
 			/* SET COLLISION INFO */
-			
+
 	if (isSmall)
 	{
 		SetObjectCollisionBounds(newObj,65*HONEYCOMB_PLATFORM_SCALE2,-300*HONEYCOMB_PLATFORM_SCALE2,
@@ -515,7 +514,7 @@ float	h;
 								200*HONEYCOMB_PLATFORM_SCALE,-200*HONEYCOMB_PLATFORM_SCALE);
 	}
 
-	return(true);							
+	return(true);
 }
 
 
@@ -525,19 +524,19 @@ static void MoveHoneycombPlatform(ObjNode *theNode)
 {
 	if (TrackTerrainItem(theNode))		// just check to see if it's gone
 	{
-delete:	
+delete:
 		DeleteObject(theNode);
 		return;
 	}
 
 	GetObjectInfo(theNode);
-	
+
 	switch(theNode->Mode)
 	{
 		case	HONEYCOMB_PLATFORM_MODE_FALL:
 				gDelta.y -= 120.0f * gFramesPerSecondFrac;		// gravity
 				gCoord.y += gDelta.y * gFramesPerSecondFrac;	// move down
-				
+
 				if (gCoord.y < (GetTerrainHeightAtCoord(gCoord.x,gCoord.z,FLOOR) - 200.0f))	// see if gone under ground
 				{
 					if (theNode->ResurfacePlatform)				// see if go away for good or if come back
@@ -555,13 +554,13 @@ delete:
 				gCoord.y += gDelta.y * gFramesPerSecondFrac;	// move up
 				if (gCoord.y >= theNode->InitCoord.y)			// see if all the way up
 				{
-					gCoord.y = theNode->InitCoord.y;	
+					gCoord.y = theNode->InitCoord.y;
 					theNode->Mode = HONEYCOMB_PLATFORM_MODE_NORMAL;
 				}
 				break;
 	}
 
-				
+
 	UpdateObject(theNode);
 }
 
@@ -575,7 +574,7 @@ static Boolean DoTrig_HoneycombPlatform(ObjNode *theNode, ObjNode *whoNode, Byte
 {
 	(void) whoNode;
 	(void) sideBits;
-	
+
 	theNode->Mode = HONEYCOMB_PLATFORM_MODE_FALL;
 	theNode->CType &= ~CTYPE_TRIGGER;							// no longer a trigger
 
@@ -590,7 +589,7 @@ static Boolean DoTrig_HoneycombPlatform(ObjNode *theNode, ObjNode *whoNode, Byte
 void InitDetonators(void)
 {
 int	i;
-	
+
 	for (i = 0; i < MAX_DETONATOR_IDS; i++)
 		gDetonatorBlown[i] = false;
 }
@@ -604,13 +603,13 @@ Boolean AddDetonator(TerrainItemEntryType *itemPtr, long  x, long z)
 {
 ObjNode			*boxObj,*plungerObj;
 TQ3Point3D		where;
-u_long			isPlunged;	
-	
+u_long			isPlunged;
+
 	if (gLevelType != LEVEL_TYPE_HIVE)
 		DoFatalAlert("AddDetonator: not on this level!");
-	
+
 	isPlunged = itemPtr->flags & ITEM_FLAGS_USER1;					// see if plunger already down
-	
+
 	where.y = GetTerrainHeightAtCoord(x,z,FLOOR);
 	where.x = x;
 	where.z = z;
@@ -621,9 +620,9 @@ u_long			isPlunged;
 				//
 				// this part isnt a trigger
 				//
-				
-	gNewObjectDefinition.group 		= MODEL_GROUP_LEVELSPECIFIC;	
-	gNewObjectDefinition.type 		= HIVE_MObjType_DetonatorGreen + itemPtr->parm[1];									
+
+	gNewObjectDefinition.group 		= MODEL_GROUP_LEVELSPECIFIC;
+	gNewObjectDefinition.type 		= HIVE_MObjType_DetonatorGreen + itemPtr->parm[1];
 	gNewObjectDefinition.coord		= where;
 	gNewObjectDefinition.flags 		= 0;
 	gNewObjectDefinition.slot 		= TRIGGER_SLOT-1;
@@ -633,26 +632,26 @@ u_long			isPlunged;
 	boxObj = MakeNewDisplayGroupObject(&gNewObjectDefinition);
 	if (boxObj == nil)
 		return false;
-	
+
 	boxObj->CType 			= CTYPE_MISC|CTYPE_BLOCKCAMERA;
 	boxObj->CBits			= CBITS_ALLSOLID;
 	SetObjectCollisionBounds(boxObj,40*DETONATOR_SCALE,0,-30,30,30,-30);
-	
+
 	boxObj->DetonatorID		= itemPtr->parm[0];					// save detonator ID#
-	
-	
+
+
 				/***************/
 				/* ADD PLUNGER */
 				/***************/
 				//
 				// this is the triggerable part
 				//
-				
+
 	if (isPlunged)
 		gNewObjectDefinition.coord.y -= PLUNGER_DOWN_YOFF;
 	else
 		gNewObjectDefinition.coord.y -= 10.0f;
-	gNewObjectDefinition.type 		= HIVE_MObjType_Plunger;									
+	gNewObjectDefinition.type 		= HIVE_MObjType_Plunger;
 	gNewObjectDefinition.slot 		= TRIGGER_SLOT;
 	gNewObjectDefinition.moveCall 	= nil;
 	plungerObj = MakeNewDisplayGroupObject(&gNewObjectDefinition);
@@ -660,7 +659,7 @@ u_long			isPlunged;
 		return false;
 
 	plungerObj->TerrainItemPtr = itemPtr;					// keep ptr to item list
-	
+
 			/* SET TRIGGER STUFF */
 
 	if (isPlunged)
@@ -674,11 +673,11 @@ u_long			isPlunged;
 	plungerObj->IsPlunging 		= false;					// not plunging right now
 
 			/* SET COLLISION INFO */
-			
+
 	SetObjectCollisionBounds(plungerObj,185*DETONATOR_SCALE,0,-30,30,30,-30);
 
 	boxObj->ChainNode = plungerObj;							// plunger is a chain off of the box
-	
+
 	return(true);											// item was added
 }
 
@@ -686,17 +685,17 @@ u_long			isPlunged;
 /********************* MOVE DETONATOR **********************/
 
 static void MoveDetonator(ObjNode *theBox)
-{		
+{
 ObjNode *plunger;
 
 		/* SEE IF OUT OF RANGE */
-		
+
 	if (TrackTerrainItem(theBox))							// just check to see if it's gone
 	{
 		DeleteObject(theBox);
 		return;
 	}
-	
+
 		/* SEE IF MOVE PLUNGER */
 
 	plunger = theBox->ChainNode;
@@ -708,15 +707,15 @@ ObjNode *plunger;
 			if (plunger->Coord.y <= (theBox->Coord.y - PLUNGER_DOWN_YOFF))	// see if plunger all the way down
 			{
 				int	id;
-				
+
 				plunger->Coord.y = theBox->Coord.y - PLUNGER_DOWN_YOFF;
 				plunger->IsPlunging = false;
-				
+
 				id = theBox->DetonatorID;					// get ID #
-				gDetonatorBlown[id] = true;					// set global flag	
+				gDetonatorBlown[id] = true;					// set global flag
 			}
 			UpdateObjectTransforms(plunger);				// update coord & collison box
-			CalcObjectBoxFromNode(plunger);											
+			CalcObjectBoxFromNode(plunger);
 		}
 	}
 }
@@ -731,7 +730,7 @@ static Boolean DoTrig_Detonator(ObjNode *theNode, ObjNode *whoNode, Byte sideBit
 {
 	(void) whoNode;
 	(void) sideBits;
-	
+
 	theNode->CType = CTYPE_MISC;							// not triggerable anymore
 	theNode->IsPlunging = true;
 	theNode->TerrainItemPtr->flags |= ITEM_FLAGS_USER1;		// set item list flag so we'll always know this has detonated
@@ -740,7 +739,6 @@ static Boolean DoTrig_Detonator(ObjNode *theNode, ObjNode *whoNode, Byte sideBit
 
 	return(true);
 }
-
 
 
 #pragma mark -
@@ -762,18 +760,18 @@ Boolean	isOpen;
 
 	keyID = itemPtr->parm[0];
 	aim = itemPtr->parm[1];
-	
+
 	isOpen = itemPtr->flags & ITEM_FLAGS_USER1;					// see if door already open
 	if (isOpen)
 		aim ^= 1;												// rotate open
 
-	gNewObjectDefinition.group 		= MODEL_GROUP_LEVELSPECIFIC;	
-	
+	gNewObjectDefinition.group 		= MODEL_GROUP_LEVELSPECIFIC;
+
 	if (gLevelType == LEVEL_TYPE_LAWN)
-		gNewObjectDefinition.type 	= LAWN1_MObjType_Door_Green + keyID;	
+		gNewObjectDefinition.type 	= LAWN1_MObjType_Door_Green + keyID;
 	else
-		gNewObjectDefinition.type 	= NIGHT_MObjType_Door_Green + keyID;	
-	
+		gNewObjectDefinition.type 	= NIGHT_MObjType_Door_Green + keyID;
+
 	gNewObjectDefinition.coord.x 	= x;
 	gNewObjectDefinition.coord.y 	= GetTerrainHeightAtCoord(x,z,FLOOR);
 	gNewObjectDefinition.coord.z 	= z;
@@ -786,7 +784,7 @@ Boolean	isOpen;
 	if (newObj == nil)
 		return(false);
 
-	newObj->TerrainItemPtr 	= itemPtr;						// keep ptr to item list		
+	newObj->TerrainItemPtr 	= itemPtr;						// keep ptr to item list
 	newObj->KeyNum 			= keyID;						// keep key ID#
 	if (isOpen)
 		newObj->Mode 		= DOOR_MODE_OPEN;				// door is closed right now
@@ -806,26 +804,26 @@ Boolean	isOpen;
 	newObj->BoundingSphere.radius = 600.0f;					// (it tended to be culled too aggressively)
 
 			/* SET COLLISION INFO */
-		
+
 	switch(aim)
 	{
 		case	0:
 				SetObjectCollisionBounds(newObj,700,0,0,600, 40, -40);
 				break;
-		
+
 		case	1:
 				SetObjectCollisionBounds(newObj,700,0,-40,40, 0, -600);
 				break;
-			
+
 		case	2:
 				SetObjectCollisionBounds(newObj,700,0,-600,0, 40, -40);
 				break;
-				
+
 		case	3:
 				SetObjectCollisionBounds(newObj,700,0,-40,40, 600, 0);
 				break;
 	}
-	
+
 	return(true);							// item was added
 }
 
@@ -839,22 +837,22 @@ static void MoveLawnDoor(ObjNode *theNode)
 		DeleteObject(theNode);
 		return;
 	}
-	
+
 	switch(theNode->Mode)
 	{
 		case	DOOR_MODE_CLOSED:
 				break;
-				
+
 		case	DOOR_MODE_OPENING:
 				theNode->Rot.y += theNode->DoorSwingSpeed * gFramesPerSecondFrac;		// rotate open
-				
+
 				if (theNode->DoorSwingSpeed < 0.0f)
 				{
 					if (theNode->Rot.y <= theNode->DoorSwingMax)
 					{
 						theNode->Rot.y = theNode->DoorSwingMax;
 						theNode->Mode = DOOR_MODE_OPEN;
-					}	
+					}
 				}
 				else
 				{
@@ -862,13 +860,13 @@ static void MoveLawnDoor(ObjNode *theNode)
 					{
 						theNode->Rot.y = theNode->DoorSwingMax;
 						theNode->Mode = DOOR_MODE_OPEN;
-					}	
+					}
 				}
 				UpdateObjectTransforms(theNode);
 				break;
-	
+
 		case	DOOR_MODE_OPEN:
-				break;	
+				break;
 	}
 }
 
@@ -891,16 +889,16 @@ int	keyNum;
 			/****************************************/
 			/* SEE IF WE HAVE THE KEY FOR THIS DOOR */
 			/****************************************/
-			
+
 	keyNum = theNode->KeyNum;								// get key ID#
-			
+
 	if (DoWeHaveTheKey(keyNum))
 	{
 		theNode->Mode = DOOR_MODE_OPENING;					// start door opening
-		theNode->CType = 0;									// no collision while opening			
-		
+		theNode->CType = 0;									// no collision while opening
+
 				/* SEE WHICH WAY TO OPEN DOOR */
-				
+
 		switch(theNode->DoorAim)
 		{
 			case	0:												// HINGE ON LEFT
@@ -941,7 +939,7 @@ int	keyNum;
 						theNode->DoorSwingMax = theNode->Rot.y - PI/2;
 					}
 					break;
-				
+
 			case	3:												// HINGE ON BACK
 					if (gCoord.x < theNode->Coord.x)				// if player on left, then open right
 					{
@@ -956,26 +954,25 @@ int	keyNum;
 					break;
 		}
 			/* MARK TERRAIN ITEM AS OPEN */
-			
+
 		theNode->TerrainItemPtr->flags |= ITEM_FLAGS_USER1;
-		
-		
+
+
 			/* KEY HAS BEEN USED */
-			
+
 		UseKey(keyNum);
-		
+
 			/* PLAY DOOR EFFECT */
-			
+
 		if (gLevelType == LEVEL_TYPE_LAWN)
 			PlayEffect3D(EFFECT_OPENLAWNDOOR, &theNode->Coord);
 		else
 		if (gLevelType == LEVEL_TYPE_NIGHT)
 			PlayEffect3D(EFFECT_OPENNIGHTDOOR, &theNode->Coord);
 	}
-					
+
 	return(true);
 }
-
 
 
 #pragma mark -
@@ -1001,7 +998,7 @@ static const Byte	keyTypes[NUM_LEVEL_TYPES] =
 };
 
 			/* GET INFO */
-			
+
 	switch(theNut->NutContents)
 	{
 		case	NUT_CONTENTS_BALLTIME:
@@ -1013,19 +1010,19 @@ static const Byte	keyTypes[NUM_LEVEL_TYPES] =
 				group = MODEL_GROUP_LEVELSPECIFIC;
 				type = keyTypes[gLevelType] + theNut->NutParm1;	// NutParm1 has key ID #
 				break;
-				
+
 		case	NUT_CONTENTS_MONEY:
 //				if (gMoney > 0)								// if already have $$ then turn this into a green clover
 //					goto clover;
 				group = POND_MGroupNum_Money;
 				type = POND_MObjType_Money;
 				break;
-				
+
 		case	NUT_CONTENTS_HEALTH:
 				group = GLOBAL2_MGroupNum_BerryPOW;
 				type = GLOBAL2_MObjType_Berry;
 				break;
-				
+
 		case	NUT_CONTENTS_FREELIFE:
 				group = GLOBAL2_MGroupNum_LifePOW;
 				type = GLOBAL2_MObjType_FreeLifePOW;
@@ -1045,12 +1042,12 @@ static const Byte	keyTypes[NUM_LEVEL_TYPES] =
 				group = GLOBAL2_MGroupNum_BlueCloverPOW;
 				type = GLOBAL2_MObjType_BlueClover;
 				break;
-				
+
 		case	NUT_CONTENTS_SHIELD:
 				group = GLOBAL2_MGroupNum_ShieldPOW;
 				type = GLOBAL2_MObjType_ShieldPOW;
 				break;
-				
+
 		default:
 				DoFatalAlert("MakePowerup: this type not supported yet");
 				return;
@@ -1060,8 +1057,8 @@ static const Byte	keyTypes[NUM_LEVEL_TYPES] =
 			/*****************/
 			/* CREATE OBJECT */
 			/*****************/
-			
-	gNewObjectDefinition.group 		= group;	
+
+	gNewObjectDefinition.group 		= group;
 	gNewObjectDefinition.type 		= type;
 	gNewObjectDefinition.coord.x	= theNut->Coord.x;
 	gNewObjectDefinition.coord.y	= theNut->Coord.y;
@@ -1083,7 +1080,7 @@ static const Byte	keyTypes[NUM_LEVEL_TYPES] =
 	newObj->Kind		 	= TRIGTYPE_POW;
 
 			/* SET COLLISION INFO */
-			
+
 	SetObjectCollisionBounds(newObj,50,0,-25,25,25,-25);
 
 
@@ -1092,7 +1089,7 @@ static const Byte	keyTypes[NUM_LEVEL_TYPES] =
 			/*************************/
 
 	newObj->NutContents = theNut->NutContents;			// remember what kind of POW
-			
+
 	switch(theNut->NutContents)
 	{
 		case	NUT_CONTENTS_KEY:
@@ -1102,7 +1099,7 @@ static const Byte	keyTypes[NUM_LEVEL_TYPES] =
 
 
 		/* REMEMBER TERRAIN PTR TO NUT THAT CREATED THIS */
-		
+
 	newObj->PowerupNutTerrainPtr = theNut->TerrainItemPtr;
 
 }
@@ -1115,7 +1112,7 @@ static void MovePowerup(ObjNode *theNode)
 float	fps = gFramesPerSecondFrac;
 
 			/* SEE IF TRACK THIS POW */
-			
+
 	switch(theNode->NutContents)
 	{
 		case	NUT_CONTENTS_BALLTIME:
@@ -1134,22 +1131,21 @@ float	fps = gFramesPerSecondFrac;
 
 	theNode->Rot.y += fps * 4.0f;
 	UpdateObjectTransforms(theNode);
-	
-	
-	
+
+
 			/***********************************/
 			/* MUSHROOM/BALLTIME HAS PARTICLES */
 			/***********************************/
-			
+
 	if (theNode->NutContents == NUT_CONTENTS_BALLTIME)
 	{
 		theNode->ParticleTimer += fps;						// regulate flow
 		if (theNode->ParticleTimer > .05f)
 		{
 			theNode->ParticleTimer = 0;
-			
+
 						/* MAKE PARTICLE GROUP */
-						
+
 			if (theNode->ParticleGroup == -1)
 			{
 				theNode->ParticleGroup = NewParticleGroup(0,							// magic num
@@ -1162,33 +1158,33 @@ float	fps = gFramesPerSecondFrac;
 														0,								// fade rate
 														PARTICLE_TEXTURE_GREENRING);	// texture
 			}
-		
+
 				/* ADD PARTICLES TO GROUP */
-				
+
 			if (theNode->ParticleGroup != -1)
-			{			
+			{
 				int	i;
-					
+
 				for (i = 0; i < 3; i++)
 				{
 					TQ3Vector3D	delta;
 					TQ3Point3D	pt;
-						
+
 					pt = theNode->Coord;
-									
+
 					pt.x += (RandomFloat()-.5f) * 100.0f;
 					pt.y += (RandomFloat()-.5f) * 30.0f + 100.0f;
 					pt.z += (RandomFloat()-.5f) * 100.0f;
-					
+
 					delta.x = (RandomFloat()-.5f) * 40.0f;
 					delta.y = (RandomFloat()-.5f) * 30.0f + 30.0f;
 					delta.z = (RandomFloat()-.5f) * 40.0f;
-					
+
 					AddParticleToGroup(theNode->ParticleGroup, &pt, &delta, RandomFloat() + 1.0f, FULL_ALPHA);
 				}
-			}			
+			}
 		}
-	}	
+	}
 }
 
 
@@ -1207,25 +1203,25 @@ static Boolean DoTrig_Powerup(ObjNode *theNode, ObjNode *whoNode, Byte sideBits)
 		case	NUT_CONTENTS_KEY:
 				GetKey(theNode->KeyNum);			// put key into inventory
 				break;
-				
+
 		case	NUT_CONTENTS_MONEY:
 				GetMoney();
 				break;
-				
+
 		case	NUT_CONTENTS_HEALTH:
 				GetHealth(.5);									// get health
 				break;
-				
+
 		case	NUT_CONTENTS_BALLTIME:
 				gBallTimer += 1.0f;
 				if (gBallTimer > 1.0f)
 					gBallTimer = 1.0f;
-				gInfobarUpdateBits |= UPDATE_TIMER;	
+				gInfobarUpdateBits |= UPDATE_TIMER;
 				break;
-				
+
 		case	NUT_CONTENTS_FREELIFE:
 				gNumLives++;
-				gInfobarUpdateBits |= UPDATE_LIVES;	
+				gInfobarUpdateBits |= UPDATE_LIVES;
 				break;
 
 		case	NUT_CONTENTS_GREENCLOVER:
@@ -1239,15 +1235,15 @@ static Boolean DoTrig_Powerup(ObjNode *theNode, ObjNode *whoNode, Byte sideBits)
 		case	NUT_CONTENTS_BLUECLOVER:
 				GetBlueClover();
 				break;
-				
+
 		case	NUT_CONTENTS_SHIELD:
 				gShieldTimer = SHIELD_TIME;
 				break;
-								
+
 		default:
 				DoFatalAlert("DoTrig_Powerup: powerup type not implemented yet");
-	}	
-				
+	}
+
 	PlayEffect3D(EFFECT_GETPOW, &theNode->Coord);	// play sound
 	ShowThePOW(theNode);
 	return(false);									// not solid
@@ -1275,7 +1271,7 @@ static void MovePowerupShow(ObjNode *theNode)
 float	fps = gFramesPerSecondFrac;
 
 	GetObjectInfo(theNode);
-	
+
 	gDelta.y += 600.0f * fps;
 	gCoord.y += gDelta.y * fps;
 	theNode->Health -= fps;
@@ -1288,15 +1284,14 @@ float	fps = gFramesPerSecondFrac;
 		}
 		else
 		{
-			MakeObjectTransparent(theNode, theNode->Health);	
+			MakeObjectTransparent(theNode, theNode->Health);
 		}
 	}
-	
+
 	theNode->Rot.y += fps * 4.0f;
-	
+
 	UpdateObject(theNode);
 }
-
 
 
 #pragma mark -
@@ -1306,7 +1301,7 @@ float	fps = gFramesPerSecondFrac;
 void InitWaterValves(void)
 {
 int	i;
-	
+
 	for (i = 0; i < MAX_VALVE_IDS; i++)
 	{
 		gValveIsOpen[i] = false;
@@ -1322,13 +1317,13 @@ Boolean AddWaterValve(TerrainItemEntryType *itemPtr, long  x, long z)
 {
 ObjNode			*newObj,*handle;
 TQ3Point3D		where;
-u_long			isOpen;	
-	
+u_long			isOpen;
+
 	if (gLevelType != LEVEL_TYPE_ANTHILL)
 		DoFatalAlert("AddWaterValve: not on this level!");
 
 	isOpen = itemPtr->flags & ITEM_FLAGS_USER1;					// see if valve already open
-	
+
 	where.y = GetTerrainHeightAtCoord(x,z,FLOOR);
 	where.x = x;
 	where.z = z;
@@ -1336,9 +1331,9 @@ u_long			isOpen;
 				/*****************/
 				/* ADD VALVE BOX */
 				/*****************/
-				
-	gNewObjectDefinition.group 		= ANTHILL_MGroupNum_WaterValve;	
-	gNewObjectDefinition.type 		= ANTHILL_MObjType_WaterValveBox;									
+
+	gNewObjectDefinition.group 		= ANTHILL_MGroupNum_WaterValve;
+	gNewObjectDefinition.type 		= ANTHILL_MObjType_WaterValveBox;
 	gNewObjectDefinition.coord		= where;
 	gNewObjectDefinition.flags 		= gAutoFadeStatusBits;
 	gNewObjectDefinition.slot 		= TRIGGER_SLOT;
@@ -1350,11 +1345,11 @@ u_long			isOpen;
 		return false;
 
 	newObj->TerrainItemPtr = itemPtr;					// keep ptr to item list
-	
+
 
 	newObj->ValveID		= itemPtr->parm[0];
-	
-	
+
+
 			/* SET TRIGGER STUFF */
 
 	if (isOpen)
@@ -1366,15 +1361,15 @@ u_long			isOpen;
 	newObj->Kind		 	= TRIGTYPE_WATERVALVE;
 
 			/* SET COLLISION INFO */
-			
+
 	SetObjectCollisionBounds(newObj,100,0,-30,30,30,-30);
 
 
 				/********************/
 				/* ADD VALVE HANDLE */
 				/********************/
-				
-	gNewObjectDefinition.type 		= ANTHILL_MObjType_WaterValveHandle;									
+
+	gNewObjectDefinition.type 		= ANTHILL_MObjType_WaterValveHandle;
 	gNewObjectDefinition.coord.y	+= 100;
 	gNewObjectDefinition.flags 		= gAutoFadeStatusBits;
 	gNewObjectDefinition.slot++;
@@ -1382,11 +1377,11 @@ u_long			isOpen;
 	handle = MakeNewDisplayGroupObject(&gNewObjectDefinition);
 	if (handle)
 	{
-		newObj->ChainNode = handle;	
-	
+		newObj->ChainNode = handle;
+
 	}
 
-	
+
 	return(true);											// item was added
 }
 
@@ -1397,15 +1392,15 @@ static void MoveWaterValve(ObjNode *theNode)
 {
 
 		/* SEE IF OUT OF RANGE */
-		
+
 	if (TrackTerrainItem(theNode))							// just check to see if it's gone
 	{
 		DeleteObject(theNode);
 		return;
 	}
-	
+
 		/* SEE IF UPDATE SOUND */
-		
+
 //	if (gValveIsOpen[theNode->ValveID])
 //	{
 //		if (theNode->EffectChannel == -1)
@@ -1433,40 +1428,23 @@ ObjNode *handle;
 	theNode->TerrainItemPtr->flags |= ITEM_FLAGS_USER1;		// set item list flag so we'll always know this has detonated
 
 			/* MARK VALVE AS OPEN */
-			
+
 	id = theNode->ValveID;
 	gValveIsOpen[id] = true;
-	
-	
+
+
 			/* TURN VALVE */
-	
+
 	handle = theNode->ChainNode;
 	if (handle)
 	{
 		handle->Rot.y += PI/2;
 		UpdateObjectTransforms(handle);
 	}
-	
+
 	PlayEffect3D(EFFECT_VALVEOPEN, &theNode->Coord);
-	
+
 	return(true);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

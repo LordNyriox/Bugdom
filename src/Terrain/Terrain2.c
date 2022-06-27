@@ -130,7 +130,7 @@ TerrainItemEntryType *lastPtr,*itemPtr;
 		DisposePtr((Ptr)gTerrainItemLookupTableX);
 		gTerrainItemLookupTableX = nil;
 	}
-		
+
 	gTerrainItemLookupTableX = (TerrainItemEntryType **)AllocPtr(sizeof(TerrainItemEntryType *)*gNumSuperTilesWide);
 	GAME_ASSERT(gTerrainItemLookupTableX);
 
@@ -180,14 +180,13 @@ trail:
 	{
 		gTerrainItemLookupTableX[col] = lastPtr;
 	}
-	
+
 
 			/* FIGURE OUT WHERE THE STARTING POINT IS */
-			
-	FindMyStartCoordItem();										// look thru items for my start coords
-	
-}
 
+	FindMyStartCoordItem();										// look thru items for my start coords
+
+}
 
 
 /******************** FIND MY START COORD ITEM *******************/
@@ -219,12 +218,11 @@ TerrainItemEntryType	*itemPtr;
 	gMyStartX = 0;
 	gMyStartZ = 0;
 
-gotit:	
+gotit:
 	gMostRecentCheckPointCoord.x = gMyStartX;
 	gMostRecentCheckPointCoord.z = gMyStartZ;
 	gMostRecentCheckPointCoord.y = 0;
 }
-
 
 
 /****************** SCAN FOR PLAYFIELD ITEMS *******************/
@@ -244,7 +242,7 @@ long			realX,realZ;
 		return;
 
 	itemPtr = gTerrainItemLookupTableX[left];					// get pointer to 1st item at this X
-	if ((Ptr)itemPtr > gMaxItemAddress)					// see if out of bounds			
+	if ((Ptr)itemPtr > gMaxItemAddress)					// see if out of bounds
 		return;
 
 	minX = left*(SUPERTILE_SIZE*OREOMAP_TILE_SIZE);
@@ -265,7 +263,7 @@ long			realX,realZ;
 
 			if (itemPtr->flags&ITEM_FLAGS_INUSE)				// see if item available
 				goto skip;
-				
+
 			type = itemPtr->type;								// get item #
 			if (type > MAX_ITEM_NUM)							// error check!
 			{
@@ -275,22 +273,22 @@ long			realX,realZ;
 
 			realX = itemPtr->x * MAP2UNIT_VALUE;				// calc & pass 3-space coords
 			realZ = itemPtr->y * MAP2UNIT_VALUE;
-	
+
 			flag = gTerrainItemAddRoutines[type](itemPtr,realX, realZ); // call item's ADD routine
 			if (flag)
 				itemPtr->flags |= ITEM_FLAGS_INUSE;				// set in-use flag
-				
+
 			n++;												// inc counter
 		}
-skip:		
+skip:
 		itemPtr++;												// point to next item in list
 		if ((Ptr)itemPtr > gMaxItemAddress)
 			break;
 	}
-	
+
 	if (n > gMaxItemsAllocatedInAPass)							// update this for debug purposes
 		gMaxItemsAllocatedInAPass = n;
-	
+
 }
 
 
@@ -372,47 +370,44 @@ TQ3Point3D	to;
 TQ3Matrix4x4	*m,m2;
 
 			/* GET CENTER Y COORD & TERRAIN NORMAL */
-			
+
 	x = theNode->Coord.x;
 	z = theNode->Coord.z;
-	y = theNode->Coord.y = GetTerrainHeightAtCoord(x, z, FLOOR) + yOffset;	
+	y = theNode->Coord.y = GetTerrainHeightAtCoord(x, z, FLOOR) + yOffset;
 	up = gRecentTerrainNormal[FLOOR];
-	
-	
+
+
 			/* CALC "TO" COORD */
-			
+
 	r = theNode->Rot.y;
 	to.x = x + sin(r) * 30.0f;
 	to.z = z + cos(r) * 30.0f;
-	to.y = GetTerrainHeightAtCoord(to.x, to.z, FLOOR) + yOffset;	
-	
-	
+	to.y = GetTerrainHeightAtCoord(to.x, to.z, FLOOR) + yOffset;
+
+
 			/* CREATE THE MATRIX */
-	
+
 	m = &theNode->BaseTransformMatrix;
 	SetLookAtMatrix(m, &up, &theNode->Coord, &to);
-	
-	
+
+
 		/* POP IN THE TRANSLATE INTO THE MATRIX */
-			
+
 	m->value[3][0] = x;
 	m->value[3][1] = y;
 	m->value[3][2] = z;
 
 
 			/* SET SCALE */
-					
+
 	Q3Matrix4x4_SetScale(&m2, theNode->Scale.x,				// make scale matrix
-							 	theNode->Scale.y,			
+							 	theNode->Scale.y,
 							 	theNode->Scale.z);
 	MatrixMultiply(&m2, m, m);
 }
 
 
-
 #pragma mark ======= TERRAIN PRE-CONSTRUCTION =========
-
-
 
 
 /********************** CALC TILE NORMALS *****************************/
@@ -429,7 +424,7 @@ static TQ3Point3D	p4 = {0, 0, TERRAIN_POLYGON_SIZE};
 
 
 		/* MAKE SURE ROW/COL IS IN RANGE */
-			
+
 	if ((row >= gTerrainTileDepth) || (row < 0) ||
 		(col >= gTerrainTileWidth) || (col < 0))
 	{
@@ -439,19 +434,19 @@ static TQ3Point3D	p4 = {0, 0, TERRAIN_POLYGON_SIZE};
 		return;
 	}
 
-	p1.y = gMapYCoords[row][col].layerY[layer];		// far left	
-	p2.y = gMapYCoords[row][col+1].layerY[layer];	// far right	
-	p3.y = gMapYCoords[row+1][col+1].layerY[layer];	// near right	
+	p1.y = gMapYCoords[row][col].layerY[layer];		// far left
+	p2.y = gMapYCoords[row][col+1].layerY[layer];	// far right
+	p3.y = gMapYCoords[row+1][col+1].layerY[layer];	// near right
 	p4.y = gMapYCoords[row+1][col].layerY[layer];	// near left
-	
-	
+
+
 		/* CALC NORMALS BASED ON SPLIT */
 
 	if (layer == 0)									// normal direction varies if floor or ceiling
 	{
-	
+
 				/* COUNTER-CLOCKWISE FOR FLOOR */
-				
+
 		if (gMapInfoMatrix[row][col].splitMode[0] == SPLIT_BACKWARD)
 		{
 			CalcFaceNormal(&p1, &p4, &p3, n1);		// fl, nl, nr
@@ -466,7 +461,7 @@ static TQ3Point3D	p4 = {0, 0, TERRAIN_POLYGON_SIZE};
 	else
 	{
 			/* CLOCKWISE FOR CEILING */
-	
+
 		if (gMapInfoMatrix[row][col].splitMode[1] == SPLIT_BACKWARD)
 		{
 			CalcFaceNormal(&p3, &p4, &p1, n1);		// nr, nl, fl
@@ -499,7 +494,7 @@ long				row,col;
 Byte				**shadowFlags;
 
 			/* INIT SHADOW FLAGS TEMP BUFFER */
-			
+
 	Alloc_2d_array(Byte, shadowFlags, gTerrainTileDepth+1, gTerrainTileWidth+1);
 
 	for (row = 0; row <= gTerrainTileDepth; row++)
@@ -515,29 +510,29 @@ Byte				**shadowFlags;
 
 	dot = -Q3Vector3D_Dot(&up,&gGameViewInfoPtr->lightList.fillDirection[0]);
 	dot = 1.0 - dot;
-	
+
 			/***********************/
 			/* SCAN THRU ITEM LIST */
 			/***********************/
-			
+
 	for (i = 0; i < gNumTerrainItems; i++)
 	{
 			/* SEE WHICH THINGS WE SUPPORT & GET PARMS */
-				
+
 		switch((*gMasterItemList)[i].type)
 		{
 			case	5:						// clover
 					height = 1000;
 					break;
-					
+
 			case	6:						// grass
 					height = 1200;
 					break;
-					
+
 			case	7:						// weed
 					height = 2500;
 					break;
-					
+
 			case	10:						// sunflower
 					height = 3000;
 					break;
@@ -565,7 +560,7 @@ Byte				**shadowFlags;
 			case	22:						// lily pad
 					height = 2000;
 					break;
-					
+
 			case	23:						// pond grass
 					height = 2500;
 					break;
@@ -594,103 +589,87 @@ Byte				**shadowFlags;
 			case	63:						// king pipe
 					height = 1200;
 					break;
-					
+
 			default:
-					continue;		
+					continue;
 		}
-		
+
 			/* CALCULATE LINE TO DRAW SHADOW ALONG */
-			
+
 		from.x = (int)(*gMasterItemList)[i].x * MAP2UNIT_VALUE;
 		from.y = (int)(*gMasterItemList)[i].y * MAP2UNIT_VALUE;
-				
+
 		to.x = from.x + lightVector.x * (height * dot);
 		to.y = from.y + lightVector.y * (height * dot);
-		
+
 		length = Q3Point2D_Distance(&from, &to);
-		
-		
+
+
 			/***************************************/
 			/* SCAN ALONG LIGHT AND SHADE VERTICES */
 			/***************************************/
-					
+
 		for (t = 1.0; t > 0.0f; t -= 1.0f / (length/TERRAIN_POLYGON_SIZE))
 		{
 			float	oneMinusT = 1.0f - t;
 			float	r,g,b;
 			float	ro,co;
 			u_short	*color;
-			
+
 			x = (from.x * oneMinusT) + (to.x * t);			// calc center x
 			z = (from.y * oneMinusT) + (to.y * t);
-		
+
 			for (ro = -.5; ro <= .5; ro += .5)
 			{
 				for (co = -.5; co <= .5; co += .5)
 				{
 					row = z / TERRAIN_POLYGON_SIZE + ro;			// calc row/col
 					col = x / TERRAIN_POLYGON_SIZE + co;
-		
+
 					if ((row < 0) || (col < 0))						// check for out of bounds
 						continue;
-					if ((row >= gTerrainTileDepth) || (col >= gTerrainTileWidth))	
+					if ((row >= gTerrainTileDepth) || (col >= gTerrainTileWidth))
 						continue;
-					
+
 					if (shadowFlags[row][col])						// see if this already shadowed
 						continue;
-		
+
 					shadowFlags[row][col] = 1;						// set flag
-					
-				
+
+
 						/* EXTRACT RGB */
-						
+
 					color = &gVertexColors[FLOOR][row][col];
-					
+
 					r = (*color >> 11);
 					r /= 0x1f;
 					g = (*color >> 5) & 0x3f;
 					g /= 0x3f;
 					b = (*color & 0x1f);
 					b /= 0x1f;
-					
+
 						/* FADE IT */
-						
+
 					r *= .7f;
 					g *= .7f;
 					b *= .7f;
-					
-					
+
+
 						/* SAVE RGB */
-						
+
 					*color = (int)(r*(float)0x1f)<<11;
 					*color |= (int)(g*(float)0x3f)<<5;
-					*color |= (int)(b*(float)0x1f);	
+					*color |= (int)(b*(float)0x1f);
 				}// co
 			} // ro
-		}		
+		}
 	}
-	
-	
+
+
 			/* CLEANUP */
-			
+
 	Free2DArray((void**) shadowFlags);
 	shadowFlags = nil;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

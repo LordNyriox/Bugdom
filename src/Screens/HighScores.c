@@ -45,18 +45,17 @@ typedef struct
 static const char* kGamepadCharset = " ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 
-
 /***************************/
 /*    VARIABLES            */
 /***************************/
 
-static HighScoreType	gNewName;	
+static HighScoreType	gNewName;
 static ObjNode			*gNewNameObj[MAX_NAME_LENGTH];
 
 static Byte		gCursorPosition;
 static ObjNode	*gCursorObj,*gScoreCyc;
 
-HighScoreType	gHighScores[NUM_SCORES];	
+HighScoreType	gHighScores[NUM_SCORES];
 
 Boolean			gEnteringName = false;
 
@@ -73,50 +72,50 @@ TQ3Vector3D	camDelta = {0,0,0};
 	PlaySong(SONG_HIGHSCORES,true);
 
 			/* INIT */
-			
+
 	SetupHighScoresScreen();
 	MakeFadeEvent(true);
-	
-	
+
+
 		/* ADD NEW SCORE */
-			
+
 	AddNewScore(newScore);
-	
+
 
 		/*************************/
 		/* PREP HIGH SCORES SHOW */
 		/*************************/
-		
+
 	PrepHighScoresShow();
 
-		
+
 			/*******************/
 			/* SHOW THE SCORES */
 			/*******************/
 
 	do
 	{
-		QD3D_CalcFramesPerSecond();					
+		QD3D_CalcFramesPerSecond();
 		MoveObjects();
-		
+
 				/* MOVE CAMERA */
-				
+
 		camDelta.y = gFramesPerSecondFrac * -45.0f;
-		QD3D_MoveCameraFromTo(gGameViewInfoPtr, &camDelta, &camDelta);			// update camera position		
-		
+		QD3D_MoveCameraFromTo(gGameViewInfoPtr, &camDelta, &camDelta);			// update camera position
+
 		gScoreCyc->Coord.y -= gFramesPerSecondFrac * 20.0f;
 		UpdateObjectTransforms(gScoreCyc);
 
-		QD3D_DrawScene(gGameViewInfoPtr,DrawObjects);	
+		QD3D_DrawScene(gGameViewInfoPtr,DrawObjects);
 		DoSDLMaintenance();
 
 		UpdateInput();
 		if (GetSkipScreenInput())
-			break;		
-			
+			break;
+
 	}while(gGameViewInfoPtr->currentCameraCoords.y > -500);
-	
-	
+
+
 			/* CLEANUP */
 
 	GammaFadeOut(true);
@@ -142,16 +141,16 @@ TQ3Vector3D			fillDirection1 = { .7, -.1, -0.3 };
 TQ3Vector3D			fillDirection2 = { -1, -.3, -.4 };
 FSSpec				file;
 QD3DSetupInputType		viewDef;
-	
+
 	DeleteAllObjects();
-	
+
 			/***********************/
 			/* SET QD3D PARAMETERS */
 			/***********************/
-			
+
 	QD3D_NewViewDef(&viewDef);
 	viewDef.view.clearColor 		= clearColor;
-		
+
 	viewDef.camera.from 			= cameraFrom;
 	viewDef.camera.to 				= cameraTo;
 	viewDef.camera.up 				= cameraUp;
@@ -177,14 +176,14 @@ QD3DSetupInputType		viewDef;
 		/***************/
 		/* LOAD MODELS */
 		/***************/
-		
+
 	FSMakeFSSpec(gDataSpec.vRefNum, gDataSpec.parID, ":models:HighScores.3dmf", &file);
 	LoadGrouped3DMF(&file, MODEL_GROUP_HIGHSCORES);
 
-	
+
 		/* LOAD CURRENT SCORES */
 
-	LoadHighScores();	
+	LoadHighScores();
 
 
 		/* LOAD AUDIO */
@@ -205,7 +204,7 @@ long				count;
 				/* OPEN FILE */
 
 	MakePrefsFSSpec("HighScores", false, &file);
-	iErr = FSpOpenDF(&file, fsRdPerm, &refNum);	
+	iErr = FSpOpenDF(&file, fsRdPerm, &refNum);
 	if (iErr == fnfErr)
 		ClearHighScores();
 	else
@@ -217,14 +216,14 @@ long				count;
 		iErr = FSRead(refNum, &count, (Ptr)&gHighScores[0]);				// read data from file
 		if (iErr)
 		{
-			FSClose(refNum);			
+			FSClose(refNum);
 			FSpDelete(&file);												// file is corrupt, so delete
 //			DoAlert("LoadHighScores: FSRead failed!");
 //			ShowSystemErr(iErr);
 			return;
 		}
-		FSClose(refNum);			
-	}	
+		FSClose(refNum);
+	}
 }
 
 
@@ -238,7 +237,7 @@ short				refNum;
 long				count;
 
 				/* CREATE BLANK FILE */
-				
+
 	MakePrefsFSSpec("HighScores", true, &file);
 	FSpDelete(&file);															// delete any existing file
 	iErr = FSpCreate(&file, 'BalZ', 'Skor', smSystemScript);					// create blank file
@@ -247,21 +246,21 @@ long				count;
 
 
 				/* OPEN FILE */
-					
+
 	FSMakeFSSpec(gPrefsFolderVRefNum, gPrefsFolderDirID, ":Bugdom:HighScores", &file);
 	iErr = FSpOpenDF(&file, fsRdWrPerm, &refNum);
 	if (iErr)
 	{
-err:	
+err:
 		DoAlert("Unable to Save High Scores file!");
 		return;
 	}
 
 				/* WRITE DATA */
-				
+
 	count = sizeof(HighScoreType) * NUM_SCORES;
 	FSWrite(refNum, &count, (Ptr)&gHighScores[0]);
-	FSClose(refNum);			
+	FSClose(refNum);
 
 }
 
@@ -274,7 +273,7 @@ short				i,j;
 char				blank[] = "               ";
 
 			/* INIT SCORES */
-			
+
 	for (i=0; i < NUM_SCORES; i++)
 	{
 		for (j=0; j < MAX_NAME_LENGTH; j++)
@@ -282,7 +281,7 @@ char				blank[] = "               ";
 		gHighScores[i].score = 0;
 	}
 
-	SaveHighScores();		
+	SaveHighScores();
 }
 
 
@@ -293,28 +292,28 @@ static void AddNewScore(unsigned long newScore)
 short	slot,i;
 
 			/* FIND INSERT SLOT */
-	
+
 	for (slot=0; slot < NUM_SCORES; slot++)
 	{
 		if (newScore > gHighScores[slot].score)
 			goto	got_slot;
 	}
 	return;
-	
-	
+
+
 got_slot:
 			/* GET PLAYER'S NAME */
-			
+
 	EnterPlayerName(newScore);
-	
+
 			/* INSERT INTO LIST */
 
 	for (i = NUM_SCORES-1; i > slot; i--)						// make hole
 		gHighScores[i] = gHighScores[i-1];
 	gHighScores[slot] = gNewName;								// insert new name 'n stuff
-	
+
 			/* UPDATE THE FILE */
-			
+
 	SaveHighScores();
 }
 
@@ -331,11 +330,11 @@ short		i;
 				/*********/
 				/* SETUP */
 				/*********/
-			
+
 			/*************************/
 			/* CREATE THE BACKGROUND */
 			/*************************/
-	
+
 	gNewObjectDefinition.type 		= SCORES_ObjType_Background;
 	gNewObjectDefinition.group 		= MODEL_GROUP_HIGHSCORES;
 	gNewObjectDefinition.coord.x 	= 0;
@@ -350,7 +349,7 @@ short		i;
 	QD3D_MirrorMeshesZ(gScoreCyc);
 
 			/* MAKE NAME FRAME */
-			
+
 	gNewObjectDefinition.group = MODEL_GROUP_HIGHSCORES;
 	gNewObjectDefinition.type = SCORES_ObjType_NameFrame;
 	gNewObjectDefinition.coord.x = 0;
@@ -365,7 +364,7 @@ short		i;
 
 
 			/* MAKE CURSOR */
-			
+
 	gNewObjectDefinition.type = SCORES_ObjType_Cursor;
 	gNewObjectDefinition.coord.x = LEFT_EDGE;
 	gNewObjectDefinition.coord.y = 0;
@@ -381,26 +380,26 @@ short		i;
 	}
 	gNewName.score = newScore;							// set new score
 	gCursorPosition = 0;
-	
-	
+
+
 			/*************/
 			/* MAIN LOOP */
 			/*************/
-		
-	QD3D_CalcFramesPerSecond();					
-		
+
+	QD3D_CalcFramesPerSecond();
+
 	gEnteringName = true;
 
 	float keyRepeatTimer = 0;
 	char newKey = '\0';
-		
+
 	do
 	{
-		QD3D_CalcFramesPerSecond();					
+		QD3D_CalcFramesPerSecond();
 		MoveObjects();
-		
+
 				/* CHECK FOR KEY */
-				
+
 		UpdateInput();
 
 		newKey = '\0';
@@ -478,16 +477,16 @@ short		i;
 		{
 			keyRepeatTimer = 0;
 		}
-		
+
 				/* MOVE CAMERA */
-				
+
 		camWobble += gFramesPerSecondFrac;
 		camPt.x = sin(camWobble) * 50;
 		QD3D_UpdateCameraFrom(gGameViewInfoPtr, &camPt);	// update camera position
-		
+
 				/* DRAW SCENE */
-				
-		QD3D_DrawScene(gGameViewInfoPtr,DrawObjects);	
+
+		QD3D_DrawScene(gGameViewInfoPtr,DrawObjects);
 		DoSDLMaintenance();
 	} while (newKey != CHAR_RETURN);
 
@@ -516,7 +515,7 @@ bool	advance = true;
 		return;
 
 				/* DELETE */
-				
+
 	if (c == CHAR_DELETE)
 	{
 		if (gCursorPosition > 0)
@@ -540,7 +539,7 @@ bool	advance = true;
 	}
 
 				/* LEFT ARROW */
-		
+
 	if (c == CHAR_LEFT)
 	{
 		if (gCursorPosition > 0)
@@ -548,7 +547,7 @@ bool	advance = true;
 		return;
 	}
 				/* RIGHT ARROW */
-	
+
 	if (c == CHAR_RIGHT)
 	{
 		if (gCursorPosition < (MAX_NAME_LENGTH-1))
@@ -589,15 +588,14 @@ bool	advance = true;
 	}
 
 			/* ADD NEW LETTER TO NAME */
-			
+
 	gNewName.name[gCursorPosition] = c;							// add to string
 
 	if (advance && gCursorPosition < (MAX_NAME_LENGTH-1))
 		gCursorPosition++;
-		
-	PlayEffect(EFFECT_SELECT);				
-}
 
+	PlayEffect(EFFECT_SELECT);
+}
 
 
 /*************** MOVE CURSOR *************************/
@@ -606,7 +604,7 @@ static void MoveCursor(ObjNode *theNode)
 {
 
 			/* MAKE BLINK */
-			
+
 	theNode->SpecialF[0] -= gFramesPerSecondFrac;
 	if (theNode->SpecialF[0] <= 0)
 	{
@@ -630,13 +628,13 @@ char	c;
 	if (doCursor)
 	{
 				/* UPDATE CURSOR COORD */
-				
+
 		gCursorObj->Coord.x = LEFT_EDGE + (gCursorPosition*LETTER_SEPARATION);
 		UpdateObjectTransforms(gCursorObj);
 
 
 				/* DELETE OLD NAME */
-				
+
 		for (i=0; i < MAX_NAME_LENGTH; i++)								// init name to blank
 		{
 			if (gNewNameObj[i])
@@ -646,7 +644,7 @@ char	c;
 	}
 
 			/* MAKE NEW NAME */
-			
+
 	for (i=0; i < MAX_NAME_LENGTH; i++)								// init name to blank
 	{
 		c = gNewName.name[i];
@@ -732,14 +730,14 @@ static const TQ3Point2D xyCoords[NUM_SCORES][2] =
 };
 
 			/* INIT CAMERA */
-			
+
 	QD3D_UpdateCameraFromTo(gGameViewInfoPtr, &from, &to);
-	
-	
+
+
 			/*******************/
 			/* CREATE THE VINE */
 			/*******************/
-	
+
 	gNewObjectDefinition.type 		= SCORES_ObjType_Vine;
 	gNewObjectDefinition.group 		= MODEL_GROUP_HIGHSCORES;
 	gNewObjectDefinition.coord.x 	= 0;
@@ -755,7 +753,7 @@ static const TQ3Point2D xyCoords[NUM_SCORES][2] =
 			/*************************/
 			/* CREATE THE BACKGROUND */
 			/*************************/
-	
+
 	gNewObjectDefinition.type 		= SCORES_ObjType_Background;
 	gNewObjectDefinition.group 		= MODEL_GROUP_HIGHSCORES;
 	gNewObjectDefinition.coord.x 	= 0;
@@ -772,11 +770,11 @@ static const TQ3Point2D xyCoords[NUM_SCORES][2] =
 			/**********************/
 			/* CREATE SCORES LIST */
 			/**********************/
-	
+
 	for (slot = 0; slot < NUM_SCORES; slot++)
 	{
 		float	z;
-		
+
 		if (slot == 0)
 			z = 30;
 		else
@@ -784,24 +782,24 @@ static const TQ3Point2D xyCoords[NUM_SCORES][2] =
 
 		const TQ3Point2D* scorePos = &xyCoords[slot][0];
 		const TQ3Point2D* namePos  = &xyCoords[slot][1];
-		
+
 				/* CREATE NAME */
 
 		gNewName = gHighScores[slot];
 		UpdateNameAndCursor(false, namePos->x, namePos->y, z);
-		
+
 				/* CREATE SCORE */
-			
+
 		score = gNewName.score;
 		place = 0;
-				
+
 		x = scorePos->x;
 		y = scorePos->y + 15;
 		while((score > 0) || (place < 1))
 		{
 			digit = score % 10;								// get digit @ end of #
 			score /= 10;									// shift down
-			
+
 			gNewObjectDefinition.type 		= SCORES_ObjType_0 + digit;
 			gNewObjectDefinition.group 		= MODEL_GROUP_HIGHSCORES;
 			gNewObjectDefinition.coord.x 	= x - (place*(LETTER_SEPARATION));
@@ -813,14 +811,10 @@ static const TQ3Point2D xyCoords[NUM_SCORES][2] =
 			gNewObjectDefinition.rot 		= 0;
 			gNewObjectDefinition.scale 		= 1.0;
 			MakeNewDisplayGroupObject(&gNewObjectDefinition);
-			
+
 			place++;
 		}
 	}
 }
-
-
-
-
 
 

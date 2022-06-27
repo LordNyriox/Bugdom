@@ -21,7 +21,6 @@ static void MovePangeaLogoPart(ObjNode *theNode);
 static void MoveLogoBG(ObjNode *theNode);
 
 
-
 /****************************/
 /*    CONSTANTS             */
 /****************************/
@@ -34,7 +33,6 @@ static void MoveLogoBG(ObjNode *theNode);
 /*********************/
 
 TQ3TriMeshData* gPauseQuad = nil;
-
 
 
 /****************** ADJUST CAMERA WHILE PAUSED **********************/
@@ -252,7 +250,7 @@ int curState = kPauseChoice_Resume;
 		case	1:
 				gGameOverFlag = true;
 				break;
-				
+
 		case	2:
 				CleanQuit();
 	}
@@ -262,10 +260,10 @@ int curState = kPauseChoice_Resume;
 
 
 			/* CLEANUP */
-			
+
 	QD3D_CalcFramesPerSecond();
 	QD3D_CalcFramesPerSecond();
-	
+
 	gPlayerObj->AccelVector.x =					// neutralize this
 	gPlayerObj->AccelVector.y = 0;
 
@@ -273,7 +271,6 @@ int curState = kPauseChoice_Resume;
 
 	PauseAllChannels(false);
 }
-
 
 
 #pragma mark -
@@ -321,25 +318,23 @@ Boolean			fo = false;
 
 
 			/* LOAD ART */
-			
+
 	err = FSMakeFSSpec(gDataSpec.vRefNum, gDataSpec.parID, ":models:Pangea.3dmf", &spec);		// load other models
 	GAME_ASSERT(err == noErr);
-	LoadGrouped3DMF(&spec,MODEL_GROUP_TITLE);	
-
-
+	LoadGrouped3DMF(&spec,MODEL_GROUP_TITLE);
 
 
 			/***************/
 			/* MAKE MODELS */
 			/***************/
-				
+
 			/* BACKGROUND */
-			
-	gNewObjectDefinition.group 		= MODEL_GROUP_PANGEA;	
+
+	gNewObjectDefinition.group 		= MODEL_GROUP_PANGEA;
 	gNewObjectDefinition.type 		= 1;
 	gNewObjectDefinition.coord.x 	= 0;
 	gNewObjectDefinition.coord.y 	= 0;
-	gNewObjectDefinition.coord.z 	= -180;	
+	gNewObjectDefinition.coord.z 	= -180;
 	gNewObjectDefinition.flags 		= STATUS_BIT_NULLSHADER;
 	gNewObjectDefinition.slot 		= 50;
 	gNewObjectDefinition.moveCall 	= MoveLogoBG;
@@ -349,33 +344,33 @@ Boolean			fo = false;
 
 
 			/* LOGO */
-		
-	gNewObjectDefinition.group 		= MODEL_GROUP_PANGEA;	
+
+	gNewObjectDefinition.group 		= MODEL_GROUP_PANGEA;
 	gNewObjectDefinition.type 		= 0;
 	gNewObjectDefinition.coord.x 	= 0;
 	gNewObjectDefinition.coord.y 	= 0;
-	gNewObjectDefinition.coord.z 	= -100;	
+	gNewObjectDefinition.coord.z 	= -100;
 	gNewObjectDefinition.flags 		= STATUS_BIT_REFLECTIONMAP;
 	gNewObjectDefinition.slot 		= 50;
 	gNewObjectDefinition.moveCall 	= MovePangeaLogoPart;
 	gNewObjectDefinition.rot 		= PI/2;
 	gNewObjectDefinition.scale 		= .18;
 	MakeNewDisplayGroupObject(&gNewObjectDefinition);
-	
-	
-	MakeFadeEvent(true);	
-	
+
+
+	MakeFadeEvent(true);
+
 			/*************/
 			/* MAIN LOOP */
 			/*************/
-			
-	PlaySong(SONG_PANGEA,false);			
-	QD3D_CalcFramesPerSecond();					
+
+	PlaySong(SONG_PANGEA,false);
+	QD3D_CalcFramesPerSecond();
 
 	while (gSongPlayingFlag)					// wait until song stops
 	{
-		QD3D_CalcFramesPerSecond();					
-	
+		QD3D_CalcFramesPerSecond();
+
 		UpdateInput();
 		if (GetSkipScreenInput())
 		{
@@ -386,14 +381,14 @@ Boolean			fo = false;
 
 		MoveObjects();
 
-		QD3D_DrawScene(gGameViewInfoPtr,DrawObjects);	
+		QD3D_DrawScene(gGameViewInfoPtr,DrawObjects);
 
 		fotime += gFramesPerSecondFrac;
 		if ((fotime > 7.0f) && (!fo))
 		{
 			MakeFadeEvent(false);
 			fo = true;
-		}		
+		}
 
 		DoSDLMaintenance();
 	}
@@ -402,10 +397,10 @@ Boolean			fo = false;
 			/***********/
 			/* CLEANUP */
 			/***********/
-			
+
 	DeleteAllObjects();
 	Free3DMFGroup(MODEL_GROUP_TITLE);
-	QD3D_DisposeWindowSetup(&gGameViewInfoPtr);		
+	QD3D_DisposeWindowSetup(&gGameViewInfoPtr);
 	KillSong();
 	GameScreenToBlack();
 	Pomme_FlushPtrTracking(true);
@@ -416,8 +411,8 @@ Boolean			fo = false;
 
 static void MovePangeaLogoPart(ObjNode *theNode)
 {
-//	theNode->Coord.z += gFramesPerSecondFrac * 45;		
-	theNode->Rot.y -= gFramesPerSecondFrac * .3;		
+//	theNode->Coord.z += gFramesPerSecondFrac * 45;
+	theNode->Rot.y -= gFramesPerSecondFrac * .3;
 	UpdateObjectTransforms(theNode);
 }
 

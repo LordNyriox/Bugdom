@@ -68,21 +68,20 @@ short		gBestCheckPoint;
 TQ3Point3D	gMostRecentCheckPointCoord;
 
 
-
 /******************* INIT PLAYER AT START OF LEVEL ********************/
 
 void InitPlayerAtStartOfLevel(void)
 {
 			/* SET SOME GLOBALS */
-			
-	gShieldTimer = 0;			
-	gShieldRingTick = 0;	
+
+	gShieldTimer = 0;
+	gShieldRingTick = 0;
 	gShieldChannel = -1;
 	gMyBuddy = nil;
 	gShieldRot = 0;
 	gCurrentLiquidType = LIQUID_WATER;
 	gTorchPlayer = false;
-	
+
 	gShieldParticleGroupA = gShieldParticleGroupB = -1;
 
 	gMyCoord.x = gMyStartX;
@@ -92,7 +91,7 @@ void InitPlayerAtStartOfLevel(void)
 	gMostRecentCheckPointCoord.y = gMyCoord.y;			// set y (x & z) were already set
 
 	InitPlayer_Bug(nil, &gMyCoord, (float)gMyStartAim * (PI2/8), PLAYER_ANIM_STAND);
-	
+
 	gCheckPointRot = (float)(gMyStartAim/2) * (PI2/4);
 
 	gPlayerObj->Damage 			= .5;
@@ -108,7 +107,7 @@ void InitPlayerAtStartOfLevel(void)
 void ResetPlayer(void)
 {
 		/* RETURN PLAYER TO STANDING MODE */
-		
+
 	if (gPlayerMode == PLAYER_MODE_BALL)				// see if turn into bug
 		InitPlayer_Bug(gPlayerObj, &gMostRecentCheckPointCoord, gCheckPointRot, PLAYER_ANIM_STAND);
 	else
@@ -123,38 +122,37 @@ void ResetPlayer(void)
 		UpdateObjectTransforms(gPlayerObj);
 	}
 	gPlayerObj->HurtTimer = 0;
-	gPlayerObj->InvincibleTimer = INVINCIBILITY_DURATION_DEATH;	// make me invincible for a while	
+	gPlayerObj->InvincibleTimer = INVINCIBILITY_DURATION_DEATH;	// make me invincible for a while
 
 	gPlayerObj->CType = CTYPE_PLAYER;						// make sure this gets reset
-	
+
 	gPlayerObj->Delta.x =									// stop motion
 	gPlayerObj->Delta.y =
 	gPlayerObj->Delta.z = 0;
-	
+
 
 				/* RESET SOME GLOBAL INFO */
-					
+
 	gMyCoord 				= gMostRecentCheckPointCoord;
-	gPlayerGotKilledFlag 	= false;		
-	gMyHealth				= 1.0;							// reset health	
+	gPlayerGotKilledFlag 	= false;
+	gMyHealth				= 1.0;							// reset health
 	gInfobarUpdateBits 		|= UPDATE_HEALTH;
 	gShieldTimer			= 0;
 	gTorchPlayer			= false;
-	
+
 	if (gShieldChannel != -1)
 	{
 		StopAChannel(&gShieldChannel);
 	}
-	
+
 			/* SEE IF KILL BUDDY */
-			
+
 	if (gMyBuddy)
 	{
 		DeleteObject(gMyBuddy);
 		gMyBuddy = nil;
 	}
 }
-
 
 
 /******************** DO PLAYER COLLISION DETECT **************************/
@@ -170,18 +168,18 @@ short		i;
 ObjNode		*hitObj;
 unsigned long	ctype;
 u_char		sides;
-	
+
 			/* LITTLE ERROR CHECK HACK TO FIX A BUG WHERE SPEED BECOMES NAN */
-			
+
 	if ((gPlayerObj->Speed >= 0.0) && (gPlayerObj->Speed < 10000000.0f))
 	{
 	}
 	else
 		gPlayerObj->Speed = 0;
-	
-	
+
+
 			/* DETERMINE CTYPE BITS TO CHECK FOR */
-			
+
 	if (gPlayerGotKilledFlag)
 		ctype = CTYPE_MISC;						// when dead, only check solid things
 	else
@@ -201,29 +199,29 @@ u_char		sides;
 			//
 
 	sides = HandleCollisions(gPlayerObj, ctype);
-		
+
 
 			/******************************/
 			/* SCAN FOR INTERESTING STUFF */
 			/******************************/
-			
+
 	gPlayerObj->StatusBits &= ~STATUS_BIT_UNDERWATER;			// assume not in water volume
 	gPlayerObj->MPlatform = nil;								// assume not on MPlatform
 
-	for (i=0; i < gNumCollisions; i++)						
+	for (i=0; i < gNumCollisions; i++)
 	{
 			hitObj = gCollisionList[i].objectPtr;				// get ObjNode of this collision
-			
+
 			if (hitObj->CType == INVALID_NODE_FLAG)			// see if has since become invalid
 				continue;
-			
+
 			ctype = hitObj->CType;								// get collision ctype from hit obj
-					
-					
+
+
 			/**************************/
 			/* CHECK FOR IMPENETRABLE */
 			/**************************/
-			
+
 			if ((ctype & CTYPE_IMPENETRABLE) && (!(ctype & CTYPE_IMPENETRABLE2)))
 			{
 				if (!(gCollisionList[i].sides & SIDE_BITS_BOTTOM))	// dont do this if we landed on top of it
@@ -232,64 +230,64 @@ u_char		sides;
 					gCoord.z = gPlayerObj->OldCoord.z;
 				}
 			}
-			
+
 			/*****************************/
 			/* CHECK FOR MOVING PLATFORM */
 			/*****************************/
-				
+
 			if (ctype & CTYPE_MPLATFORM)
 			{
 					/* ONLY IF BOTTOM HIT IT */
-					
+
 				if (gCollisionList[i].sides & SIDE_BITS_BOTTOM)
 				{
-					gPlayerObj->MPlatform = hitObj;				
+					gPlayerObj->MPlatform = hitObj;
 				}
 			}
-		
+
 				/*******************/
 				/* CHECK FOR ENEMY */
 				/*******************/
-				
+
 			if (ctype & CTYPE_ENEMY)
 			{
 					/* SEE IF BOPPABLE ENEMY */
-					
+
 				if ((ctype & CTYPE_BOPPABLE) && (gCollisionList[i].sides & SIDE_BITS_BOTTOM)) // bottom must have hit for it to be a bop
 				{
 					PlayerBopEnemy(gPlayerObj, hitObj);
-				}		
-				
-					/* COLLISION WASNT A BOP */	
+				}
+
+					/* COLLISION WASNT A BOP */
 				else
 				{
 					PlayerHitEnemy(hitObj);
 				}
 
 			}
-			
+
 				/**********************/
 				/* SEE IF HURTME ITEM */
 				/**********************/
-				
+
 			if (ctype & CTYPE_HURTME)
 			{
 				if (ctype & CTYPE_HURTNOKNOCK)
 					PlayerGotHurt(hitObj, hitObj->Damage,false,true,false,INVINCIBILITY_DURATION);
 				else
 					PlayerGotHurt(hitObj, hitObj->Damage,false,true,true,INVINCIBILITY_DURATION);
-			}			
+			}
 
 				/**************************/
 				/* SEE IF DRAIN BALL TIME */
 				/**************************/
-				
+
 			if (ctype & CTYPE_DRAINBALLTIME)
 			{
 				LoseBallTime(hitObj->Damage * gFramesPerSecondFrac);
 			}
 
-			
+
 				/**********************/
 				/* SEE IF WATER PATCH */
 				/**********************/
@@ -298,7 +296,7 @@ u_char		sides;
 				// if the bottom collision bit is set.  This way jumping on lily pads
 				// will be more reliable.
 				//
-			
+
 			if ((ctype & CTYPE_LIQUID) && (!(sides&CBITS_BOTTOM)))	// only check for water if no bottom collision
 			{
 				if (GetTerrainHeightAtCoord(gCoord.x, gCoord.z, FLOOR) < hitObj->Coord.y)		// make sure didnt hit liquid thru solid floor
@@ -307,12 +305,12 @@ u_char		sides;
 					gPlayerCurrentWaterY = hitObj->CollisionBoxes[0].top;
 					gCurrentLiquidType = hitObj->Kind;
 				}
-			}				
+			}
 
 				/******************/
 				/* SEE IF VISCOUS */
 				/******************/
-			
+
 			if (ctype & CTYPE_VISCOUS)
 			{
 				ApplyFrictionToDeltas(120, &gDelta);
@@ -321,9 +319,6 @@ u_char		sides;
 
 	return(gPlayerGotKilledFlag);
 }
-
-
-
 
 
 /******************** PLAYER HIT ENEMY ***********************/
@@ -337,11 +332,11 @@ void PlayerHitEnemy(ObjNode *enemy)
 {
 
 			/* SEE IF ENEMY IS 'SPIKED' */
-			
+
 	if (enemy->CType & CTYPE_SPIKED)
 	{
-		PlayerGotHurt(enemy, enemy->Damage, false, true,true,INVINCIBILITY_DURATION);	
-		
+		PlayerGotHurt(enemy, enemy->Damage, false, true,true,INVINCIBILITY_DURATION);
+
 		if (enemy->Kind == ENEMY_KIND_FLYINGBEE)			// flying bees die when they sting me
 		{
 			KillFlyingBee(enemy,0,0,0);
@@ -352,19 +347,19 @@ void PlayerHitEnemy(ObjNode *enemy)
 				/*******************/
 				/* HANDLE FOR BALL */
 				/*******************/
-				
+
 	if (gPlayerMode == PLAYER_MODE_BALL)
 	{
 		switch(enemy->Kind)
-		{	
+		{
 			case	ENEMY_KIND_BOXERFLY:
 					BallHitBoxerFly(gPlayerObj, enemy);
 					break;
-					
+
 			case	ENEMY_KIND_MOSQUITO:
 					BallHitMosquito(gPlayerObj, enemy);
 					break;
-					
+
 			case	ENEMY_KIND_ANT:
 					BallHitAnt(gPlayerObj, enemy);
 					break;
@@ -414,36 +409,36 @@ TQ3Vector3D	delta;
 
 	if (damage == 0.0f)
 		return;
-		
+
 	if (!overrideShield)
 		if (gShieldTimer > 0.0f)								// see if shielded
 			return;
-		
+
 	if (gPlayerGotKilledFlag)									// cant get hurt if already dead
 		return;
-		
-	
+
+
 	if (gPlayerObj->InvincibleTimer > 0.0f)						// cant be harmed if invincible
 		return;
 
 	if (gPlayerObj->InvincibleTimer < invincibleDuration)
 		gPlayerObj->InvincibleTimer = invincibleDuration;	// make me invincible for a while
-	
+
 
 			/* LOSE HEALTH & SEE IF WAS KILLED */
-			
+
 	LoseHealth(damage);
-	
-	
+
+
 				/*****************/
 				/* KNOCK ON BUTT */
-				/*****************/				
-				
+				/*****************/
+
 	if ((!gPlayerGotKilledFlag) && canKnockOnButt)
-	{	
+	{
 					/* CALC KNOCK VECTOR */
-					
-		if (what)									
+
+		if (what)
 		{
 			delta.x = what->Delta.x;
 			delta.z = what->Delta.z;
@@ -451,19 +446,19 @@ TQ3Vector3D	delta;
 		}
 		else
 		{
-			delta.x = delta.y = delta.z = 0;	
+			delta.x = delta.y = delta.z = 0;
 		}
 
-		
+
 				/* IF NOT KILLED, SEE IF KNOCK ON BUTT */
-				
+
 		KnockPlayerBugOnButt(&delta, false, playerIsCurrent);
 	}
 
 
 			/* PLAY OUCH SOUND */
-			
-	PlayEffect3D(EFFECT_OUCH, &gPlayerObj->Coord);	
+
+	PlayEffect3D(EFFECT_OUCH, &gPlayerObj->Coord);
 }
 
 
@@ -484,7 +479,7 @@ void KillPlayer(Boolean changeAnims)
 				InitPlayer_Bug(gPlayerObj, &gPlayerObj->Coord, gPlayerObj->Rot.y, PLAYER_ANIM_DEATH);
 			else
 				SetSkeletonAnim(gPlayerObj->Skeleton, PLAYER_ANIM_DEATH);
-		}	
+		}
 		gPlayerGotKilledFlag = true;
 	}
 }
@@ -504,7 +499,7 @@ static void PlayerBopEnemy(ObjNode *me, ObjNode *enemy)
 		case	ENEMY_KIND_LARVA:
 				LarvaGotBopped(enemy);
 				break;
-				
+
 		case	ENEMY_KIND_TICK:
 				TickGotBopped(enemy);
 				break;
@@ -525,11 +520,11 @@ void CreateMyBuddy(float x, float z)
 ObjNode *newObj;
 
 	gNewObjectDefinition.type 		= SKELETON_TYPE_BUDDY;
-	gNewObjectDefinition.animNum 	= 0;							
+	gNewObjectDefinition.animNum 	= 0;
 	gNewObjectDefinition.coord.x 	= x;
 	gNewObjectDefinition.coord.y 	= GetTerrainHeightAtCoord(x,z,FLOOR) + 30;
 	gNewObjectDefinition.coord.z 	= z;
-	gNewObjectDefinition.flags 		= gAutoFadeStatusBits;	
+	gNewObjectDefinition.flags 		= gAutoFadeStatusBits;
 	gNewObjectDefinition.slot 		= PLAYER_SLOT+1;
 	gNewObjectDefinition.moveCall 	= MoveMyBuddy;
 	gNewObjectDefinition.rot 		= 0;
@@ -562,12 +557,12 @@ static void MoveMyBuddy(ObjNode *theNode)
 				if (GetNewKeyState(kKey_BuddyAttack) && gPlayerCanMove)
 				{
 					gMyBuddy = nil;							// buddy isnt attached to me anymore
-					theNode->Mode = BUDDY_MODE_ATTACK;					
+					theNode->Mode = BUDDY_MODE_ATTACK;
 					PlayEffect3D(EFFECT_BUDDYLAUNCH, &theNode->Coord);
 					break;
 				}
 				break;
-		
+
 		case	BUDDY_MODE_ATTACK:
 				if (MoveBuddyTowardEnemy(theNode))
 					return;
@@ -611,16 +606,16 @@ float		fps = gFramesPerSecondFrac;
 	pToC.x = gCoord.x - myX;									// calc player->buddy vector
 	pToC.y = gCoord.z - myZ;
 	FastNormalizeVector2D(pToC.x, pToC.y, &pToC);				// normalize it
-	
+
 	target.x = myX + (pToC.x * BUDDY_DIST_FROM_ME);				// target is appropriate dist based on buddy's current coord
 	target.z = myZ + (pToC.y * BUDDY_DIST_FROM_ME);
 
 
 			/* MOVE BUDDY TOWARDS POINT */
-					
+
 	distX = target.x - gCoord.x;
 	distZ = target.z - gCoord.z;
-	
+
 	if (distX > 500.0f)											// pin max accel factor
 		distX = 500.0f;
 	else
@@ -631,7 +626,7 @@ float		fps = gFramesPerSecondFrac;
 	else
 	if (distZ < -500.0f)
 		distZ = -500.0f;
-		
+
 	from.x = gCoord.x+(distX * (fps * BUDDY_ACCEL));
 	from.z = gCoord.z+(distZ * (fps * BUDDY_ACCEL));
 
@@ -641,7 +636,7 @@ float		fps = gFramesPerSecondFrac;
 	dist = CalcQuickDistance(from.x, from.z, myX, myZ) - BUDDY_CLOSEST;
 	if (dist < 0.0f)
 		dist = 0.0f;
-	
+
 	target.y = myY + (dist*BUDDY_HEIGHT_FACTOR) + BUDDY_MINY;	// calc desired y based on dist and height factor
 
 
@@ -658,44 +653,44 @@ float		fps = gFramesPerSecondFrac;
 			CollisionBoxType *coll = obj->CollisionBoxes;			// get object's collision box
 			if (coll)
 			{
-				target.y = coll->top + 100.0f;						// set target on top of object			
+				target.y = coll->top + 100.0f;						// set target on top of object
 			}
 		}
 	}
 
 	dist = (target.y - gCoord.y)*BUDDY_ACCEL;						// calc dist from current y to desired y
 	from.y = gCoord.y+(dist*fps);
-	
+
 	if (gDoCeiling)
 	{
 				/* MAKE SURE NOT ABOVE CEILING */
-		
+
 		dist = GetTerrainHeightAtCoord(from.x, from.z, CEILING) - 30.0f;
 		if (from.y > dist)
 			from.y = dist;
 	}
 
 			/* MAKE SURE NOT UNDERGROUND */
-			
+
 	dist = GetTerrainHeightAtCoord(from.x, from.z, FLOOR) + 50.0f;
 	if (from.y < dist)
 		from.y = dist;
 
 	gCoord = from;
-	
-	
+
+
 				/* AIM HIM AT ME */
-				
-	TurnObjectTowardTarget(theNode, &from, myX, myZ, 3.0, false);	
-	
-	
+
+	TurnObjectTowardTarget(theNode, &from, myX, myZ, 3.0, false);
+
+
 	/* MATCH UNDERWATER BITS SO SHADOW WILL GO AWAY AUTOMATICALLY */
 
 	if (gPlayerObj->StatusBits & STATUS_BIT_UNDERWATER)
 		theNode->StatusBits |= STATUS_BIT_UNDERWATER;
 	else
 		theNode->StatusBits &= ~STATUS_BIT_UNDERWATER;
-	
+
 }
 
 
@@ -709,17 +704,17 @@ static Boolean MoveBuddyTowardEnemy(ObjNode *theNode)
 ObjNode	*enemy;
 float	fps = gFramesPerSecondFrac;
 float	dist;
-	
+
 			/* FIND CLOSEST ENEMY */
-			
+
 	enemy = FindClosestEnemy(&gCoord, &dist);
-	
-	
+
+
 			/* AIM AT ENEMY */
-			
+
 	if (enemy)
 	{
-		TurnObjectTowardTarget(theNode, &gCoord, enemy->Coord.x, enemy->Coord.z, 4.0, false);	
+		TurnObjectTowardTarget(theNode, &gCoord, enemy->Coord.x, enemy->Coord.z, 4.0, false);
 
 		if (gCoord.y < (enemy->Coord.y + enemy->BottomOff))
 			gDelta.y += 400.0f * fps;
@@ -732,7 +727,7 @@ float	dist;
 
 
 			/* CALC DELTA & MOVE */
-			
+
 	gDelta.x = -sin(theNode->Rot.y) * BUDDY_ATTACK_SPEED;
 	gDelta.z = -cos(theNode->Rot.y) * BUDDY_ATTACK_SPEED;
 
@@ -741,19 +736,18 @@ float	dist;
 	gCoord.z += gDelta.z * fps;
 
 
-	
 		/* SEE IF HIT FLOOR OR CEILING */
-		
+
 	if ((gCoord.y < GetTerrainHeightAtCoord(gCoord.x, gCoord.z, FLOOR)) ||
 		(gCoord.y > GetTerrainHeightAtCoord(gCoord.x, gCoord.z, CEILING)))
 	{
-explode:	
+explode:
 		SplatterBuddy(theNode);
 		return(true);
 	}
 
 		/* SEE IF HIT SOLID */
-		
+
 	if (DoSimplePointCollision(&gCoord, CTYPE_MISC))
 		goto explode;
 
@@ -768,17 +762,17 @@ explode:
 		EnemyGotHurt(gCollisionList[0].objectPtr, 1.1);		// cause massive damage
 		goto explode;
 	}
-	
+
 		/***************/
 		/* SEE IF GONE */
 		/***************/
-			
-	if (TrackTerrainItem_Far(theNode, 500))	
+
+	if (TrackTerrainItem_Far(theNode, 500))
 	{
 		DeleteObject(theNode);
 		return(true);
 	}
-	
+
 
 	return(false);
 }
@@ -793,9 +787,9 @@ TQ3Vector3D		delta;
 TQ3Point3D		coord;
 
 	DeleteObject(theNode);
-	
+
 				/* MAKE PARTICLE EXPLOSION */
-				
+
 	pg = NewParticleGroup(	0,							// magic num
 							PARTICLE_TYPE_FALLINGSPARKS,	// type
 							PARTICLE_FLAGS_BOUNCE|PARTICLE_FLAGS_HOT,		// flags
@@ -805,7 +799,7 @@ TQ3Point3D		coord;
 							.7,							// decay rate
 							0,							// fade rate
 							PARTICLE_TEXTURE_WHITE);	// texture
-	
+
 	if (pg != -1)
 	{
 		for (i = 0; i < 100; i++)
@@ -813,18 +807,18 @@ TQ3Point3D		coord;
 			delta.x = (RandomFloat()-.5f) * 800.0f;
 			delta.y = (RandomFloat()-.4f) * 800.0f;
 			delta.z = (RandomFloat()-.5f) * 800.0f;
-			
+
 			coord.x = gCoord.x + ((RandomFloat()-.5f) * 80.0f);
 			coord.y = gCoord.y + ((RandomFloat()-.5f) * 80.0f);
 			coord.z = gCoord.z + ((RandomFloat()-.5f) * 80.0f);
-			
+
 			AddParticleToGroup(pg, &coord, &delta, RandomFloat() + 1.0f, FULL_ALPHA);
 		}
 	}
-	
-	
+
+
 		/* EXPLODE EFFECT */
-		
+
 	PlayEffect_Parms3D(EFFECT_FIRECRACKER, &gCoord, kMiddleC-12, 3.0);
 }
 
@@ -842,13 +836,13 @@ void UpdatePlayerShield(void)
 TQ3Vector3D	delta;
 TQ3Point3D  pt;
 float		r;
-			
+
 
 	if (gShieldTimer == 0.0f)
 		return;
-	
+
 			/* DEC TIMER */
-			
+
 	gShieldTimer -= gFramesPerSecondFrac;
 	if (gShieldTimer < 0.0f)
 	{
@@ -857,14 +851,14 @@ float		r;
 			StopAChannel(&gShieldChannel);
 		gShieldParticleGroupA = gShieldParticleGroupB = -1;
 	}
-	
+
 		/* UPDATE SOUND */
-		
+
 	else
 	{
 		if (gShieldChannel == -1)
 		{
-			gShieldChannel = PlayEffect_Parms(EFFECT_SHIELD, 200, 200, kMiddleC);	
+			gShieldChannel = PlayEffect_Parms(EFFECT_SHIELD, 200, 200, kMiddleC);
 		}
 	}
 
@@ -886,10 +880,10 @@ float		r;
 
 
 				/* DO PARTICLE GROUP A */
-				
+
 		if ((gShieldParticleGroupA == -1) || (!VerifyParticleGroupMagicNum(gShieldParticleGroupA, gShieldMagicA)))
 		{
-new_groupa:		
+new_groupa:
 			gShieldMagicA = MyRandomLong();			// generate a random magic num
 
 			gShieldParticleGroupA = NewParticleGroup(gShieldMagicA,					// magic num
@@ -904,22 +898,22 @@ new_groupa:
 		}
 
 		if (gShieldParticleGroupA != -1)
-		{			
+		{
 			delta.x = sin(r) * 250.0f;
 			delta.z = cos(r) * 250.0f;
-			
+
 			if (AddParticleToGroup(gShieldParticleGroupA, &pt, &delta, RandomFloat() + 1.5f, FULL_ALPHA))
 				goto new_groupa;
 		}
 
-		
+
 		if (gShieldTimer > 2.0f)			// when 2 seconds remain, use 1 color
 		{
 					/* DO PARTICLE GROUP B */
-					
+
 			if ((gShieldParticleGroupB == -1) || (!VerifyParticleGroupMagicNum(gShieldParticleGroupB, gShieldMagicB)))
 			{
-	new_groupb:		
+	new_groupb:
 				gShieldMagicB = MyRandomLong();											// generate a random magic num
 				gShieldParticleGroupB = NewParticleGroup(gShieldMagicB,					// magic num
 														PARTICLE_TYPE_FALLINGSPARKS,	// type
@@ -937,7 +931,7 @@ new_groupa:
 				r += PI;
 				delta.x = sin(r) * 250.0f;
 				delta.z = cos(r) * 250.0f;
-				
+
 				if (AddParticleToGroup(gShieldParticleGroupB, &pt, &delta, RandomFloat() + 1.5f, FULL_ALPHA))
 					goto new_groupb;
 			}
@@ -946,10 +940,5 @@ new_groupa:
 	}
 
 }
-
-
-
-
-
 
 

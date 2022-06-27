@@ -34,7 +34,7 @@ static void MoveSkippyOnSpline(ObjNode *theNode);
 #define SKIPPY_TURN_SPEED		4.5f
 #define SKIPPY_SPLINE_SPEED		200.0f
 
-#define	SKIPPY_HEALTH			.5f		
+#define	SKIPPY_HEALTH			.5f
 #define	SKIPPY_DAMAGE			0.05f
 #define	SKIPPY_SCALE			.7f
 
@@ -51,7 +51,7 @@ enum
 /*    VARIABLES      */
 /*********************/
 
-#define	SpeedBoost	Flag[0]		
+#define	SpeedBoost	Flag[0]
 #define	RippleTimer	SpecialF[0]
 
 
@@ -68,25 +68,25 @@ ObjNode	*newObj;
 		return(false);
 
 				/* MAKE DEFAULT SKELETON ENEMY */
-				
+
 	newObj = MakeEnemySkeleton(SKELETON_TYPE_SKIPPY,x,z,SKIPPY_SCALE);
 	if (newObj == nil)
 		return(false);
 	newObj->TerrainItemPtr = itemPtr;
 
 	SetSkeletonAnim(newObj->Skeleton, SKIPPY_ANIM_SWIM);
-	
+
 
 				/* SET BETTER INFO */
-			
+
 	newObj->MoveCall 	= MoveSkippy;							// set move call
 	newObj->Health 		= SKIPPY_HEALTH;
 	newObj->Damage 		= SKIPPY_DAMAGE;
 	newObj->Kind 		= ENEMY_KIND_SKIPPY;
 	newObj->CType		|= CTYPE_SPIKED;
-	
+
 				/* SET COLLISION INFO */
-				
+
 	SetObjectCollisionBounds(newObj, 30,-60,-50,50,50,-50);
 
 
@@ -94,9 +94,6 @@ ObjNode	*newObj;
 	gNumEnemyOfKind[ENEMY_KIND_SKIPPY]++;
 	return(true);
 }
-
-
-
 
 
 /********************* MOVE SKIPPY **************************/
@@ -116,7 +113,7 @@ static	void(*myMoveTable[])(ObjNode *) =
 	}
 
 	GetObjectInfo(theNode);
-	
+
 	myMoveTable[theNode->Skeleton->AnimNum](theNode);
 }
 
@@ -138,22 +135,21 @@ float	r,s;
 
 
 			/* MOVE TOWARD PLAYER */
-			
-	TurnObjectTowardTarget(theNode, &gCoord, gMyCoord.x, gMyCoord.z, SKIPPY_TURN_SPEED, false);			
+
+	TurnObjectTowardTarget(theNode, &gCoord, gMyCoord.x, gMyCoord.z, SKIPPY_TURN_SPEED, false);
 	r = theNode->Rot.y;
 
 
-
 			/* SEE IF SPEED BOOST */
-			
+
 	if (theNode->SpeedBoost)
 	{
 		theNode->SpeedBoost = false;
-		theNode->Speed = 400;	
+		theNode->Speed = 400;
 	}
-	
+
 			/* CALC SPEED DELTAS */
-			
+
 	theNode->Speed -= fps * 500.0f;
 	if (theNode->Speed < 0.0f)
 		theNode->Speed  = 0.0;
@@ -161,16 +157,15 @@ float	r,s;
 
 	gDelta.x = -sin(r) * s;
 	gDelta.z = -cos(r) * s;
-	
-	
+
+
 			/* MOVE IT */
-	
+
 	gCoord.x += gDelta.x * fps;
-	gCoord.z += gDelta.z * fps;	
+	gCoord.z += gDelta.z * fps;
 	gCoord.y = SKIPPY_Y;
 
 
-	
 				/* DO ENEMY COLLISION */
 
 	if (DoEnemyCollisionDetect(theNode,DEFAULT_ENEMY_COLLISION_CTYPES))
@@ -178,15 +173,15 @@ float	r,s;
 
 
 			/* DONT ALLOW ON LAND */
-			
+
 	if (GetTerrainHeightAtCoord(gCoord.x, gCoord.z, FLOOR) > WATER_Y)
 	{
 		gCoord = theNode->OldCoord;
-		gDelta.x = gDelta.z = 0;	
+		gDelta.x = gDelta.z = 0;
 	}
 
-	UpdateSkippy(theNode);		
-	
+	UpdateSkippy(theNode);
+
 }
 
 
@@ -199,15 +194,14 @@ static void  MoveSkippy_Death(ObjNode *theNode)
 }
 
 
-
 /***************** UPDATE SKIPPY ********************/
 
 static void UpdateSkippy(ObjNode *theNode)
 {
-	UpdateEnemy(theNode);			
+	UpdateEnemy(theNode);
 
 		/* ADD WATER RIPPLE */
-			
+
 	theNode->RippleTimer += gFramesPerSecondFrac;
 	if (theNode->RippleTimer > .3f)
 	{
@@ -228,29 +222,29 @@ float			x,z,placement;
 
 			/* GET SPLINE INFO */
 
-	placement = itemPtr->placement;	
+	placement = itemPtr->placement;
 	GetCoordOnSpline(&(*gSplineList)[splineNum], placement, &x, &z);
 
 
 				/* MAKE DEFAULT SKELETON ENEMY */
-				
+
 	newObj = MakeEnemySkeleton(SKELETON_TYPE_SKIPPY,x,z, SKIPPY_SCALE);
 	if (newObj == nil)
 		return(false);
-		
+
 	DetachObject(newObj);									// detach this object from the linked list
-		
+
 	newObj->SplineItemPtr = itemPtr;
 	newObj->SplineNum = splineNum;
-	
+
 	SetSkeletonAnim(newObj->Skeleton, SKIPPY_ANIM_SWIM);
-	
+
 
 				/* SET BETTER INFO */
-			
+
 	newObj->StatusBits		|= STATUS_BIT_ONSPLINE;
 	newObj->SplinePlacement = placement;
-	newObj->Coord.y 		= WATER_Y;			
+	newObj->Coord.y 		= WATER_Y;
 	newObj->SplineMoveCall 	= MoveSkippyOnSpline;				// set move call
 	newObj->Health 			= SKIPPY_HEALTH;
 	newObj->Damage 			= SKIPPY_DAMAGE;
@@ -258,14 +252,13 @@ float			x,z,placement;
 	newObj->CType			|= CTYPE_SPIKED;
 
 
-	
 				/* SET COLLISION INFO */
-				
+
 	SetObjectCollisionBounds(newObj, 30,-60,-50,50,50,-50);
 
 
 			/* ADD SPLINE OBJECT TO SPLINE OBJECT LIST */
-			
+
 	AddToSplineObjectList(newObj);
 
 	return(true);
@@ -293,27 +286,27 @@ Boolean isVisible;
 			/***************************/
 			/* UPDATE STUFF IF VISIBLE */
 			/***************************/
-			
+
 	if (isVisible)
 	{
 		theNode->Rot.y = CalcYAngleFromPointToPoint(theNode->Rot.y, theNode->OldCoord.x, theNode->OldCoord.z,			// calc y rot aim
-												theNode->Coord.x, theNode->Coord.z);		
+												theNode->Coord.x, theNode->Coord.z);
 
 
 		UpdateObjectTransforms(theNode);																// update transforms
 		CalcObjectBoxFromNode(theNode);																	// update collision box
-		UpdateShadow(theNode);																			// update shadow		
-		
+		UpdateShadow(theNode);																			// update shadow
+
 				/* SEE IF CLOSE ENOUGH TO CHASE */
-				
+
 		if (CalcQuickDistance(theNode->Coord.x, theNode->Coord.z, gMyCoord.x, gMyCoord.z) < SKIPPY_CHASE_RANGE)
 		{
 					/* REMOVE FROM SPLINE */
-					
+
 			DetachEnemyFromSpline(theNode, MoveSkippy);
-		}		
+		}
 	}
-	
+
 			/* NOT VISIBLE */
 	else
 	{
@@ -332,31 +325,23 @@ Boolean isVisible;
 Boolean KillSkippy(ObjNode *theNode)
 {
 		/* IF ON SPLINE, DETACH */
-		
+
 	DetachEnemyFromSpline(theNode, MoveSkippy);
 
 
 			/* DEACTIVATE */
-			
+
 	theNode->TerrainItemPtr = nil;									// dont ever come back
 	theNode->CType = CTYPE_MISC;
-	
+
 		/* DO DEATH ANIM */
-			
+
 	if (theNode->Skeleton->AnimNum != SKIPPY_ANIM_DEATH)
 		SetSkeletonAnim(theNode->Skeleton, SKIPPY_ANIM_DEATH);
-		
-	theNode->Delta.x = theNode->Delta.y = theNode->Delta.z = 0;	
-	
+
+	theNode->Delta.x = theNode->Delta.y = theNode->Delta.z = 0;
+
 	return(false);
 }
-
-
-
-
-
-
-
-
 
 

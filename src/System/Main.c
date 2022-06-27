@@ -209,7 +209,6 @@ static const TQ3ColorRGBA	gLevelClearColorWithCyc[NUM_LEVEL_TYPES] =
 };
 
 
-
 //======================================================================================
 //======================================================================================
 //======================================================================================
@@ -224,7 +223,7 @@ void ToolBoxInit(void)
 	gMainAppRezFile = CurResFile();
 
 		/* FIRST VERIFY SYSTEM BEFORE GOING TOO FAR */
-				
+
 	VerifySystem();
 
 	InitPrefs();
@@ -236,8 +235,8 @@ void InitPrefs(void)
 {
 	memset(&gGamePrefs, 0, sizeof(PrefsType));
 
-	gGamePrefs.easyMode				= false;	
-	gGamePrefs.playerRelativeKeys	= false;	
+	gGamePrefs.easyMode				= false;
+	gGamePrefs.playerRelativeKeys	= false;
 	gGamePrefs.fullscreen			= true;
 	gGamePrefs.lowDetail			= false;
 	gGamePrefs.mouseSensitivityLevel= DEFAULT_MOUSE_SENSITIVITY_LEVEL;
@@ -245,7 +244,7 @@ void InitPrefs(void)
 	gGamePrefs.force4x3AspectRatio	= false;
 	gGamePrefs.antialiasingLevel	= 0;
 
-	LoadPrefs(&gGamePrefs);							// attempt to read from prefs file		
+	LoadPrefs(&gGamePrefs);							// attempt to read from prefs file
 }
 
 #pragma mark -
@@ -258,7 +257,7 @@ static void PlayGame(void)
 			/***********************/
 			/* GAME INITIALIZATION */
 			/***********************/
-			
+
 	InitInventoryForGame();
 	gGameOverFlag = false;
 
@@ -266,7 +265,7 @@ static void PlayGame(void)
 			/* CHEAT: LET USER SELECT STARTING LEVEL & AREA */
 
 	UpdateInput();
-	
+
 	if (GetKeyState_SDL(SDL_SCANCODE_F10))				// see if do level cheat
 	{
 		if (!DoLevelSelect())
@@ -282,22 +281,22 @@ static void PlayGame(void)
 			//
 			// Note: gRealLevel is already set if restoring a saved game
 			//
-					
+
 	for (; gRealLevel < NUM_LEVELS; gRealLevel++)
 	{
 			/* GET LEVEL TYPE & AREA FOR THIS LEVEL */
 
 		gLevelType = gLevelTable[gRealLevel].levelType;
 		gAreaNum = gLevelTable[gRealLevel].areaNum;
-		
+
 
 			/* PLAY THIS AREA */
-		
+
 		ShowLevelIntroScreen();
 		InitArea();
 
 		gRestoringSavedGame = false;				// we dont need this anymore
-		
+
 		PlayArea();
 
 
@@ -305,32 +304,31 @@ static void PlayGame(void)
 
 		GammaFadeOut(true);
 		CleanupLevel();
-		GameScreenToBlack();		
-		
+		GameScreenToBlack();
+
 		if (gGameOverFlag)
 			goto game_over;
-			
+
 		/* DO END-LEVEL BONUS SCREEN */
-			
+
 		DoBonusScreen();
 	}
-	
+
 			/*************/
 			/* GAME OVER */
 			/*************/
 game_over:
 			/* PLAY WIN MOVIE */
-	
+
 	if (gWonGameFlag)
 		DoWinScreen();
-	
+
 			/* PLAY LOSE MOVIE */
 	else
 		DoLoseScreen();
 
 	ShowHighScoresScreen(gScore);
 }
-
 
 
 /**************** PLAY AREA ************************/
@@ -341,7 +339,7 @@ float killDelay = KILL_DELAY;						// time to wait after I'm dead before fading 
 float fps;
 
 	CaptureMouse(true);
-	
+
 	UpdateInput();
 	QD3D_CalcFramesPerSecond();						// prime this
 	QD3D_CalcFramesPerSecond();
@@ -365,22 +363,22 @@ float fps;
 
 				/* SPECIFIC MAINTENANCE */
 
-		CheckPlayerMorph();				
+		CheckPlayerMorph();
 		UpdateLiquidAnimation();
 		UpdateHoneyTubeTextureAnimation();
 		UpdateRootSwings();
-		
-	
+
+
 				/* MOVE OBJECTS */
-				
+
 		MoveObjects();
 		MoveSplineObjects();
 		QD3D_MoveParticles();
 		MoveParticleGroups();
 		UpdateCamera();
-	
+
 			/* DRAW OBJECTS & TERRAIN */
-					
+
 		UpdateInfobar();
 
 		DoMyTerrainUpdate();
@@ -399,8 +397,8 @@ float fps;
 			CaptureMouse(true);
 		}
 
-			/* SEE IF GAME ENDED */				
-		
+			/* SEE IF GAME ENDED */
+
 		if (gGameOverFlag)
 			break;
 
@@ -412,15 +410,15 @@ float fps;
 		}
 
 			/* CHECK FOR CHEATS */
-			
+
 		CheckForCheats();
-					
-			
+
+
 			/* SEE IF GOT KILLED */
-				
+
 		if (gPlayerGotKilledFlag)				// if got killed, then hang around for a few seconds before resetting player
 		{
-			killDelay -= fps;					
+			killDelay -= fps;
 			if (killDelay < 0.0f)				// see if time to reset player
 			{
 				killDelay = KILL_DELAY;			// reset kill timer for next death
@@ -429,9 +427,9 @@ float fps;
 					break;
 			}
 			ResetInputState();
-		}	
+		}
 	}
-	
+
 	CaptureMouse(false);
 }
 
@@ -457,17 +455,17 @@ QD3DSetupInputType	viewDef;
 
 	gDoCeiling				= gLevelHasCeiling[gLevelType];
 	gSuperTileActiveRange	= gLevelSuperTileActiveRange[gLevelType];
-	
-		
+
+
 	gAmbientColor 			= gLevelLightColors[gLevelType][0];
 	gFillColor1 			= gLevelLightColors[gLevelType][1];
 	gFillColor2 			= gLevelLightColors[gLevelType][2];
 	gLightDirection1 		= gLensFlareVector[gLevelType];		// get direction of light 0 for lense flare
 	Q3Vector3D_Normalize(&gLightDirection1,&gLightDirection1);
-	
+
 	gBestCheckPoint			= -1;								// no checkpoint yet
 
-		
+
 	if (gSuperTileActiveRange == 5)								// set yon clipping value
 	{
 		gCurrentYon = YON_DISTANCE + 1700;
@@ -478,7 +476,6 @@ QD3DSetupInputType	viewDef;
 		gCurrentYon = YON_DISTANCE;
 		gCycScale = 50;
 	}
-
 
 
 	if (gDoAutoFade)
@@ -492,17 +489,17 @@ QD3DSetupInputType	viewDef;
 			/*************/
 
 //	GameScreenToBlack();
-	
+
 
 			/* SETUP VIEW DEF */
-			
+
 	QD3D_NewViewDef(&viewDef);
-	
+
 	viewDef.camera.hither 			= HITHER_DISTANCE;
 	viewDef.camera.yon 				= gCurrentYon;
-	
+
 	viewDef.camera.fov 				= 1.1;
-	
+
 	viewDef.view.paneClip.top		=	62;
 	viewDef.view.paneClip.bottom	=	gGamePrefs.showBottomBar ? 60 : 0;
 	viewDef.view.paneClip.left		=	0;
@@ -510,9 +507,9 @@ QD3DSetupInputType	viewDef;
 
 	viewDef.view.clearColor 	= gLevelFogColor[gLevelType];	// set clear & fog color
 
-	
+
 			/* SET LIGHTS */
-			
+
 
 	if (gDoCeiling)
 	{
@@ -524,7 +521,7 @@ QD3DSetupInputType	viewDef;
 	}
 	else
 	{
-		viewDef.lights.numFillLights 	= 2;	
+		viewDef.lights.numFillLights 	= 2;
 		gLightDirection2.x = -.2;
 		gLightDirection2.y = -.7;
 		gLightDirection2.z = -.1;
@@ -539,19 +536,19 @@ QD3DSetupInputType	viewDef;
 	viewDef.lights.fillDirection[1] 	= gLightDirection2;
 	viewDef.lights.fillBrightness[0] 	= 1.1;
 	viewDef.lights.fillBrightness[1] 	= .5;
-	
+
 	viewDef.lights.ambientColor 	= gAmbientColor;
 	viewDef.lights.fillColor[0] 	= gFillColor1;
 	viewDef.lights.fillColor[1] 	= gFillColor2;
-	
-	
+
+
 			/* SET FOG */
-			
+
 	viewDef.lights.useFog 		= true;
 	viewDef.lights.fogColor		= gLevelFogColor[gLevelType];
 	viewDef.lights.fogStart 	= gLevelFogStart[gLevelType];
 	viewDef.lights.fogEnd	 	= gLevelFogEnd[gLevelType];
-	viewDef.lights.fogDensity 	= 1.0;	
+	viewDef.lights.fogDensity 	= 1.0;
 	viewDef.lights.fogMode		= kQ3FogModePlaneBasedLinear;  // Source port note: plane-based linear fog accurately reproduces fog rendering on real Macs
 
 	// Source port addition: camouflage seam in sky with custom clear color that roughly matches top of cyc
@@ -560,19 +557,19 @@ QD3DSetupInputType	viewDef;
 		viewDef.lights.useCustomFogColor = true;	// need this so fog color will be different from clear color
 		viewDef.view.clearColor = gLevelClearColorWithCyc[gLevelType];
 	}
-	
+
 //	if (gUseCyclorama && (gLevelType != LEVEL_TYPE_FOREST) && (gLevelType != LEVEL_TYPE_NIGHT))
 //		viewDef.view.dontClear		= true;
 
-		
+
 	QD3D_SetupWindow(&viewDef, &gGameViewInfoPtr);
 
-	
+
 			/**********************/
 			/* LOAD ART & TERRAIN */
 			/**********************/
-			
-	LoadLevelArt();			
+
+	LoadLevelArt();
 
 
 				/* INIT FLAGS */
@@ -582,35 +579,35 @@ QD3DSetupInputType	viewDef;
 	gWonGameFlag = false;
 
 		/* DRAW INITIAL INFOBAR */
-				
+
 	InitInventoryForArea();					// must call after terrain is loaded!!
-	InitInfobar();			
-	
+	InitInfobar();
+
 
 			/* INIT OTHER MANAGERS */
 
-	CreateSuperTileMemoryList();	
-	
-	QD3D_InitParticles();	
+	CreateSuperTileMemoryList();
+
+	QD3D_InitParticles();
 	InitParticleSystem();
 	InitItemsManager();
 
-		
+
 		/* INIT THE PLAYER */
-			
+
 	InitPlayerAtStartOfLevel();
-	InitEnemyManager();	
-						
+	InitEnemyManager();
+
 			/* INIT CAMERA */
-			
+
 	InitCamera();
-	
+
 			/* PREP THE TERRAIN */
-			
+
 	PrimeInitialTerrain(false);
 
 			/* INIT BACKGROUND */
-			
+
 	if (gUseCyclorama)
 		CreateCyclorama();
  }
@@ -646,8 +643,6 @@ static void CleanupLevel(void)
 }
 
 
-
-
 /************************* DO DEATH RESET ******************************/
 //
 // Called from above when player is killed.
@@ -657,7 +652,7 @@ static void DoDeathReset(void)
 {
 
 			/* SEE IF THAT WAS THE LAST LIFE */
-			
+
 	gNumLives--;
 	gInfobarUpdateBits |= UPDATE_LIVES;
 	if (gNumLives <= 0)
@@ -669,22 +664,21 @@ static void DoDeathReset(void)
 			/* FADE OUT IF WE HAVE MORE LIVES */
 
 	GammaFadeOut(false);
-	
+
 
 			/* RESET THE PLAYER & CAMERA INFO */
-				
+
 	ResetPlayer();
 	InitCamera();
-	
-	
+
+
 		/* RESET TERRAIN SCROLL AT LAST CHECKPOINT */
-		
+
 	InitCurrentScrollSettings();
 	PrimeInitialTerrain(true);
-	
+
 	MakeFadeEvent(true);
 }
-
 
 
 /******************** CHECK FOR CHEATS ************************/
@@ -702,14 +696,14 @@ static void CheckForCheats(void)
 			gShieldTimer = SHIELD_TIME;
 
 		if (GetKeyState_SDL(SDL_SCANCODE_F3))	// get full health
-			GetHealth(1.0);							
-			
+			GetHealth(1.0);
+
 		if (GetKeyState_SDL(SDL_SCANCODE_F4))	// get full ball-time
 		{
 			gBallTimer = 1.0f;
-			gInfobarUpdateBits |= UPDATE_TIMER;	
-		}	
-		
+			gInfobarUpdateBits |= UPDATE_TIMER;
+		}
+
 		if (GetKeyState_SDL(SDL_SCANCODE_F5))	// get full inventory
 		{
 			GetMoney();
@@ -789,7 +783,6 @@ static void CheckDebugShortcutKeysOnBoot(void)
 }
 
 
-
 #pragma mark -
 
 /************************************************************/
@@ -817,15 +810,15 @@ unsigned long	someLong;
 	InitTerrainManager();
 	InitSkeletonManager();
 	InitSoundTools();
-	Init3DMFManager();	
+	Init3DMFManager();
 	InitFenceManager();
 
 
 			/* INIT MORE MY STUFF */
-					
+
 	InitObjectManager();
 	LoadInfobarArt();
-	
+
 	GetDateTime ((unsigned long *)(&someLong));		// init random seed
 	SetMyRandomSeed(someLong);
 
@@ -841,19 +834,18 @@ unsigned long	someLong;
 
 
 		/* MAIN LOOP */
-			
+
 	while(true)
 	{
 		DoTitleScreen();
 		if (DoMainMenu())
 			continue;
-		
+
 		PlayGame();
 	}
-	
-	
+
+
 	return(0);
 }
-
 
 

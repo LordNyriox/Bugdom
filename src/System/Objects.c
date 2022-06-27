@@ -32,10 +32,10 @@ static void FlushObjectDeleteQueue(int queueID);
 
 											// OBJECT LIST
 ObjNode		*gFirstNodePtr = nil;
-					
+
 ObjNode		*gCurrentNode,*gMostRecentlyAddedNode,*gNextNode;
-			
-										
+
+
 NewObjectDefinitionType	gNewObjectDefinition;
 
 TQ3Point3D	gCoord;
@@ -65,11 +65,11 @@ void InitObjectManager(void)
 
 				/* INIT LINKED LIST */
 
-															
+
 	gCurrentNode = nil;
-	
+
 					/* CLEAR ENTIRE OBJECT LIST */
-		
+
 	gFirstNodePtr = nil;									// no node yet
 }
 
@@ -92,7 +92,7 @@ ObjNode	*newNodePtr;
 		scale = 0.0001f;
 
 				/* INITIALIZE NEW NODE */
-	
+
 	newNodePtr = (ObjNode*) NewPtrClear(sizeof(ObjNode));	// source port change: use NewPtrClear so all fields start at 0
 	GAME_ASSERT(newNodePtr);
 
@@ -132,12 +132,12 @@ ObjNode	*newNodePtr;
 		newNodePtr->MoveCall = newObjDef->moveCall;			// save move routine
 
 				/* INSERT NODE INTO LINKED LIST */
-				
+
 	newNodePtr->StatusBits |= STATUS_BIT_DETACHED;		// its not attached to linked list yet
 	AttachObject(newNodePtr);
 
 				/* CLEANUP */
-				
+
 	gMostRecentlyAddedNode = newNodePtr;					// remember this
 	return(newNodePtr);
 }
@@ -154,17 +154,17 @@ ObjNode	*newObj;
 Byte	group,type;
 
 	newObjDef->genre = DISPLAY_GROUP_GENRE;
-	
-	newObj = MakeNewObject(newObjDef);		
+
+	newObj = MakeNewObject(newObjDef);
 	if (newObj == nil)
 		return(nil);
 
 			/* MAKE BASE GROUP & ADD GEOMETRY TO IT */
-	
+
 	CreateBaseGroup(newObj);											// create group object
 	group = newObjDef->group;											// get group #
 	type = newObjDef->type;												// get type #
-	
+
 	GAME_ASSERT(type < gNumObjectsInGroupList[group]);					// see if illegal
 
 	TQ3TriMeshFlatGroup* meshList = &gObjectGroupList[group][type];
@@ -176,10 +176,10 @@ Byte	group,type;
 
 
 			/* CALC RADIUS */
-			
-	newObj->BoundingSphere.origin.x = gObjectGroupRadiusList[group][type].origin.x * newObj->Scale.x;	
-	newObj->BoundingSphere.origin.y = gObjectGroupRadiusList[group][type].origin.y * newObj->Scale.y;	
-	newObj->BoundingSphere.origin.z = gObjectGroupRadiusList[group][type].origin.z * newObj->Scale.z;	
+
+	newObj->BoundingSphere.origin.x = gObjectGroupRadiusList[group][type].origin.x * newObj->Scale.x;
+	newObj->BoundingSphere.origin.y = gObjectGroupRadiusList[group][type].origin.y * newObj->Scale.y;
+	newObj->BoundingSphere.origin.z = gObjectGroupRadiusList[group][type].origin.z * newObj->Scale.z;
 	newObj->BoundingSphere.radius = gObjectGroupRadiusList[group][type].radius * newObj->Scale.x;
 
 	return(newObj);
@@ -193,17 +193,16 @@ ObjNode *MakeNewCustomDrawObject(NewObjectDefinitionType *newObjDef, TQ3Bounding
 ObjNode	*newObj;
 
 	newObjDef->genre = CUSTOM_GENRE;
-	
-	newObj = MakeNewObject(newObjDef);		
+
+	newObj = MakeNewObject(newObjDef);
 	if (newObj == nil)
 		return(nil);
-			
-	newObj->BoundingSphere = *cullSphere;	
+
+	newObj->BoundingSphere = *cullSphere;
 	newObj->CustomDrawFunction = drawFunc;
-	
+
 	return(newObj);
 }
-
 
 
 /************************* ADD GEOMETRY TO DISPLAY GROUP OBJECT ***********************/
@@ -240,7 +239,6 @@ void AttachGeometryToDisplayGroupObject(ObjNode* theNode, int numMeshes, TQ3TriM
 }
 
 
-
 /***************** CREATE BASE GROUP **********************/
 //
 // The base group contains the base transform matrix plus any other objects you want to add into it.
@@ -258,14 +256,14 @@ TQ3Matrix4x4			transMatrix,scaleMatrix,rotMatrix;
 	theNode->NumMeshes = 0;
 
 					/* SETUP BASE MATRIX */
-			
+
 	if ((theNode->Scale.x == 0) || (theNode->Scale.y == 0) || (theNode->Scale.z == 0))
 		DoFatalAlert("CreateBaseGroup: A scale component == 0");
-		
-			
+
+
 	Q3Matrix4x4_SetScale(&scaleMatrix, theNode->Scale.x, theNode->Scale.y,		// make scale matrix
 							theNode->Scale.z);
-			
+
 	Q3Matrix4x4_SetRotate_XYZ(&rotMatrix, theNode->Rot.x, theNode->Rot.y,		// make rotation matrix
 								 theNode->Rot.z);
 
@@ -280,7 +278,6 @@ TQ3Matrix4x4			transMatrix,scaleMatrix,rotMatrix;
 						 &transMatrix,
 						 &theNode->BaseTransformMatrix);
 }
-
 
 
 //============================================================================================================
@@ -300,18 +297,18 @@ ObjNode		*thisNodePtr;
 		return;
 
 	thisNodePtr = gFirstNodePtr;
-	
+
 	do
 	{
 		gCurrentNode = thisNodePtr;							// set current object node
 		gNextNode	 = thisNodePtr->NextNode;				// get next node now (cuz current node might get deleted)
-			
-	
+
+
 		KeepOldCollisionBoxes(thisNodePtr);					// keep old box
-		
-			
+
+
 				/* UPDATE ANIMATION */
-				
+
 		if (thisNodePtr->StatusBits & STATUS_BIT_ANIM)
 			UpdateSkeletonAnimation(thisNodePtr);
 
@@ -327,18 +324,15 @@ ObjNode		*thisNodePtr;
 	while (thisNodePtr != nil);
 
 
-
 			/* CALL SOUND MAINTENANCE HERE FOR CONVENIENCE */
-			
+
 	DoSoundMaintenance();
-	
+
 			/* FLUSH THE DELETE QUEUE */
 
 	gObjectDeleteQueueFlipFlop = !gObjectDeleteQueueFlipFlop;
 	FlushObjectDeleteQueue(gObjectDeleteQueueFlipFlop);
 }
-
-
 
 
 /**************************** DRAW OBJECTS ***************************/
@@ -353,20 +347,20 @@ float			cameraX, cameraZ;
 		return;
 
 				/* FIRST DO OUR CULLING */
-				
+
 	CheckAllObjectsInConeOfVision();
-	
+
 	theNode = gFirstNodePtr;
 
-	
+
 			/* GET CAMERA COORDS */
-			
+
 	cameraX = setupInfo->currentCameraCoords.x;
 	cameraZ = setupInfo->currentCameraCoords.z;
-	
+
 			/***********************/
 			/* MAIN NODE TASK LOOP */
-			/***********************/			
+			/***********************/
 	do
 	{
 		statusBits = theNode->StatusBits;						// get obj's status bits
@@ -420,7 +414,7 @@ float			cameraX, cameraZ;
 							&theNode->RenderModifiers,
 							&theNode->Coord);
 					break;
-			
+
 			case	DISPLAY_GROUP_GENRE:
 					Render_SubmitMeshList(
 							theNode->NumMeshes,
@@ -429,7 +423,7 @@ float			cameraX, cameraZ;
 							&theNode->RenderModifiers,
 							&theNode->Coord);
 					break;
-					
+
 			case	CUSTOM_GENRE:
 					if (theNode->CustomDrawFunction)
 					{
@@ -439,7 +433,7 @@ float			cameraX, cameraZ;
 		}
 
 
-			/* NEXT NODE */		
+			/* NEXT NODE */
 next:
 		theNode = (ObjNode *)theNode->NextNode;
 	}while (theNode != nil);
@@ -449,7 +443,7 @@ next:
 /********************* MOVE STATIC OBJECT **********************/
 
 void MoveStaticObject(ObjNode *theNode)
-{		
+{
 
 	if (TrackTerrainItem(theNode))							// just check to see if it's gone
 	{
@@ -459,7 +453,6 @@ void MoveStaticObject(ObjNode *theNode)
 
 	UpdateShadow(theNode);										// prime it
 }
-
 
 
 //============================================================================================================
@@ -513,13 +506,13 @@ void DeleteObject(ObjNode	*theNode)
 
 
 			/* SEE IF NEED TO FREE UP SPECIAL MEMORY */
-			
+
 	if (theNode->Genre == SKELETON_GENRE)
 	{
 		FreeSkeletonBaseData(theNode->Skeleton);	// purge all alloced memory for skeleton data
 		theNode->Skeleton = nil;
 	}
-	
+
 	if (theNode->CollisionBoxes != nil)				// free collision box memory
 	{
 		DisposePtr((Ptr)theNode->CollisionBoxes);
@@ -567,13 +560,13 @@ void DeleteObject(ObjNode	*theNode)
 
 
 			/* SEE IF MARK AS NOT-IN-USE IN ITEM LIST */
-			
+
 	if (theNode->TerrainItemPtr)
 		theNode->TerrainItemPtr->flags &= ~ITEM_FLAGS_INUSE;		// clear the "in use" flag
-		
-		
+
+
 		/* OR, IF ITS A SPLINE ITEM, THEN UPDATE SPLINE OBJECT LIST */
-		
+
 	if (theNode->StatusBits & STATUS_BIT_ONSPLINE)
 	{
 		RemoveFromSplineObjectList(theNode);
@@ -619,7 +612,7 @@ void DetachObject(ObjNode *theNode)
 
 	if (theNode->PrevNode == nil)					// special case 1st node
 	{
-		gFirstNodePtr = theNode->NextNode;	
+		gFirstNodePtr = theNode->NextNode;
 		if (gFirstNodePtr)
 			gFirstNodePtr->PrevNode = nil;
 	}
@@ -633,11 +626,11 @@ void DetachObject(ObjNode *theNode)
 		theNode->PrevNode->NextNode = theNode->NextNode;
 		theNode->NextNode->PrevNode = theNode->PrevNode;
 	}
-	
+
 	theNode->PrevNode = nil;						// seal links on original node
 	theNode->NextNode = nil;
-	
-	theNode->StatusBits |= STATUS_BIT_DETACHED;	
+
+	theNode->StatusBits |= STATUS_BIT_DETACHED;
 }
 
 
@@ -662,10 +655,10 @@ short	slot;
 		theNode->PrevNode = nil;
 		theNode->NextNode = nil;
 	}
-	
+
 			/* INSERT AS FIRST NODE */
 	else
-	if (slot < gFirstNodePtr->Slot)					
+	if (slot < gFirstNodePtr->Slot)
 	{
 		theNode->PrevNode = nil;					// no prev
 		theNode->NextNode = gFirstNodePtr; 			// next pts to old 1st
@@ -676,10 +669,10 @@ short	slot;
 	else
 	{
 		ObjNode	 *reNodePtr, *scanNodePtr;
-		
+
 		reNodePtr = gFirstNodePtr;
 		scanNodePtr = gFirstNodePtr->NextNode;		// start scanning for insertion slot on 2nd node
-			
+
 		while (scanNodePtr != nil)
 		{
 			if (slot < scanNodePtr->Slot)					// INSERT IN MIDDLE HERE
@@ -687,21 +680,21 @@ short	slot;
 				theNode->NextNode = scanNodePtr;
 				theNode->PrevNode = reNodePtr;
 				reNodePtr->NextNode = theNode;
-				scanNodePtr->PrevNode = theNode;			
+				scanNodePtr->PrevNode = theNode;
 				goto out;
 			}
 			reNodePtr = scanNodePtr;
 			scanNodePtr = scanNodePtr->NextNode;			// try next node
 		} 
-	
+
 		theNode->NextNode = nil;							// TAG TO END
 		theNode->PrevNode = reNodePtr;
-		reNodePtr->NextNode = theNode;		
+		reNodePtr->NextNode = theNode;
 	}
-out:	
-	
-	
-	theNode->StatusBits &= ~STATUS_BIT_DETACHED;	
+out:
+
+
+	theNode->StatusBits &= ~STATUS_BIT_DETACHED;
 }
 
 
@@ -716,8 +709,6 @@ static void FlushObjectDeleteQueue(int qid)
 
 	gNumObjsInDeleteQueue[qid] = 0;
 }
-
-
 
 
 //============================================================================================================
@@ -742,7 +733,7 @@ void UpdateObject(ObjNode *theNode)
 {
 	if (theNode->CType == INVALID_NODE_FLAG)		// see if already deleted
 		return;
-		
+
 	theNode->Coord = gCoord;
 	theNode->Delta = gDelta;
 	UpdateObjectTransforms(theNode);
@@ -751,10 +742,9 @@ void UpdateObject(ObjNode *theNode)
 
 
 		/* UPDATE ANY SHADOWS */
-				
-	UpdateShadow(theNode);		
-}
 
+	UpdateShadow(theNode);
+}
 
 
 /****************** UPDATE OBJECT TRANSFORMS *****************/
@@ -775,21 +765,21 @@ TQ3Matrix4x4	m,m2;
 
 	Q3Matrix4x4_SetScale(&m, theNode->Scale.x,	theNode->Scale.y, theNode->Scale.z);
 
-	
+
 			/*****************************/
 			/* NOW ROTATE & TRANSLATE IT */
 			/*****************************/
-	
+
 				/* DO XZY ROTATION */
-						
+
 	if (theNode->StatusBits & STATUS_BIT_ROTXZY)
 	{
 		TQ3Matrix4x4	mx,my,mz,mxz;
-		
-		Q3Matrix4x4_SetRotate_X(&mx, theNode->Rot.x);	
-		Q3Matrix4x4_SetRotate_Y(&my, theNode->Rot.y);	
-		Q3Matrix4x4_SetRotate_Z(&mz, theNode->Rot.z);	
-	
+
+		Q3Matrix4x4_SetRotate_X(&mx, theNode->Rot.x);
+		Q3Matrix4x4_SetRotate_Y(&my, theNode->Rot.y);
+		Q3Matrix4x4_SetRotate_Z(&mz, theNode->Rot.z);
+
 		MatrixMultiplyFast(&mx,&mz, &mxz);
 		MatrixMultiplyFast(&mxz,&my, &m2);
 	}
@@ -798,15 +788,13 @@ TQ3Matrix4x4	m,m2;
 	{
 		Q3Matrix4x4_SetRotate_XYZ(&m2, theNode->Rot.x, theNode->Rot.y, theNode->Rot.z);
 	}
-	
+
 	m2.value[3][0] = theNode->Coord.x;
 	m2.value[3][1] = theNode->Coord.y;
 	m2.value[3][2] = theNode->Coord.z;
-	
+
 	MatrixMultiplyFast(&m,&m2, &theNode->BaseTransformMatrix);
 }
-
-
 
 
 /********************* MAKE OBJECT TRANSPARENT ***********************/
@@ -832,7 +820,7 @@ int	n,i;
 CollisionBoxType	*c;
 float			left,right,top,bottom,front,back;
 
-	n = theNode->NumCollisionBoxes;							// get # collision boxes	
+	n = theNode->NumCollisionBoxes;							// get # collision boxes
 	c = theNode->CollisionBoxes;							// pt to array
 	if (c == nil)
 		return;

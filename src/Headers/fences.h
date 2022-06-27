@@ -20,8 +20,8 @@ typedef struct
 {
 	u_short			type;				// type of fence
 	short			numNubs;			// # nubs in fence
-	FencePointType	**nubList;			// handle to nub list	
-	RectF			bBox;				// bounding box of fence area	
+	FencePointType	**nubList;			// handle to nub list
+	RectF			bBox;				// bounding box of fence area
 	TQ3Vector2D		*sectionVectors;	// for each section/span, this is the vector from nub(n) to nub(n+1)
 }FenceDefType;
 

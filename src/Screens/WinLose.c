@@ -66,7 +66,7 @@ void DoWinScreen(void)
 			/*********/
 			/* SETUP */
 			/*********/
-			
+
 	KillSong();
 	SetupWinScreen();
 	PlaySong(SONG_WIN,false);
@@ -77,17 +77,17 @@ void DoWinScreen(void)
 		/**************/
 		/* PROCESS IT */
 		/**************/
-				
-	WaitAndDraw(29, false);	
+
+	WaitAndDraw(29, false);
 	MakeFadeEvent(false);
-	WaitAndDraw(1, false);	
-	
+	WaitAndDraw(1, false);
+
 			/* CLEANUP */
 
 	DeleteAllObjects();
 	FreeAllSkeletonFiles(-1);
 	DeleteAll3DMFGroups();
-	QD3D_DisposeWindowSetup(&gGameViewInfoPtr);		
+	QD3D_DisposeWindowSetup(&gGameViewInfoPtr);
 	Pomme_FlushPtrTracking(true);
 }
 
@@ -137,14 +137,14 @@ static const TQ3Point2D po[4] =
 			/*************/
 
 	QD3D_NewViewDef(&viewDef);
-	
+
 	viewDef.camera.hither 			= 20;
 	viewDef.camera.yon 				= 3000;		// Source port mod (was 2000) so fog doesn't kick in
 	viewDef.camera.fov 				= 1.1;
 	viewDef.styles.usePhong 		= false;
 	viewDef.camera.from				= cameraFrom;
 	viewDef.camera.to	 			= cameraTo;
-	
+
 	viewDef.lights.numFillLights 	= 1;
 	viewDef.lights.ambientBrightness = 0.4;
 	viewDef.lights.fillDirection[0] = fillDirection1;
@@ -153,34 +153,34 @@ static const TQ3Point2D po[4] =
 	viewDef.lights.fillColor[1] 	= lightColor;
 	viewDef.lights.fillBrightness[0] = 1.0;
 	viewDef.lights.fillBrightness[1] = .4;
-	
-	
+
+
 	viewDef.view.clearColor.r = .9;
 	viewDef.view.clearColor.g = .9;
 	viewDef.view.clearColor.b = .8;
-		
+
 	QD3D_SetupWindow(&viewDef, &gGameViewInfoPtr);
 
 			/************/
 			/* LOAD ART */
 			/************/
-			
+
 	LoadASkeleton(SKELETON_TYPE_LADYBUG);
 	LoadASkeleton(SKELETON_TYPE_ME);
 	LoadASkeleton(SKELETON_TYPE_KINGANT);
-			
+
 	FSMakeFSSpec(gDataSpec.vRefNum, gDataSpec.parID, ":models:WinLose.3dmf", &spec);
-	LoadGrouped3DMF(&spec,MODEL_GROUP_MENU);	
+	LoadGrouped3DMF(&spec,MODEL_GROUP_MENU);
 
 
 			/*******************/
 			/* MAKE BACKGROUND */
 			/*******************/
-			
+
 			/* THRONE ROOM */
-				
-	gNewObjectDefinition.group 		= MODEL_GROUP_BONUS;	
-	gNewObjectDefinition.type 		= WINLOSE_MObjType_WinRoom;	
+
+	gNewObjectDefinition.group 		= MODEL_GROUP_BONUS;
+	gNewObjectDefinition.type 		= WINLOSE_MObjType_WinRoom;
 	gNewObjectDefinition.coord.x	= 0;
 	gNewObjectDefinition.coord.y	= 0;
 	gNewObjectDefinition.coord.z	= 1000;
@@ -193,9 +193,9 @@ static const TQ3Point2D po[4] =
 
 
 			/* PLAYER BUG */
-			
+
 	gNewObjectDefinition.type 		= SKELETON_TYPE_ME;
-	gNewObjectDefinition.animNum 	= PLAYER_ANIM_SITONTHRONE;							
+	gNewObjectDefinition.animNum 	= PLAYER_ANIM_SITONTHRONE;
 	gNewObjectDefinition.coord.x 	= 0;
 	gNewObjectDefinition.coord.y 	= 135;
 	gNewObjectDefinition.coord.z 	= -30;
@@ -204,33 +204,33 @@ static const TQ3Point2D po[4] =
 	gNewObjectDefinition.moveCall 	= nil;
 	gNewObjectDefinition.rot 		= PI;
 	gNewObjectDefinition.scale 		= 1.6;
-	MakeNewSkeletonObject(&gNewObjectDefinition);			
-	
-	
+	MakeNewSkeletonObject(&gNewObjectDefinition);
+
+
 			/* LADY BUGS */
-	
+
 	for (i = 0; i < 12; i++)
 	{
 		gNewObjectDefinition.type 		= SKELETON_TYPE_LADYBUG;
-		gNewObjectDefinition.animNum 	= 3;							
+		gNewObjectDefinition.animNum 	= 3;
 		gNewObjectDefinition.coord		= lbCoord[i];
 		gNewObjectDefinition.flags 		= 0;
 		gNewObjectDefinition.slot 		= 100;
 		gNewObjectDefinition.moveCall 	= nil;
 		gNewObjectDefinition.rot 		= lbRot[i];
 		gNewObjectDefinition.scale 		= .9;
-		newObj = MakeNewSkeletonObject(&gNewObjectDefinition);			
+		newObj = MakeNewSkeletonObject(&gNewObjectDefinition);
 		newObj->Skeleton->CurrentAnimTime = RandomFloat()*newObj->Skeleton->MaxAnimTime;	// random time index start
-	}	
-	
+	}
+
 		/******************/
 		/* KING IN CAGE */
 		/******************/
-	
+
 			/* KING */
-			
+
 	gNewObjectDefinition.type 		= SKELETON_TYPE_KINGANT;
-	gNewObjectDefinition.animNum 	= 0;	
+	gNewObjectDefinition.animNum 	= 0;
 	gNewObjectDefinition.coord.x 	= CAGE_X;
 	gNewObjectDefinition.coord.y 	= CAGE_Y + 80;
 	gNewObjectDefinition.coord.z 	= CAGE_Z;
@@ -239,14 +239,14 @@ static const TQ3Point2D po[4] =
 	gNewObjectDefinition.moveCall 	= nil;
 	gNewObjectDefinition.rot 		= PI;
 	gNewObjectDefinition.scale 		= .6;
-	MakeNewSkeletonObject(&gNewObjectDefinition);			
+	MakeNewSkeletonObject(&gNewObjectDefinition);
 
 
 			/* CAGE */
 
 	scale = .2;
-	gNewObjectDefinition.group 		= MODEL_GROUP_BONUS;	
-	gNewObjectDefinition.type 		= WINLOSE_MObjType_Cage;	
+	gNewObjectDefinition.group 		= MODEL_GROUP_BONUS;
+	gNewObjectDefinition.type 		= WINLOSE_MObjType_Cage;
 	gNewObjectDefinition.coord.x 	= CAGE_X;
 	gNewObjectDefinition.coord.y 	= CAGE_Y;
 	gNewObjectDefinition.coord.z 	= CAGE_Z;
@@ -258,11 +258,11 @@ static const TQ3Point2D po[4] =
 
 
 			/* 4 POSTS */
-				
-	
+
+
 	for (i = 0; i < 4; i++)
 	{
-		gNewObjectDefinition.type 		= WINLOSE_MObjType_Post;	
+		gNewObjectDefinition.type 		= WINLOSE_MObjType_Post;
 		gNewObjectDefinition.coord.x 	= CAGE_X + (po[i].x * scale);
 		gNewObjectDefinition.coord.y 	= CAGE_Y;
 		gNewObjectDefinition.coord.z 	= CAGE_Z + (po[i].y * scale);
@@ -270,13 +270,12 @@ static const TQ3Point2D po[4] =
 		gNewObjectDefinition.rot 		= -PI/2 + (PI/2 * i);
 		MakeNewDisplayGroupObject(&gNewObjectDefinition);
 	}
-	
-	
+
+
 	MakeFadeEvent(true);
 }
 
 #pragma mark -
-
 
 
 /********************** DO LOSE SCREEN *************************/
@@ -287,7 +286,7 @@ void DoLoseScreen(void)
 			/*********/
 			/* SETUP */
 			/*********/
-			
+
 	KillSong();
 	SetupLoseScreen();
 	PlaySong(SONG_LOSE,false);
@@ -299,19 +298,19 @@ void DoLoseScreen(void)
 		/**************/
 		/* PROCESS IT */
 		/**************/
-				
-	WaitAndDraw(29, true);	
+
+	WaitAndDraw(29, true);
 	MakeFadeEvent(false);
-	WaitAndDraw(1, true);	
-				
-	
+	WaitAndDraw(1, true);
+
+
 			/* CLEANUP */
 
 	DeleteAllObjects();
 	DeleteAllParticleGroups();
 	FreeAllSkeletonFiles(-1);
 	DeleteAll3DMFGroups();
-	QD3D_DisposeWindowSetup(&gGameViewInfoPtr);		
+	QD3D_DisposeWindowSetup(&gGameViewInfoPtr);
 	Pomme_FlushPtrTracking(true);
 }
 
@@ -356,14 +355,14 @@ static const TQ3Point2D po[4] =
 	{ -430,-430 },	{ -430, 430 },
 	{  430, 430 },	{  430,-430 },
 };
-	
+
 
 			/*************/
 			/* MAKE VIEW */
 			/*************/
 
 	QD3D_NewViewDef(&viewDef);
-	
+
 	viewDef.camera.hither 			= 20;
 	viewDef.camera.yon 				= 2000;
 	viewDef.camera.fov 				= 1.1;
@@ -382,13 +381,13 @@ static const TQ3Point2D po[4] =
 	viewDef.lights.fillColor[1] 	= lightColor;
 	viewDef.lights.fillBrightness[0] = 1.0;
 	viewDef.lights.fillBrightness[1] = 1;
-	
-	
+
+
 	viewDef.view.clearColor.r = .8;
 	viewDef.view.clearColor.g = 0;
 	viewDef.view.clearColor.b = 0;
-		
-		
+
+
 	QD3D_SetupWindow(&viewDef, &gGameViewInfoPtr);
 
 			/************/
@@ -396,23 +395,23 @@ static const TQ3Point2D po[4] =
 			/************/
 
 	InitParticleSystem();
-			
+
 	LoadASkeleton(SKELETON_TYPE_FIREANT);
 	LoadASkeleton(SKELETON_TYPE_ME);
 	LoadASkeleton(SKELETON_TYPE_KINGANT);
-			
+
 	FSMakeFSSpec(gDataSpec.vRefNum, gDataSpec.parID, ":models:WinLose.3dmf", &spec);
-	LoadGrouped3DMF(&spec,MODEL_GROUP_MENU);	
+	LoadGrouped3DMF(&spec,MODEL_GROUP_MENU);
 
 
 			/*******************/
 			/* MAKE BACKGROUND */
 			/*******************/
-			
+
 			/* THRONE ROOM */
-				
-	gNewObjectDefinition.group 		= MODEL_GROUP_BONUS;	
-	gNewObjectDefinition.type 		= WINLOSE_MObjType_ThroneRoom;	
+
+	gNewObjectDefinition.group 		= MODEL_GROUP_BONUS;
+	gNewObjectDefinition.type 		= WINLOSE_MObjType_ThroneRoom;
 	gNewObjectDefinition.coord.x	= 0;
 	gNewObjectDefinition.coord.y	= 0;
 	gNewObjectDefinition.coord.z	= 1000;
@@ -425,9 +424,9 @@ static const TQ3Point2D po[4] =
 
 
 			/* KING ON THRONE */
-			
+
 	gNewObjectDefinition.type 		= SKELETON_TYPE_KINGANT;
-	gNewObjectDefinition.animNum 	= 5;							
+	gNewObjectDefinition.animNum 	= 5;
 	gNewObjectDefinition.coord.x 	= 0;
 	gNewObjectDefinition.coord.y 	= 230;
 	gNewObjectDefinition.coord.z 	= -20;
@@ -436,11 +435,11 @@ static const TQ3Point2D po[4] =
 	gNewObjectDefinition.moveCall 	= MoveLoseKing;
 	gNewObjectDefinition.rot 		= PI;
 	gNewObjectDefinition.scale 		= .8;
-	MakeNewSkeletonObject(&gNewObjectDefinition);			
-	
-	
+	MakeNewSkeletonObject(&gNewObjectDefinition);
+
+
 			/* FIRE ANTS */
-	
+
 	for (i = 0; i < 12; i++)
 	{
 		gNewObjectDefinition.type 		= SKELETON_TYPE_FIREANT;
@@ -451,18 +450,18 @@ static const TQ3Point2D po[4] =
 		gNewObjectDefinition.moveCall 	= nil;
 		gNewObjectDefinition.rot 		= lbRot[i];
 		gNewObjectDefinition.scale 		= 1.0;
-		newObj = MakeNewSkeletonObject(&gNewObjectDefinition);			
+		newObj = MakeNewSkeletonObject(&gNewObjectDefinition);
 		newObj->Skeleton->CurrentAnimTime = RandomFloat()*newObj->Skeleton->MaxAnimTime;	// random time index start
-	}	
-	
+	}
+
 		/******************/
 		/* PLAYER IN CAGE */
 		/******************/
-	
+
 			/* PLAYER */
-			
+
 	gNewObjectDefinition.type 		= SKELETON_TYPE_ME;
-	gNewObjectDefinition.animNum 	= PLAYER_ANIM_CAPTURED;	
+	gNewObjectDefinition.animNum 	= PLAYER_ANIM_CAPTURED;
 	gNewObjectDefinition.coord.x 	= CAGE_X;
 	gNewObjectDefinition.coord.y 	= CAGE_Y;
 	gNewObjectDefinition.coord.z 	= CAGE_Z;
@@ -471,14 +470,14 @@ static const TQ3Point2D po[4] =
 	gNewObjectDefinition.moveCall 	= nil;
 	gNewObjectDefinition.rot 		= PI;
 	gNewObjectDefinition.scale 		= 1.3;
-	MakeNewSkeletonObject(&gNewObjectDefinition);			
+	MakeNewSkeletonObject(&gNewObjectDefinition);
 
 
 			/* CAGE */
 
 	scale = .2;
-	gNewObjectDefinition.group 		= MODEL_GROUP_BONUS;	
-	gNewObjectDefinition.type 		= WINLOSE_MObjType_Cage;	
+	gNewObjectDefinition.group 		= MODEL_GROUP_BONUS;
+	gNewObjectDefinition.type 		= WINLOSE_MObjType_Cage;
 	gNewObjectDefinition.coord.x 	= CAGE_X;
 	gNewObjectDefinition.coord.y 	= CAGE_Y;
 	gNewObjectDefinition.coord.z 	= CAGE_Z;
@@ -490,11 +489,11 @@ static const TQ3Point2D po[4] =
 
 
 			/* 4 POSTS */
-				
-	
+
+
 	for (i = 0; i < 4; i++)
 	{
-		gNewObjectDefinition.type 		= WINLOSE_MObjType_Post;	
+		gNewObjectDefinition.type 		= WINLOSE_MObjType_Post;
 		gNewObjectDefinition.coord.x 	= CAGE_X + (po[i].x * scale);
 		gNewObjectDefinition.coord.y 	= CAGE_Y;
 		gNewObjectDefinition.coord.z 	= CAGE_Z + (po[i].y * scale);
@@ -502,18 +501,16 @@ static const TQ3Point2D po[4] =
 		gNewObjectDefinition.rot 		= -PI/2 + (PI/2 * i);
 		MakeNewDisplayGroupObject(&gNewObjectDefinition);
 	}
-	
-	
+
+
 		/* INIT FIRES */
-		
+
 	gFireGroup1 = -1;
 	gFireGroup2 = -1;
 	gFireTimer = 0;
-	
+
 	MakeFadeEvent(true);
 }
-
-
 
 
 #pragma mark -
@@ -533,14 +530,14 @@ float	fps;
 		MoveParticleGroups();
 		QD3D_MoveParticles();
 		QD3D_DrawScene(gGameViewInfoPtr,WinLoseDrawStuff);
-		QD3D_CalcFramesPerSecond();	
+		QD3D_CalcFramesPerSecond();
 		DoSDLMaintenance();
-		fps = gFramesPerSecondFrac;			
+		fps = gFramesPerSecondFrac;
 		duration -= fps;
-		
+
 		if (GetSkipScreenInput())
-			return(true);		
-		
+			return(true);
+
 		if (fire)
 		{
  			UpdateLoseFire();
@@ -554,7 +551,7 @@ float	fps;
 			GAME_ASSERT_MESSAGE(gThrone->NumMeshes > WIN_THRONE_WATER_SUBMESH, "water mesh ID not found in win throne");
 			QD3D_ScrollUVs(gThrone->MeshList[WIN_THRONE_WATER_SUBMESH], fps*.1f, -fps*.05f);
 		}
-		
+
 	}while(duration > 0.0f);
 
 	return(false);
@@ -570,8 +567,6 @@ static void WinLoseDrawStuff(const QD3DSetupOutputType *setupInfo)
 }
 
 
-
-
 /****************** MOVE WINLOSE CAMERA *********************/
 
 static void MoveWinLoseCamera(void)
@@ -584,9 +579,9 @@ float		fps = gFramesPerSecondFrac;
 
 
 	from.z += 50.0f*fps;
-	
-	
-	QD3D_UpdateCameraFromTo(gGameViewInfoPtr, &from, &to);	
+
+
+	QD3D_UpdateCameraFromTo(gGameViewInfoPtr, &from, &to);
 }
 
 
@@ -603,7 +598,7 @@ int	i;
 
 		if (theNode->ParticleGroup == -1)
 		{
-new_group:		
+new_group:
 			theNode->ParticleGroup = NewParticleGroup(0,	// magic num
 														PARTICLE_TYPE_FALLINGSPARKS,	// type
 														0,							// flags
@@ -620,18 +615,18 @@ new_group:
 			TQ3Vector3D	delta;
 			TQ3Point3D  pt;
 			static const TQ3Point3D off = {0,100, -50};							// offset to top of head
-		
+
 			for (i = 0; i < 4; i++)
 			{
 				FindCoordOnJoint(theNode, KINGANT_HEAD_LIMB, &off, &pt);			// get coord of head
 				pt.x += (RandomFloat()-.5f) * 40.0f;
 				pt.y += (RandomFloat()-.5f) * 20.0f;
 				pt.z += (RandomFloat()-.5f) * 40.0f;
-				
+
 				delta.x = 0; //(RandomFloat()-.5f) * 60.0f;
 				delta.y = RandomFloat() * 50.0f;
 				delta.z = 0; //(RandomFloat()-.5f) * 60.0f;
-				
+
 				if (AddParticleToGroup(theNode->ParticleGroup, &pt, &delta, RandomFloat() + 1.5f, FULL_ALPHA))
 					goto new_group;
 			}
@@ -655,10 +650,10 @@ TQ3Point3D  pt;
 
 
 				/* LEFT */
-				
+
 		if (gFireGroup1 == -1)
 		{
-new_group:		
+new_group:
 			gFireGroup1 = NewParticleGroup(0,	// magic num
 											PARTICLE_TYPE_FALLINGSPARKS,	// type
 											0,							// flags
@@ -672,17 +667,17 @@ new_group:
 
 		if (gFireGroup1 != -1)
 		{
-		
+
 			for (i = 0; i < 5; i++)
 			{
 				pt.x = -500 + (RandomFloat()-.5f) * 50.0f;
 				pt.y = 110 + (RandomFloat()-.5f) * 20.0f;
 				pt.z = -50 + (RandomFloat()-.5f) * 50.0f;
-				
+
 				delta.x = 0; //(RandomFloat()-.5f) * 60.0f;
 				delta.y = RandomFloat() * 50.0f;
 				delta.z = 0; //(RandomFloat()-.5f) * 60.0f;
-				
+
 				if (AddParticleToGroup(gFireGroup1, &pt, &delta, RandomFloat() + 1.8f, FULL_ALPHA))
 					goto new_group;
 			}
@@ -691,10 +686,10 @@ new_group:
 				/*********/
 				/* RIGHT */
 				/*********/
-				
+
 		if (gFireGroup2 == -1)
 		{
-new_group2:		
+new_group2:
 			gFireGroup2 = NewParticleGroup(0,	// magic num
 											PARTICLE_TYPE_FALLINGSPARKS,	// type
 											0,							// flags
@@ -708,17 +703,17 @@ new_group2:
 
 		if (gFireGroup2 != -1)
 		{
-		
+
 			for (i = 0; i < 5; i++)
 			{
 				pt.x = 540 + (RandomFloat()-.5f) * 50.0f;
 				pt.y = 110 + (RandomFloat()-.5f) * 20.0f;
 				pt.z = -50 + (RandomFloat()-.5f) * 50.0f;
-				
+
 				delta.x = 0; //(RandomFloat()-.5f) * 60.0f;
 				delta.y = RandomFloat() * 50.0f;
 				delta.z = 0; //(RandomFloat()-.5f) * 60.0f;
-				
+
 				if (AddParticleToGroup(gFireGroup2, &pt, &delta, RandomFloat() + 1.8f, FULL_ALPHA))
 					goto new_group2;
 			}
@@ -726,16 +721,5 @@ new_group2:
 
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
 
 

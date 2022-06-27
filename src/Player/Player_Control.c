@@ -69,13 +69,12 @@ Boolean				killed = false;
 
 
 				/* CALC MAX SPEED */
-				
+
 	if (gPlayerObj->StatusBits & STATUS_BIT_UNDERWATER)				// if in water, then max speed is fixed
 		maxSpeed = MAX_PLAYER_SWIM_SPEED;
 	else
 		maxSpeed = gPlayerMaxSpeed;
-		
-			
+
 
 	gPlayerObj->StatusBits &= ~(STATUS_BIT_ONGROUND|STATUS_BIT_ONTERRAIN);	// assume not on ground/terrain
 	oldDelta = gDelta;
@@ -83,10 +82,10 @@ Boolean				killed = false;
 
 			/**************************************/
 			/* PART 1: CALCULATE THE ACTUAL DELTA */
-			/**************************************/			
+			/**************************************/
 
 	if (!gPlayerGotKilledFlag)
-	{	
+	{
 		if (noControl)
 		{
 //			ApplyFrictionToDeltas(20, &gDelta);
@@ -97,27 +96,27 @@ Boolean				killed = false;
 					/***********************/
 		else
 		{
-						
-			if (gPlayerUsingKeyControl && gGamePrefs.playerRelativeKeys)						
+
+			if (gPlayerUsingKeyControl && gGamePrefs.playerRelativeKeys)
 			{
 				if (GetKeyState(kKey_Left))										// see if rotate ccw
-					gPlayerObj->Rot.y += fps * 4.0f;	
+					gPlayerObj->Rot.y += fps * 4.0f;
 				else
 				if (GetKeyState(kKey_Right))									// see if rotate cw
-					gPlayerObj->Rot.y -= fps * 4.0f;	
-			
+					gPlayerObj->Rot.y -= fps * 4.0f;
+
 				if (GetKeyState(kKey_Forward))									// see if go forward
 				{
 					float	rot = gPlayerObj->Rot.y;
 					gDelta.x += sin(rot) * (fps * -KEY_THRUST);
-					gDelta.z += cos(rot) * (fps * -KEY_THRUST);		
+					gDelta.z += cos(rot) * (fps * -KEY_THRUST);
 				}
 				else
 				if (GetKeyState(kKey_Backward))									// see if go backward
 				{
 					float	rot = gPlayerObj->Rot.y;
 					gDelta.x += sin(rot) * (fps * KEY_THRUST);
-					gDelta.z += cos(rot) * (fps * KEY_THRUST);		
+					gDelta.z += cos(rot) * (fps * KEY_THRUST);
 				}
 			}
 					/**********************/
@@ -126,24 +125,24 @@ Boolean				killed = false;
 			else
 			{
 						/* ROTATE MOUSE ACCELERATION VECTOR BASED ON CAMERA POS & APPLY TO DELTA */
-			
-				Q3Matrix3x3_SetRotateAboutPoint(&m, &origin, gPlayerToCameraAngle);		// make a 2D rotation matrix camera-rel
-			
 
-				Q3Vector2D_Transform(&gPlayerObj->AccelVector, &m, &newVec);		// rotate the mouse acceleration vector			
+				Q3Matrix3x3_SetRotateAboutPoint(&m, &origin, gPlayerToCameraAngle);		// make a 2D rotation matrix camera-rel
+
+
+				Q3Vector2D_Transform(&gPlayerObj->AccelVector, &m, &newVec);		// rotate the mouse acceleration vector
 				gDelta.x += newVec.x;												// apply acceleration to deltas
 				gDelta.z += newVec.y;
-				
-				
+
+
 							/* SEE IF ALSO APPLY KEY THRUST */
-							
+
 				if (gPlayerCanMove)
 				{
 					if (GetKeyState(kKey_AutoWalk))										// see if forward thrust
 					{
 						float	rot = gPlayerObj->Rot.y;
 						gDelta.x += sin(rot) * (fps * -KEY_THRUST);
-						gDelta.z += cos(rot) * (fps * -KEY_THRUST);		
+						gDelta.z += cos(rot) * (fps * -KEY_THRUST);
 					}
 				}
 				else
@@ -152,9 +151,9 @@ Boolean				killed = false;
 				}
 			}
 		}
-	
+
 					/* CALC SPEED */
-					
+
 		gPlayerObj->Speed = FastVectorLength2D(gDelta.x, gDelta.z);			// calc 2D speed value
 		if ((gPlayerObj->Speed >= 0.0f) && (gPlayerObj->Speed < 10000000.0f))	// check for weird NaN bug
 		{
@@ -175,7 +174,7 @@ Boolean				killed = false;
 			if (gPlayerObj->Speed > maxSpeed)								// check max/min speeds
 			{
 				float	scale;
-				
+
 				scale = maxSpeed/gPlayerObj->Speed;							// get 100-% over
 				gDelta.x *= scale;											// adjust back to max (note, we dont mess with y since gravity and jump need different max's)
 				gDelta.z *= scale;
@@ -193,60 +192,60 @@ Boolean				killed = false;
 
 	oldFPS = gFramesPerSecond;							// remember what fps really is
 	oldFPSFrac = gFramesPerSecondFrac;
-			
+
 	numPasses = (gPlayerObj->Speed*oldFPSFrac) * (1.0f / DELTA_SUBDIV);// calc how many subdivisions to create
 	numPasses++;
-		
+
 	gFramesPerSecondFrac *= 1.0f / (float)numPasses;	// adjust frame rate during motion and collision
 	gFramesPerSecond *= 1.0f / (float)numPasses;
-	
+
 	fps = gFramesPerSecondFrac;
 
 	for (pass = 0; pass < numPasses; pass++)
 	{
 		float	dx,dy,dz;
-		
+
 		oldCoord = gCoord;								// remember starting coord
-	
-	
+
+
 				/* GET DELTA */
-		
+
 		dx = gDelta.x;
 		dy = gDelta.y;
 		dz = gDelta.z;
-				
+
 		if (gPlayerObj->MPlatform)						// see if factor in moving platform
 		{
 			ObjNode *plat = gPlayerObj->MPlatform;
 			dx += plat->Delta.x;
 			dy += plat->Delta.y;
-			dz += plat->Delta.z;	
+			dz += plat->Delta.z;
 		}
-	
+
 				/* MOVE IT */
-		
+
 		gCoord.x += dx*fps;
-		gCoord.y += dy*fps;	
+		gCoord.y += dy*fps;
 		gCoord.z += dz*fps;
 
 
 				/******************************/
 				/* DO OBJECT COLLISION DETECT */
 				/******************************/
-				
+
 		if (DoPlayerCollisionDetect())
 			killed = true;
-		
+
 				/**************************/
 				/* SEE IF IN WATER VOLUME */
 				/**************************/
-				
+
 		if (!killed)
 		{
 			if (gPlayerObj->StatusBits & STATUS_BIT_UNDERWATER)
 			{
 						/* BUG IS SWIMMING */
-						
+
 				if (gPlayerMode == PLAYER_MODE_BUG)
 				{
 					if (gPlayerObj->Skeleton->AnimNum != PLAYER_ANIM_SWIM)
@@ -254,22 +253,22 @@ Boolean				killed = false;
 						MorphToSkeletonAnim(gPlayerObj->Skeleton, PLAYER_ANIM_SWIM, 5.0);
 					}
 				}
-				
+
 						/* BALL IS SWIMMING */
 				else
 				{
 					InitPlayer_Bug(gPlayerObj, &gCoord, 0, PLAYER_ANIM_SWIM);
 				}
 
-		
+
 						/* SEE IF MAKE SPLASH */
-							
+
 				if (gCurrentLiquidType == LIQUID_WATER)
 					if (gDelta.y < -800.0f)
 						MakeSplash(gCoord.x, gPlayerCurrentWaterY, gCoord.z, .3, 1);
-								
+
 				gCoord.y = gPlayerCurrentWaterY - 1.0f;
-				gDelta.y = -1.0;				
+				gDelta.y = -1.0;
 			}
 		}
 
@@ -289,21 +288,21 @@ Boolean				killed = false;
 											-gPlayerObj->BottomOff, gPlayerObj->TopOff,
 											realSpeed))
 		{
-			gPlayerObj->StatusBits |= STATUS_BIT_ONGROUND|STATUS_BIT_ONTERRAIN;	
+			gPlayerObj->StatusBits |= STATUS_BIT_ONGROUND|STATUS_BIT_ONTERRAIN;
 		}
-		
+
 				/* DEAL WITH SLOPES */
 				//
 				// Using the floor normal here, apply some deltas to it.
 				// Only apply slopes when on the ground (or really close to it)
 				//
-			
+
 		if ((gPlayerObj->StatusBits & STATUS_BIT_ONTERRAIN) || (gMyDistToFloor < 15.0f))
 		{
 			float	acc;
-			
+
 					/* SLOPE ACC FOR BUG */
-					
+
 			if (gPlayerMode == PLAYER_MODE_BUG)
 			{
 				if (gRecentTerrainNormal[FLOOR].y < .25f)		// if really steep then give bug a hard time
@@ -329,12 +328,12 @@ Boolean				killed = false;
 				else
 					acc = PLAYER_SLOPE_ACCEL;
 			}
-			
+
 					/* APPLY SLOPE ACC */
-					
+
 			gDelta.x += gRecentTerrainNormal[FLOOR].x * (fps * acc);
-			gDelta.z += gRecentTerrainNormal[FLOOR].z * (fps * acc);		
-			
+			gDelta.z += gRecentTerrainNormal[FLOOR].z * (fps * acc);
+
 			if (gShowDebug)		//------------
 				ShowNormal(&gCoord, &gRecentTerrainNormal[FLOOR]);
 		}
@@ -347,15 +346,14 @@ Boolean				killed = false;
 				/*************************/
 				/* CHECK FENCE COLLISION */
 				/*************************/
-				
+
 	DoFenceCollision(gPlayerObj,.7);					// shrink my radius a little bit
-				
+
 
 	gMyDistToFloor = gCoord.y + gPlayerObj->BottomOff - GetTerrainHeightAtCoord(gCoord.x, gCoord.z, FLOOR);
-	
+
 	return(killed);
 }
-
 
 
 /************************ DO FRICTION & GRAVITY ****************************/
@@ -369,46 +367,46 @@ TQ3Vector2D	v;
 float	x,z,fps;
 
 	fps = gFramesPerSecondFrac;
-	
+
 			/***************/
 			/* DO FRICTION */
 			/***************/
-			
+
 	friction *= fps;							// adjust friction
 
 	v.x = gDelta.x;
 	v.y = gDelta.z;
-	
+
 	FastNormalizeVector2D(v.x, v.y, &v);		// get normalized motion vector
 	x = -v.x * friction;						// make counter-motion vector
 	z = -v.y * friction;
-	
+
 	if (gDelta.x < 0.0f)						// decelerate against vector
 	{
 		gDelta.x += x;
 		if (gDelta.x > 0.0f)					// see if sign changed
-			gDelta.x = 0;											
+			gDelta.x = 0;
 	}
 	else
-	if (gDelta.x > 0.0f)									
+	if (gDelta.x > 0.0f)
 	{
 		gDelta.x += x;
-		if (gDelta.x < 0.0f)								
-			gDelta.x = 0;											
+		if (gDelta.x < 0.0f)
+			gDelta.x = 0;
 	}
-	
-	if (gDelta.z < 0.0f)								
+
+	if (gDelta.z < 0.0f)
 	{
 		gDelta.z += z;
-		if (gDelta.z > 0.0f)								
-			gDelta.z = 0;											
+		if (gDelta.z > 0.0f)
+			gDelta.z = 0;
 	}
 	else
-	if (gDelta.z > 0.0f)									
+	if (gDelta.z > 0.0f)
 	{
 		gDelta.z += z;
-		if (gDelta.z < 0.0f)								
-			gDelta.z = 0;											
+		if (gDelta.z < 0.0f)
+			gDelta.z = 0;
 	}
 
 	if ((gDelta.x == 0.0f) && (gDelta.z == 0.0f))
@@ -419,7 +417,7 @@ float	x,z,fps;
 			/**************/
 			/* DO GRAVITY */
 			/**************/
-			
+
 	gDelta.y -= PLAYER_GRAVITY*fps;					// add gravity
 
 	if (gDelta.y < 0.0f)							// if falling, keep dy at least -1.0 to avoid collision jitter on platforms
@@ -439,17 +437,17 @@ void CheckPlayerMorph(void)
 int	anim;
 
 		/* SEE IF THERE'S ANY BALL-TIME REMAINING */
-				
+
 	if (gBallTimer <= 0.0f)
 		return;
 
 	if (!GetNewKeyState(kKey_MorphPlayer))
 		return;
-	
-			/****************/	
+
+			/****************/
 			/* CHANGE FORMS */
-			/****************/	
-			
+			/****************/
+
 	if (gPlayerMode == PLAYER_MODE_BALL)				// see if turn into bug
 	{
 			/* SEE IF HEAD WILL MATERIALIZE IN ROCK */
@@ -465,7 +463,7 @@ int	anim;
 			/* CHECK BUG'S MODE AND SEE IF THIS IS ALLOWED */
 
 		anim = gPlayerObj->Skeleton->AnimNum;
-		
+
 		switch(anim)
 		{
 			case	PLAYER_ANIM_STAND:					// these are the only modes allowed during a morph
@@ -474,19 +472,10 @@ int	anim;
 			case	PLAYER_ANIM_UNROLL:
 			case	PLAYER_ANIM_KICK:
 					SetSkeletonAnim(gPlayerObj->Skeleton, PLAYER_ANIM_ROLLUP);
-					PlayEffect3D(EFFECT_MORPH, &gMyCoord);	
+					PlayEffect3D(EFFECT_MORPH, &gMyCoord);
 					break;
 		}
-	}	
+	}
 }
-
-
-
-
-
-
-
-
-
 
 

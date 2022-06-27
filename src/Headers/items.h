@@ -11,7 +11,6 @@ enum
 };
 
 
-
 extern	void InitItemsManager(void);
 Boolean AddClover(TerrainItemEntryType *itemPtr, long  x, long z);
 Boolean AddGrass(TerrainItemEntryType *itemPtr, long  x, long z);
@@ -48,7 +47,6 @@ void UpdateRootSwings(void);
 Boolean AddRock(TerrainItemEntryType *itemPtr, long  x, long z);
 
 
-
 Boolean AddHoneyTube(TerrainItemEntryType *itemPtr, long  x, long z);
 void UpdateHoneyTubeTextureAnimation(void);
 Boolean PrimeHoneycombPlatform(long splineNum, SplineItemType *itemPtr);
@@ -60,21 +58,5 @@ Boolean AddHorizAntPipe(TerrainItemEntryType *itemPtr, long  x, long z);
 
 Boolean AddFaucet(TerrainItemEntryType *itemPtr, long  x, long z);
 Boolean AddWoodPost(TerrainItemEntryType *itemPtr, long  x, long z);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

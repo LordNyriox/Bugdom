@@ -39,7 +39,7 @@ static void  MoveLarva_Dead(ObjNode *theNode);
 
 #define	MAX_LARVA_RANGE			(LARVA_CHASE_RANGE+1000.0f)	// max distance this enemy can go from init coord
 
-#define	LARVA_HEALTH			1.0f		
+#define	LARVA_HEALTH			1.0f
 #define	LARVA_DAMAGE			0.1f
 #define	LARVA_SCALE				.5f
 
@@ -67,28 +67,28 @@ ObjNode	*newObj;
 	if (gNumEnemies >= MAX_ENEMIES)								// keep from getting absurd
 		return(false);
 
-	if (gNumEnemyOfKind[ENEMY_KIND_LARVA] >= MAX_LARVA)			
+	if (gNumEnemyOfKind[ENEMY_KIND_LARVA] >= MAX_LARVA)
 		return(false);
 
 
 				/* MAKE DEFAULT SKELETON ENEMY */
-				
+
 	newObj = MakeEnemySkeleton(SKELETON_TYPE_LARVA,x,z,LARVA_SCALE);
 	if (newObj == nil)
 		return(false);
 	newObj->TerrainItemPtr = itemPtr;
-	
+
 
 				/* SET BETTER INFO */
-			
+
 	newObj->MoveCall 	= MoveLarva;							// set move call
 	newObj->Health 		= LARVA_HEALTH;
 	newObj->Damage 		= LARVA_DAMAGE;
 	newObj->Kind 		= ENEMY_KIND_LARVA;
-	
-	
+
+
 				/* SET COLLISION INFO */
-				
+
 	newObj->CType		|= CTYPE_AUTOTARGET|CTYPE_AUTOTARGETJUMP|CTYPE_BOPPABLE|CTYPE_SPIKED|CTYPE_KICKABLE; 
 	SetObjectCollisionBounds(newObj, 70,0,-40,40,40,-40);
 
@@ -110,22 +110,22 @@ ObjNode	*newObj;
 
 
 				/* MAKE DEFAULT SKELETON ENEMY */
-				
+
 	newObj = MakeEnemySkeleton(SKELETON_TYPE_LARVA,x,z,LARVA_SCALE);
 	if (newObj == nil)
-		return(nil);	
+		return(nil);
 
 				/* SET BETTER INFO */
-			
+
 	newObj->MoveCall 	= MoveLarva;							// set move call
 	newObj->Health 		= LARVA_HEALTH;
 	newObj->Damage 		= LARVA_DAMAGE;
 	newObj->Kind 		= ENEMY_KIND_LARVA;
-	
+
 	newObj->Rot.y 		= RandomFloat()*PI2;					// random aim
-	
+
 				/* SET COLLISION INFO */
-				
+
 	newObj->CType		|= CTYPE_AUTOTARGET|CTYPE_AUTOTARGETJUMP|CTYPE_BOPPABLE|CTYPE_SPIKED|CTYPE_KICKABLE; 
 	SetObjectCollisionBounds(newObj, 70,0,-40,40,40,-40);
 
@@ -134,7 +134,6 @@ ObjNode	*newObj;
 	gNumEnemyOfKind[ENEMY_KIND_LARVA]++;
 	return(newObj);
 }
-
 
 
 /********************* MOVE LARVA **************************/
@@ -156,7 +155,7 @@ static	void(*myMoveTable[])(ObjNode *) =
 	}
 
 	GetObjectInfo(theNode);
-	
+
 	myMoveTable[theNode->Skeleton->AnimNum](theNode);
 }
 
@@ -171,31 +170,28 @@ float	r;
 	theNode->Skeleton->AnimSpeed = 2.0f;
 
 			/* MOVE TOWARD PLAYER */
-			
-	TurnObjectTowardTarget(theNode, &gCoord, gMyCoord.x, gMyCoord.z, LARVA_TURN_SPEED, false);			
+
+	TurnObjectTowardTarget(theNode, &gCoord, gMyCoord.x, gMyCoord.z, LARVA_TURN_SPEED, false);
 
 	r = theNode->Rot.y;
 	gDelta.x = sin(r) * -LARVA_CHASE_SPEED;
 	gDelta.z = cos(r) * -LARVA_CHASE_SPEED;
-	
+
 	gCoord.x += gDelta.x * fps;
 	gCoord.z += gDelta.z * fps;
 	gCoord.y = GetTerrainHeightAtCoord(gCoord.x, gCoord.z, FLOOR);	// calc y coord
 
-			
 
 				/**********************/
 				/* DO ENEMY COLLISION */
 				/**********************/
-				
+
 	if (DoEnemyCollisionDetect(theNode,DEFAULT_ENEMY_COLLISION_CTYPES))
 		return;
 
-	UpdateEnemy(theNode);		
-	
+	UpdateEnemy(theNode);
+
 }
-
-
 
 
 /********************** MOVE LARVA: WAIT ******************************/
@@ -203,24 +199,24 @@ float	r;
 static void  MoveLarva_Wait(ObjNode *theNode)
 {
 
-	TurnObjectTowardTarget(theNode, &gCoord, gMyCoord.x, gMyCoord.z, LARVA_TURN_SPEED, false);			
-	
+	TurnObjectTowardTarget(theNode, &gCoord, gMyCoord.x, gMyCoord.z, LARVA_TURN_SPEED, false);
+
 		/* SEE IF CLOSE ENOUGH TO ATTACK */
-		
+
 	if (CalcQuickDistance(gCoord.x, gCoord.z, gMyCoord.x, gMyCoord.z) < LARVA_CHASE_RANGE)
 	{
-		MorphToSkeletonAnim(theNode->Skeleton, LARVA_ANIM_WALK, 7);	
+		MorphToSkeletonAnim(theNode->Skeleton, LARVA_ANIM_WALK, 7);
 	}
 
 				/**********************/
 				/* DO ENEMY COLLISION */
 				/**********************/
-				
+
 	if (DoEnemyCollisionDetect(theNode,DEFAULT_ENEMY_COLLISION_CTYPES))
 		return;
 
-	UpdateEnemy(theNode);		
-	
+	UpdateEnemy(theNode);
+
 }
 
 
@@ -228,8 +224,8 @@ static void  MoveLarva_Wait(ObjNode *theNode)
 
 static void  MoveLarva_Squished(ObjNode *theNode)
 {
-	UpdateEnemy(theNode);		
-	
+	UpdateEnemy(theNode);
+
 }
 
 /********************** MOVE LARVA: DEAD ******************************/
@@ -244,7 +240,6 @@ static void  MoveLarva_Dead(ObjNode *theNode)
 }
 
 
-
 #pragma mark -
 
 /************************ PRIME LARVA ENEMY *************************/
@@ -256,26 +251,26 @@ float			x,z,placement;
 
 			/* GET SPLINE INFO */
 
-	placement = itemPtr->placement;	
+	placement = itemPtr->placement;
 	GetCoordOnSpline(&(*gSplineList)[splineNum], placement, &x, &z);
 
 
 				/* MAKE DEFAULT SKELETON ENEMY */
-				
+
 	newObj = MakeEnemySkeleton(SKELETON_TYPE_LARVA,x,z, LARVA_SCALE);
 	if (newObj == nil)
 		return(false);
-		
+
 	DetachObject(newObj);									// detach this object from the linked list
-		
+
 	newObj->SplineItemPtr = itemPtr;
 	newObj->SplineNum = splineNum;
-	
+
 	SetSkeletonAnim(newObj->Skeleton, LARVA_ANIM_WALK);
-	
+
 
 				/* SET BETTER INFO */
-			
+
 	newObj->StatusBits		|= STATUS_BIT_ONSPLINE;
 	newObj->SplinePlacement = placement;
 	newObj->SplineMoveCall 	= MoveLarvaOnSpline;				// set move call
@@ -284,15 +279,14 @@ float			x,z,placement;
 	newObj->Kind 			= ENEMY_KIND_LARVA;
 	newObj->CType			|= CTYPE_AUTOTARGET|CTYPE_AUTOTARGETJUMP|CTYPE_BOPPABLE|CTYPE_SPIKED; 
 
-	
+
 				/* SET COLLISION INFO */
-				
+
 	SetObjectCollisionBounds(newObj, 70,0,-40,40,40,-40);
 
 
-
 			/* ADD SPLINE OBJECT TO SPLINE OBJECT LIST */
-			
+
 	AddToSplineObjectList(newObj);
 
 	return(true);
@@ -321,37 +315,37 @@ Boolean isVisible;
 			/***************************/
 			/* UPDATE STUFF IF VISIBLE */
 			/***************************/
-			
+
 	if (isVisible)
 	{
 		theNode->Skeleton->AnimSpeed = 2.0f;
-	
+
 			/* START/UPDATE BUZZ */
-	
+
 		if (theNode->EffectChannel == -1)
 			theNode->EffectChannel = PlayEffect3D(EFFECT_BUZZ, &theNode->Coord);
 		else
 			Update3DSoundChannel(EFFECT_BUZZ, &theNode->EffectChannel, &theNode->Coord);
-	
+
 		theNode->Rot.y = CalcYAngleFromPointToPoint(theNode->Rot.y, theNode->OldCoord.x, theNode->OldCoord.z,			// calc y rot aim
-												theNode->Coord.x, theNode->Coord.z);		
+												theNode->Coord.x, theNode->Coord.z);
 
 		theNode->Coord.y = GetTerrainHeightAtCoord(theNode->Coord.x, theNode->Coord.z, FLOOR);	// calc y coord
 		UpdateObjectTransforms(theNode);																// update transforms
 		CalcObjectBoxFromNode(theNode);																	// update collision box
-		
+
 				/*********************************/
 				/* SEE IF CLOSE ENOUGH TO ATTACK */
 				/*********************************/
-				
+
 		if (CalcQuickDistance(theNode->Coord.x, theNode->Coord.z, gMyCoord.x, gMyCoord.z) < LARVA_CHASE_RANGE2)
 		{
 					/* REMOVE FROM SPLINE */
-					
+
 			DetachEnemyFromSpline(theNode, MoveLarva);
-		}		
+		}
 	}
-	
+
 			/* NOT VISIBLE */
 	else
 	{
@@ -370,16 +364,16 @@ Boolean isVisible;
 void LarvaGotBopped(ObjNode *enemy)
 {
 		/* IF ON SPLINE, DETACH */
-		
+
 	DetachEnemyFromSpline(enemy, MoveLarva);
-	
+
 	SetSkeletonAnim(enemy->Skeleton, LARVA_ANIM_SQUISHED);
-	
+
 		/* FLATTEN */
-		
-	enemy->Scale.y *= .2f;	
-	UpdateObjectTransforms(enemy);	
-	
+
+	enemy->Scale.y *= .2f;
+	UpdateObjectTransforms(enemy);
+
 	enemy->CType = 0;
 }
 
@@ -392,15 +386,5 @@ Boolean KillLarva(ObjNode *theNode)
 	theNode->CType = CTYPE_MISC;
 	return(false);
 }
-
-
-
-
-
-
-
-
-
-
 
 

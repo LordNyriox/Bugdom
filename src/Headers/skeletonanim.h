@@ -5,7 +5,7 @@
 
 
 		/* ANIM EVENTS */
-		
+
 #define	MAX_ANIM_EVENTS		30
 
 #define	MAX_ANIMEVENT_TYPES	7
@@ -45,6 +45,5 @@ extern	void SetSkeletonAnim(SkeletonObjDataType *skeleton, long animNum);
 extern	void GetModelCurrentPosition(SkeletonObjDataType *skeleton);
 extern	void MorphToSkeletonAnim(SkeletonObjDataType *skeleton, long animNum, float speed);
 extern	void CalcAccelerationSplineCurve(void);
-
 
 

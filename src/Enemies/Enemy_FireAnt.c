@@ -57,9 +57,8 @@ static void UpdateFireAnt(ObjNode *theNode, Boolean updateFlame);
 #define	FIREANT_FLY_HEIGHT			320.0f
 
 
-
 		/* MODES */
-		
+
 enum
 {
 	FIREANT_MODE_NONE
@@ -79,7 +78,6 @@ enum
 #define FireTimer 			SpecialF[1]
 
 
-
 /************************ ADD FIREANT ENEMY *************************/
 //
 // parm[3]:bit0 = always add
@@ -90,67 +88,65 @@ Boolean AddEnemy_FireAnt(TerrainItemEntryType *itemPtr, long x, long z)
 ObjNode	*newObj;
 
 				/* SEE IF TOO MANY */
-				
+
 //	if (gNumEnemies >= MAX_ENEMIES)								// keep from getting absurd
 //		return(false);
-	
+
 	if (!(itemPtr->parm[3] & 1))								// see if always add
 	{
 		if (gNumEnemyOfKind[ENEMY_KIND_FIREANT] > MAX_ENEMIES)		// only care if too many of this kind
 			return(false);
 	}
-	
-	
+
+
 				/*******************************/
 				/* MAKE DEFAULT SKELETON ENEMY */
 				/*******************************/
-				
+
 	newObj = MakeEnemySkeleton(SKELETON_TYPE_FIREANT,x,z, FIREANT_SCALE);
 	if (newObj == nil)
 		return(false);
 	newObj->TerrainItemPtr = itemPtr;
 
 	SetSkeletonAnim(newObj->Skeleton, FIREANT_ANIM_STAND);
-	
+
 
 				/*******************/
 				/* SET BETTER INFO */
 				/*******************/
 
-	newObj->Coord.y 	-= FIREANT_FOOT_OFFSET;			
+	newObj->Coord.y 	-= FIREANT_FOOT_OFFSET;
 	newObj->MoveCall 	= MoveFireAnt;							// set move call
 	newObj->Health 		= 1.0;
 	newObj->Damage 		= FIREANT_DAMAGE;
 	newObj->Kind 		= ENEMY_KIND_FIREANT;
 	newObj->CType		|= CTYPE_KICKABLE|CTYPE_AUTOTARGET;		// these can be kicked
 	newObj->CBits		= CBITS_NOTTOP;
-	
+
 	newObj->Mode		= FIREANT_MODE_NONE;
-	
+
 	newObj->BreathTimer 		= 0;
 	newObj->BreathParticleGroup = -1;
 	newObj->BreathRegulator 	= 0;
-	
-	
+
+
 				/* SET COLLISION INFO */
-				
+
 	SetObjectCollisionBounds(newObj, 70,FIREANT_FOOT_OFFSET,-70,70,70,-70);
 	CalcNewTargetOffsets(newObj,FIREANT_TARGET_OFFSET);
 
 
 				/* MAKE SHADOW */
-				
+
 	AttachShadowToObject(newObj, 8, 8,false);
 
 	newObj->InitCoord = newObj->Coord;							// remember where started
-	
-		
+
+
 	gNumEnemies++;
 	gNumEnemyOfKind[ENEMY_KIND_FIREANT]++;
 	return(true);
 }
-
-
 
 
 /********************* MOVE FIREANT **************************/
@@ -165,7 +161,7 @@ static	void(*myMoveTable[])(ObjNode *) =
 					MoveFireAnt_Fly,
 					MoveFireAnt_FallOnButt,
 					MoveFireAnt_GetOffButt,
-					MoveFireAnt_Death,		
+					MoveFireAnt_Death,
 				};
 
 
@@ -177,10 +173,8 @@ static	void(*myMoveTable[])(ObjNode *) =
 
 	GetObjectInfo(theNode);
 	myMoveTable[theNode->Skeleton->AnimNum](theNode);
-	
+
 }
-
-
 
 
 /********************** MOVE FIREANT: STANDING ******************************/
@@ -190,12 +184,12 @@ static void  MoveFireAnt_Standing(ObjNode *theNode)
 float	angleToTarget,dist;
 
 				/* TURN TOWARDS ME */
-				
-	angleToTarget = TurnObjectTowardTarget(theNode, &gCoord, gMyCoord.x, gMyCoord.z, FIREANT_TURN_SPEED, false);			
+
+	angleToTarget = TurnObjectTowardTarget(theNode, &gCoord, gMyCoord.x, gMyCoord.z, FIREANT_TURN_SPEED, false);
 
 
 		/* IF I'M TOO CLOSE, THEN GO INTO FLY MODE */
-		
+
 	dist = CalcQuickDistance(gMyCoord.x, gMyCoord.z, gCoord.x, gCoord.z);
 
 	if (dist < FIREANT_START_FLY_DIST)
@@ -210,7 +204,7 @@ float	angleToTarget,dist;
 	if (angleToTarget < .03f)
 	{
 		if (dist < FIREANT_ATTACK_DIST)
-		{					
+		{
 			MorphToSkeletonAnim(theNode->Skeleton, FIREANT_ANIM_STANDFIRE, 8);
 			theNode->BreathTimer = 0;
 			theNode->BreathParticleGroup = -1;
@@ -219,19 +213,18 @@ float	angleToTarget,dist;
 	}
 
 			/* MOVE */
-				
+
 	gDelta.y -= ENEMY_GRAVITY*gFramesPerSecondFrac;				// add gravity
 	MoveEnemy(theNode);
 
-				
 
 				/* DO ENEMY COLLISION */
-				
+
 	if (DoEnemyCollisionDetect(theNode,DEFAULT_ENEMY_COLLISION_CTYPES))
 		return;
 
 
-	UpdateFireAnt(theNode, true);		
+	UpdateFireAnt(theNode, true);
 }
 
 
@@ -241,33 +234,33 @@ static void  MoveFireAnt_StandBreathFire(ObjNode *theNode)
 {
 float	dist;
 					/* TURN TOWARDS ME */
-					
-	TurnObjectTowardTarget(theNode, &gCoord, gMyCoord.x, gMyCoord.z, FIREANT_TURN_SPEED, false);			
+
+	TurnObjectTowardTarget(theNode, &gCoord, gMyCoord.x, gMyCoord.z, FIREANT_TURN_SPEED, false);
 
 
 					/* BREATH FIRE */
-					
+
 	FireAntBreathFire(theNode);
 	theNode->BreathTimer += gFramesPerSecondFrac;
 	if (theNode->BreathTimer > TIME_TO_BREATH)
 	{
-		MorphToSkeletonAnim(theNode->Skeleton, FIREANT_ANIM_STAND, 4);	
+		MorphToSkeletonAnim(theNode->Skeleton, FIREANT_ANIM_STAND, 4);
 	}
 
 			/* MOVE */
-				
+
 	gDelta.y -= ENEMY_GRAVITY*gFramesPerSecondFrac;				// add gravity
 	MoveEnemy(theNode);
 
 
 				/* DO ENEMY COLLISION */
-				
+
 	if (DoEnemyCollisionDetect(theNode,DEFAULT_ENEMY_COLLISION_CTYPES))
 		return;
 
 
 			/* IF I'M TOO CLOSE, THEN GO INTO FLY MODE */
-			
+
 	dist = CalcQuickDistance(gMyCoord.x, gMyCoord.z, gCoord.x, gCoord.z);
 	if (dist < FIREANT_START_FLY_DIST)
 	{
@@ -276,7 +269,7 @@ float	dist;
 	}
 
 
-	UpdateFireAnt(theNode, false);		
+	UpdateFireAnt(theNode, false);
 }
 
 
@@ -289,8 +282,8 @@ float		r,fps;
 	fps = gFramesPerSecondFrac;
 
 			/* MOVE TOWARD PLAYER */
-			
-	TurnObjectTowardTarget(theNode, &gCoord, gMyCoord.x, gMyCoord.z, FIREANT_TURN_SPEED, false);			
+
+	TurnObjectTowardTarget(theNode, &gCoord, gMyCoord.x, gMyCoord.z, FIREANT_TURN_SPEED, false);
 
 	r = theNode->Rot.y;
 	gDelta.x = -sin(r) * FIREANT_WALK_SPEED;
@@ -298,21 +291,20 @@ float		r,fps;
 	gDelta.y -= ENEMY_GRAVITY*fps;				// add gravity
 
 	MoveEnemy(theNode);
-	
-	
-		
+
+
 				/* UPDATE ANIM SPEED */
 
 	if (theNode->Skeleton->AnimNum == FIREANT_ANIM_WALK)
 		theNode->Skeleton->AnimSpeed = FIREANT_WALK_SPEED * .0032f;
-	
+
 
 				/* DO ENEMY COLLISION */
-				
+
 	if (DoEnemyCollisionDetect(theNode,DEFAULT_ENEMY_COLLISION_CTYPES))
 		return;
-	
-	UpdateFireAnt(theNode, true);		
+
+	UpdateFireAnt(theNode, true);
 }
 
 
@@ -325,59 +317,58 @@ float		r,fps,y;
 	fps = gFramesPerSecondFrac;
 
 			/* MOVE TOWARD PLAYER */
-			
-	TurnObjectTowardTarget(theNode, &gCoord, gMyCoord.x, gMyCoord.z, FIREANT_TURN_SPEED, false);			
+
+	TurnObjectTowardTarget(theNode, &gCoord, gMyCoord.x, gMyCoord.z, FIREANT_TURN_SPEED, false);
 
 	r = theNode->Rot.y;
 	gDelta.x = -sin(r) * FIREANT_FLY_SPEED;
 	gDelta.z = -cos(r) * FIREANT_FLY_SPEED;
 	gCoord.x += gDelta.x*fps;
 	gCoord.z += gDelta.z*fps;
-	
+
 			/* HOVER ABOVE GROUND */
-			
+
 	y = GetTerrainHeightAtCoord(gCoord.x, gCoord.z, FLOOR) + FIREANT_FLY_HEIGHT;		// get target Y
 	if (gCoord.y < y)
 	{
 		gDelta.y += 1000.0f*fps;
-		gCoord.y += gDelta.y*fps;				
+		gCoord.y += gDelta.y*fps;
 		if (gCoord.y >= y)
 			gCoord.y = y;
 	}
 	else
 	if (gCoord.y > y)
 	{
-		gDelta.y -= 1000.0f*fps;				
-		gCoord.y += gDelta.y*fps;				
+		gDelta.y -= 1000.0f*fps;
+		gCoord.y += gDelta.y*fps;
 		if (gCoord.y <= y)
 			gCoord.y = y;
 	}
 	else
-		gDelta.y = 0;	
+		gDelta.y = 0;
 
 
 					/* BREATH FIRE */
-					
+
 	FireAntBreathFire(theNode);
 
-	
+
 				/* DO ENEMY COLLISION */
-				
+
 	if (DoEnemyCollisionDetect(theNode,DEFAULT_ENEMY_COLLISION_CTYPES))
 		return;
-		
+
 
 			/* IF FAR AWAY, STOP FLYING*/
-			
+
 	if (CalcQuickDistance(gMyCoord.x, gMyCoord.z, gCoord.x, gCoord.z) > FIREANT_END_FLY_DIST)
 	{
 		MorphToSkeletonAnim(theNode->Skeleton, FIREANT_ANIM_STAND, 7);
 		gDelta.x = gDelta.z = gDelta.y = 0;
 	}
 
-	UpdateFireAnt(theNode, false);		
+	UpdateFireAnt(theNode, false);
 }
-
 
 
 /********************** MOVE FIREANT: FALLONBUTT ******************************/
@@ -386,14 +377,14 @@ static void  MoveFireAnt_FallOnButt(ObjNode *theNode)
 {
 	if (theNode->StatusBits & STATUS_BIT_ONGROUND)			// if on ground, add friction
 		ApplyFrictionToDeltas(140.0,&gDelta);
-		
+
 	gDelta.y -= ENEMY_GRAVITY*gFramesPerSecondFrac;				// add gravity
 
 	MoveEnemy(theNode);
 
 
 				/* SEE IF DONE */
-			
+
 	theNode->ButtTimer -= gFramesPerSecondFrac;
 	if (theNode->ButtTimer <= 0.0)
 	{
@@ -408,13 +399,13 @@ static void  MoveFireAnt_FallOnButt(ObjNode *theNode)
 
 
 				/* DO ENEMY COLLISION */
-				
+
 	if (DoEnemyCollisionDetect(theNode,DEFAULT_ENEMY_COLLISION_CTYPES))
 		return;
 
 
 update:
-	UpdateFireAnt(theNode, false);		
+	UpdateFireAnt(theNode, false);
 }
 
 
@@ -422,9 +413,9 @@ update:
 
 static void  MoveFireAnt_Death(ObjNode *theNode)
 {
-	
+
 			/* SEE IF GONE */
-			
+
 	if (theNode->StatusBits & STATUS_BIT_ISCULLED)		// if was culled on last frame and is far enough away, then delete it
 	{
 		if (CalcQuickDistance(gCoord.x, gCoord.z, gMyCoord.x, gMyCoord.z) > 600.0f)
@@ -436,7 +427,7 @@ static void  MoveFireAnt_Death(ObjNode *theNode)
 
 
 				/* MOVE IT */
-				
+
 	if (theNode->StatusBits & STATUS_BIT_ONGROUND)			// if on ground, add friction
 		ApplyFrictionToDeltas(60.0,&gDelta);
 	gDelta.y -= ENEMY_GRAVITY*gFramesPerSecondFrac;				// add gravity
@@ -444,14 +435,14 @@ static void  MoveFireAnt_Death(ObjNode *theNode)
 
 
 				/* DO ENEMY COLLISION */
-				
+
 	if (DoEnemyCollisionDetect(theNode,DEATH_ENEMY_COLLISION_CTYPES))
 		return;
 
 
 				/* UPDATE */
-			
-	UpdateFireAnt(theNode, false);		
+
+	UpdateFireAnt(theNode, false);
 
 }
 
@@ -467,7 +458,7 @@ static void  MoveFireAnt_GetOffButt(ObjNode *theNode)
 
 
 				/* SEE IF DONE */
-			
+
 	if (theNode->Skeleton->AnimHasStopped)
 	{
 		SetSkeletonAnim(theNode->Skeleton, FIREANT_ANIM_STAND);
@@ -475,19 +466,17 @@ static void  MoveFireAnt_GetOffButt(ObjNode *theNode)
 
 
 				/* DO ENEMY COLLISION */
-				
+
 	if (DoEnemyCollisionDetect(theNode,DEFAULT_ENEMY_COLLISION_CTYPES))
 		return;
 
-	UpdateFireAnt(theNode, true);		
+	UpdateFireAnt(theNode, true);
 }
 
 
-
 //===============================================================================================================
 //===============================================================================================================
 //===============================================================================================================
-
 
 
 #pragma mark -
@@ -501,40 +490,40 @@ float			x,z,placement;
 
 			/* GET SPLINE INFO */
 
-	placement = itemPtr->placement;	
+	placement = itemPtr->placement;
 	GetCoordOnSpline(&(*gSplineList)[splineNum], placement, &x, &z);
 
 
 				/* MAKE DEFAULT SKELETON ENEMY */
-				
+
 	newObj = MakeEnemySkeleton(SKELETON_TYPE_FIREANT,x,z, FIREANT_SCALE);
 	if (newObj == nil)
 		return(false);
-		
+
 	DetachObject(newObj);										// detach this object from the linked list
-		
+
 	newObj->SplineItemPtr = itemPtr;
 	newObj->SplineNum = splineNum;
-	
+
 	SetSkeletonAnim(newObj->Skeleton, FIREANT_ANIM_WALK);
-		
+
 
 				/* SET BETTER INFO */
-			
+
 	newObj->StatusBits		|= STATUS_BIT_ONSPLINE;
 	newObj->SplinePlacement = placement;
-	newObj->Coord.y 		-= FIREANT_FOOT_OFFSET;			
+	newObj->Coord.y 		-= FIREANT_FOOT_OFFSET;
 	newObj->SplineMoveCall 	= MoveFireAntOnSpline;				// set move call
 	newObj->Health 			= 1.0;
 	newObj->Damage 			= FIREANT_DAMAGE;
 	newObj->Kind 			= ENEMY_KIND_FIREANT;
 	newObj->CType			|= CTYPE_KICKABLE|CTYPE_AUTOTARGET;	// these can be kicked
 	newObj->CBits			= CBITS_NOTTOP;
-	
+
 	newObj->Mode		= FIREANT_MODE_NONE;
-	
+
 				/* SET COLLISION INFO */
-				
+
 	SetObjectCollisionBounds(newObj, 70,FIREANT_FOOT_OFFSET,-70,70,70,-70);
 	CalcNewTargetOffsets(newObj,FIREANT_TARGET_OFFSET);
 
@@ -542,13 +531,13 @@ float			x,z,placement;
 	newObj->InitCoord = newObj->Coord;							// remember where started
 
 				/* MAKE SHADOW */
-				
+
 	shadowObj = AttachShadowToObject(newObj, 8, 8, false);
 	DetachObject(shadowObj);									// detach this object from the linked list
 
 
 			/* ADD SPLINE OBJECT TO SPLINE OBJECT LIST */
-			
+
 	AddToSplineObjectList(newObj);
 
 	return(true);
@@ -570,28 +559,26 @@ Boolean isVisible;
 
 
 			/* UPDATE STUFF IF VISIBLE */
-			
+
 	if (isVisible)
 	{
 		theNode->Rot.y = CalcYAngleFromPointToPoint(theNode->Rot.y, theNode->OldCoord.x, theNode->OldCoord.z,			// calc y rot aim
-												theNode->Coord.x, theNode->Coord.z);		
+												theNode->Coord.x, theNode->Coord.z);
 
 		theNode->Coord.y = GetTerrainHeightAtCoord(theNode->Coord.x, theNode->Coord.z, FLOOR) - FIREANT_FOOT_OFFSET;	// calc y coord
 		UpdateObjectTransforms(theNode);																// update transforms
 		CalcObjectBoxFromNode(theNode);																	// update collision box
-		UpdateShadow(theNode);																			// update shadow		
+		UpdateShadow(theNode);																			// update shadow
 	}
-	
+
 			/* HIDE SOME THINGS SINCE INVISIBLE */
 	else
 	{
 //		if (theNode->ShadowNode)						// hide shadow
-//			theNode->ShadowNode->StatusBits |= STATUS_BIT_HIDDEN;	
+//			theNode->ShadowNode->StatusBits |= STATUS_BIT_HIDDEN;
 	}
-	
+
 }
-
-
 
 
 #pragma mark -
@@ -607,16 +594,16 @@ long			pg,i;
 TQ3Vector3D		delta;
 Boolean	killed = false;
 
-				
+
 	if (me->Speed > FIREANT_KNOCKDOWN_SPEED)
-	{	
+	{
 
 				/*******************/
 				/* SPARK EXPLOSION */
 				/*******************/
 
 				/* white sparks */
-					
+
 		pg = NewParticleGroup(	0,							// magic num
 								PARTICLE_TYPE_FALLINGSPARKS,	// type
 								PARTICLE_FLAGS_BOUNCE|PARTICLE_FLAGS_HOT,		// flags
@@ -626,7 +613,7 @@ Boolean	killed = false;
 								.9,							// decay rate
 								0,							// fade rate
 								PARTICLE_TEXTURE_WHITE);	// texture
-		
+
 		if (pg != -1)
 		{
 			for (i = 0; i < 50; i++)
@@ -637,9 +624,9 @@ Boolean	killed = false;
 				AddParticleToGroup(pg, &enemy->Coord, &delta, RandomFloat() + 1.0f, FULL_ALPHA);
 			}
 		}
-		
+
 					/* fire sparks */
-					
+
 		pg = NewParticleGroup(	0,							// magic num
 								PARTICLE_TYPE_FALLINGSPARKS,	// type
 								PARTICLE_FLAGS_BOUNCE|PARTICLE_FLAGS_HOT,		// flags
@@ -649,7 +636,7 @@ Boolean	killed = false;
 								.7,							// decay rate
 								0,							// fade rate
 								PARTICLE_TEXTURE_FIRE);		// texture
-		
+
 		if (pg != -1)
 		{
 			for (i = 0; i < 50; i++)
@@ -660,17 +647,17 @@ Boolean	killed = false;
 				AddParticleToGroup(pg, &enemy->Coord, &delta, RandomFloat() + 1.0f, FULL_ALPHA);
 			}
 		}
-		
+
 				/*****************/
 				/* KNOCK ON BUTT */
 				/*****************/
-					
+
 		killed = KnockFireAntOnButt(enemy, me->Delta.x * .8f, me->Delta.y * .8f + 250.0f, me->Delta.z * .8f);
 
 		PlayEffect_Parms3D(EFFECT_POUND, &gCoord, kMiddleC+2, 2.0);
 	}
 
-	return(killed);		
+	return(killed);
 }
 
 
@@ -683,14 +670,14 @@ Boolean KnockFireAntOnButt(ObjNode *enemy, float dx, float dy, float dz)
 {
 	if (enemy->Skeleton->AnimNum == FIREANT_ANIM_FALLONBUTT)		// see if already in butt mode
 		return(false);
-		
+
 		/* IF ON SPLINE, DETACH */
-		
+
 	DetachEnemyFromSpline(enemy, MoveFireAnt);
 
 
 			/* GET IT MOVING */
-		
+
 	enemy->Delta.x = dx;
 	enemy->Delta.y = dy;
 	enemy->Delta.z = dz;
@@ -700,17 +687,17 @@ Boolean KnockFireAntOnButt(ObjNode *enemy, float dx, float dy, float dz)
 
 
 		/* SLOW DOWN PLAYER */
-		
+
 	gDelta.x *= .2f;
 	gDelta.y *= .2f;
 	gDelta.z *= .2f;
 
 
 		/* HURT & SEE IF KILLED */
-			
+
 	if (EnemyGotHurt(enemy, .5))
 		return(true);
-		
+
 	return(false);
 }
 
@@ -722,29 +709,26 @@ Boolean KnockFireAntOnButt(ObjNode *enemy, float dx, float dy, float dz)
 
 Boolean KillFireAnt(ObjNode *theNode)
 {
-	
+
 		/* IF ON SPLINE, DETACH */
-		
+
 	DetachEnemyFromSpline(theNode, MoveFireAnt);
 
 
 			/* DEACTIVATE */
-			
+
 	theNode->TerrainItemPtr = nil;				// dont ever come back
 	theNode->CType = CTYPE_MISC;
 	theNode->Dying = true;						// after butt-fall, make it die
-	
+
 	if (theNode->Skeleton->AnimNum != FIREANT_ANIM_FALLONBUTT)			// make fall on butt first
 	{
-		SetSkeletonAnim(theNode->Skeleton, FIREANT_ANIM_FALLONBUTT);	
+		SetSkeletonAnim(theNode->Skeleton, FIREANT_ANIM_FALLONBUTT);
 		theNode->ButtTimer = 2.0;
 	}
-	
+
 	return(false);
 }
-
-
-
 
 
 /***************** UPDATE FIRE FIREANT ************************/
@@ -762,7 +746,7 @@ static void UpdateFireAnt(ObjNode *theNode, Boolean updateFlame)
 			if ((theNode->ParticleGroup == -1) || (!VerifyParticleGroupMagicNum(theNode->ParticleGroup, theNode->FireParticleMagicNum)))
 			{
 				theNode->FireParticleMagicNum = MyRandomLong();			// generate a random magic num
-				
+
 				theNode->ParticleGroup = NewParticleGroup(	theNode->FireParticleMagicNum,	// magic num
 																PARTICLE_TYPE_GRAVITOIDS,	// type
 																PARTICLE_FLAGS_HOT,			// flags
@@ -783,31 +767,31 @@ static void UpdateFireAnt(ObjNode *theNode, Boolean updateFlame)
 					TQ3Vector3D	delta;
 					TQ3Point3D  pt;
 					static const TQ3Point3D off = {0,30, -10};							// offset to top of head
-				
+
 					theNode->FireTimer = 0;
-					
+
 					FindCoordOnJoint(theNode, FIREANT_HEAD_LIMB, &off, &pt);			// get coord of head
 					pt.x += (RandomFloat()-.5f) * 50.0f;
 					pt.y += (RandomFloat()-.5f) * 30.0f;
 					pt.z += (RandomFloat()-.5f) * 50.0f;
-					
+
 					delta.x = (RandomFloat()-.5f) * 50.0f;
 					delta.y = (RandomFloat()-.5f) * 30.0f + 40.0f;
 					delta.z = (RandomFloat()-.5f) * 50.0f;
-					
+
 					AddParticleToGroup(theNode->ParticleGroup, &pt, &delta, RandomFloat() + 1.7f, FULL_ALPHA);
 				}
 			}
 		}
 	}
-	
+
 		/* UPDATE ENEMY */
-		
+
 	UpdateEnemy(theNode);
 
 
-		/* UPDATE BUZZ */	
-	
+		/* UPDATE BUZZ */
+
 	if (theNode->Skeleton->AnimNum == FIREANT_ANIM_FLY)
 	{
 		if (theNode->EffectChannel == -1)
@@ -817,7 +801,7 @@ static void UpdateFireAnt(ObjNode *theNode, Boolean updateFlame)
 	}
 	else
 		StopAChannel(&theNode->EffectChannel);
-	
+
 }
 
 
@@ -837,11 +821,11 @@ long		i;
 	theNode->BreathRegulator += gFramesPerSecondFrac;				// see if time to spew fire
 	if (theNode->BreathRegulator < 0.02f)
 		return;
-		
+
 	theNode->BreathRegulator = 0;
 
 				/* CALC COORD OF MOUTH AND CENTER OF HEAD */
-				
+
 	FindJointFullMatrix(theNode, FIREANT_HEAD_LIMB, &m);
 	Q3Point3D_To3DTransformArray(&off[0], &m, &p[0], 2);//, sizeof(TQ3Point3D), sizeof(TQ3Point3D));
 
@@ -852,12 +836,12 @@ long		i;
 	dy = p[0].y - p[1].y;
 	dz = p[0].z - p[1].z;
 	FastNormalizeVector(dx,dy,dz, &dir);
-		
+
 					/* MAKE GROUP */
-					
+
 	if (theNode->BreathParticleGroup == -1)
 	{
-new_pgroup:	
+new_pgroup:
 		theNode->BreathParticleGroup = NewParticleGroup(0,							// magic num
 														PARTICLE_TYPE_FALLINGSPARKS,	// type
 														PARTICLE_FLAGS_BOUNCE|PARTICLE_FLAGS_HURTPLAYER|PARTICLE_FLAGS_HOT,		// flags
@@ -873,9 +857,9 @@ new_pgroup:
 			/**********************/
 			/* ADD FIRE PARTICLES */
 			/**********************/
-			
+
 	if (theNode->BreathParticleGroup != -1)
-	{	
+	{
 		for (i = 0; i < 4; i++)
 		{
 			TQ3Vector3D	dir2,delta;
@@ -885,33 +869,16 @@ new_pgroup:
 			dir2.x = dir.x * temp;								// speed of flames
 			dir2.y = dir.y * temp;
 			dir2.z = dir.z * temp;
-			
+
 					/* RANDOMLY ROTATE VECTOR IN CONE FOR GOOD SPREAD */
-					
+
 			Q3Matrix4x4_SetRotate_XYZ(&m, RandomFloat()*.15f, RandomFloat()*.15f, RandomFloat()*.15f);
 			Q3Vector3D_Transform(&dir2, &m, &delta);
-			
+
 			if (AddParticleToGroup(theNode->BreathParticleGroup, &p[0], &delta, 1.5f, FULL_ALPHA))
 				goto new_pgroup;
 		}
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

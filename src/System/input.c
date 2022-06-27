@@ -147,7 +147,6 @@ KeyBinding gKeyBindings[kKey_MAX] =
 };
 
 
-
 #pragma mark -
 
 
@@ -196,7 +195,7 @@ TQ3Vector2D GetThumbStickVector(bool rightStick)
 	else
 	{
 		float magnitude;
-		
+
 		if (magnitudeSquared > 1.0f)
 		{
 			// Cap magnitude -- what's returned by the controller actually lies within a square
@@ -247,7 +246,7 @@ void UpdateInput(void)
 	}
 
 		/* UPDATE KEYMAP */
-		
+
 	if (WeAreFrontProcess())								// only read keys if we're the front process
 		UpdateKeyMap();
 	else													// otherwise, just clear it out
@@ -308,7 +307,6 @@ void InvalidateKeyState(int need)
 }
 
 
-
 /**************** UPDATE KEY MAP *************/
 //
 // This reads the KeyMap and sets a bunch of new/old stuff.
@@ -332,12 +330,12 @@ void UpdateKeyMap(void)
 	for (int i = 0; i < kKey_MAX; i++)
 	{
 		const KeyBinding* kb = &gKeyBindings[i];
-		
+
 		bool downNow = false;
 
 		if (kb->key1 && kb->key1 < numkeys)
 			downNow |= 0 != keystate[kb->key1];
-		
+
 		if (kb->key2 && kb->key2 < numkeys)
 			downNow |= 0 != keystate[kb->key2];
 
@@ -450,9 +448,9 @@ void CaptureMouse(Boolean doCapture)
 
 void GetMouseDelta(float *dx, float *dy)
 {
-	
+
 		/* SEE IF OVERRIDE MOUSE WITH KEY MOVEMENT */
-			
+
 	if (gPlayerUsingKeyControl)
 	{
 		if (GetKeyState(kKey_Left))
@@ -470,7 +468,7 @@ void GetMouseDelta(float *dx, float *dy)
 			*dy = 1600.0f * gFramesPerSecondFrac;
 		else
 			*dy = 0;
-	
+
 		return;
 	}
 

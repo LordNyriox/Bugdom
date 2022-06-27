@@ -23,7 +23,6 @@ enum
 #define	MAX_OBJECTS_IN_GROUP	64
 
 
-
 /******************* LAWN LEVEL *************************/
 
 enum
@@ -61,7 +60,7 @@ enum
 	LAWN2_MObjType_Sunflower,
 	LAWN2_MObjType_Clover,
 	LAWN2_MObjType_Clover2,
-	
+
 	LAWN2_MObjType_Rock1,
 	LAWN2_MObjType_Rock2
 };
@@ -125,7 +124,7 @@ enum
 	FOREST_MObjType_FlatRock,
 	FOREST_MObjType_Rock,
 	FOREST_MObjType_WoodPost
-	
+
 };
 
 enum
@@ -153,27 +152,27 @@ enum
 	HIVE_MObjType_DetonatorRed,
 	HIVE_MObjType_DetonatorTeal,
 	HIVE_MObjType_Plunger,
-	
+
 	HIVE_MObjType_HiveDoor_Green,
 	HIVE_MObjType_HiveDoor_Orange,
 	HIVE_MObjType_HiveDoor_Purple,
 	HIVE_MObjType_HiveDoor_Red,
 	HIVE_MObjType_HiveDoor_Teal,
-	
+
 	HIVE_MObjType_HiveDoor_GreenOpen,
 	HIVE_MObjType_HiveDoor_OrangeOpen,
 	HIVE_MObjType_HiveDoor_PurpleOpen,
 	HIVE_MObjType_HiveDoor_RedOpen,
 	HIVE_MObjType_HiveDoor_TealOpen,
-	
+
 	HIVE_MObjType_BentTube,
 	HIVE_MObjType_SquiggleTube,
 	HIVE_MObjType_StraightTube,
 	HIVE_MObjType_TaperTube,
-	
+
 	HIVE_MObjType_HoneyBlob,
 	HIVE_MObjType_FloorSpike,
-	
+
 	HIVE_MObjType_Stinger
 };
 
@@ -185,7 +184,6 @@ enum
 	HIVE_MGroupNum_Plunger = MODEL_GROUP_LEVELSPECIFIC,
 	HIVE_MGroupNum_HiveDoor = MODEL_GROUP_LEVELSPECIFIC
 };
-
 
 
 /******************* NIGHT LEVEL *************************/

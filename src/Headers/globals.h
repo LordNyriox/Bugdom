@@ -7,13 +7,12 @@
 #pragma once
 
 			/* SOME FLOATING POINT HELPERS */
-			
+
 #define EPS 1e-5					// a very small number which is useful for FP compares close to 0
 
 
 #define	PICT_HEADER_SIZE	512
 #define REMOVE_ALL_EVENTS	 0
-
 
 
 		/*******************/
@@ -31,10 +30,10 @@ typedef	unsigned short u_short;
 #define	PI					kQ3Pi	//3.141592654
 #define PI2					(2.0f*PI)
 
-															
+
 							// COLLISION SIDE INFO
 							//=================================
-							
+
 #define	SIDE_BITS_TOP		(1)							// %000001	(r/l/b/t)
 #define	SIDE_BITS_BOTTOM	(1<<1)						// %000010
 #define	SIDE_BITS_LEFT		(1<<2)						// %000100 
@@ -89,7 +88,6 @@ enum
 	CTYPE_IMPENETRABLE2		= (1<<19),		// set with CTYPE_IMPENETRABLE if dont want player to do coord=oldCoord when touched
 	CTYPE_AUTOTARGETJUMP	= (1<<20)		// if auto target when jumping
 };
-
 
 
 							// OBJNODE STATUS BITS

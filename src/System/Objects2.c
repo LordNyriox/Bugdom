@@ -17,7 +17,6 @@
 /****************************/
 
 
-
 /****************************/
 /*    CONSTANTS             */
 /****************************/
@@ -42,7 +41,7 @@
 void AllocateCollisionBoxMemory(ObjNode *theNode, short numBoxes)
 {
 			/* FREE OLD STUFF */
-			
+
 	if (theNode->CollisionBoxes)
 	{
 		DisposePtr((Ptr)theNode->CollisionBoxes);
@@ -52,13 +51,13 @@ void AllocateCollisionBoxMemory(ObjNode *theNode, short numBoxes)
 	}
 
 				/* SET # */
-				
+
 	theNode->NumCollisionBoxes = numBoxes;
 	GAME_ASSERT(numBoxes > 0);
 
 
 				/* CURRENT LIST */
-				
+
 	theNode->CollisionBoxes		= (CollisionBoxType *) NewPtr(sizeof(CollisionBoxType) * numBoxes);
 	theNode->OldCollisionBoxes	= (CollisionBoxType *) NewPtr(sizeof(CollisionBoxType) * numBoxes);
 	GAME_ASSERT(theNode->CollisionBoxes);
@@ -95,7 +94,7 @@ CollisionBoxType *boxPtr;
 
 	GAME_ASSERT_MESSAGE(theNode->CollisionBoxes, "CalcObjectBox on objnode with no CollisionBoxType");
 	GAME_ASSERT(theNode->NumCollisionBoxes == 1);  // Source port
-		
+
 	boxPtr = theNode->CollisionBoxes;					// get ptr to 1st box (presumed only box)
 
 	boxPtr->left 	= theNode->Coord.x + (float)theNode->LeftOff;
@@ -124,7 +123,7 @@ CollisionBoxType *boxPtr;
 
 	if (theNode->CollisionBoxes == nil)
 		return;
-		
+
 	boxPtr = theNode->CollisionBoxes;					// get ptr to 1st box (presumed only box)
 
 	boxPtr->left 	= gCoord.x  + (float)theNode->LeftOff;
@@ -147,7 +146,7 @@ void SetObjectCollisionBounds(ObjNode *theNode, short top, short bottom, short l
 
 	AllocateCollisionBoxMemory(theNode, 1);					// alloc 1 collision box
 	theNode->TopOff 		= top;
-	theNode->BottomOff 	= bottom;	
+	theNode->BottomOff 	= bottom;
 	theNode->LeftOff 	= left;
 	theNode->RightOff 	= right;
 	theNode->FrontOff 	= front;
@@ -156,7 +155,6 @@ void SetObjectCollisionBounds(ObjNode *theNode, short top, short bottom, short l
 	CalcObjectBoxFromNode(theNode);
 	KeepOldCollisionBoxes(theNode);
 }
-
 
 
 //============================================================================================================
@@ -173,8 +171,8 @@ ObjNode	*shadowObj;
 
 	GAME_ASSERT_MESSAGE(!theNode->ShadowNode, "Node already had a shadow");
 
-	gNewObjectDefinition.group 		= GLOBAL1_MGroupNum_Shadow;	
-	gNewObjectDefinition.type 		= GLOBAL1_MObjType_Shadow;	
+	gNewObjectDefinition.group 		= GLOBAL1_MGroupNum_Shadow;
+	gNewObjectDefinition.type 		= GLOBAL1_MObjType_Shadow;
 	gNewObjectDefinition.coord 		= theNode->Coord;
 	gNewObjectDefinition.coord.y 	+= SHADOW_Y_OFF;
 	gNewObjectDefinition.flags		= STATUS_BIT_NOZWRITE | STATUS_BIT_NULLSHADER | gAutoFadeStatusBits;
@@ -211,13 +209,13 @@ ObjNode	*shadowObj;
 ObjNode	*AttachGlowShadowToObject(ObjNode *theNode, float scaleX, float scaleZ, Boolean checkBlockers)
 {
 ObjNode	*shadowObj;
-									
-	gNewObjectDefinition.group 		= MODEL_GROUP_LEVELSPECIFIC;	
-	gNewObjectDefinition.type 		= NIGHT_MObjType_GlowShadow;	
+
+	gNewObjectDefinition.group 		= MODEL_GROUP_LEVELSPECIFIC;
+	gNewObjectDefinition.type 		= NIGHT_MObjType_GlowShadow;
 	gNewObjectDefinition.coord 		= theNode->Coord;
 	gNewObjectDefinition.coord.y 	+= SHADOW_Y_OFF;
 	gNewObjectDefinition.flags 		= STATUS_BIT_NOZWRITE|STATUS_BIT_NULLSHADER|STATUS_BIT_GLOW|STATUS_BIT_NOFOG|gAutoFadeStatusBits;
-									
+
 	if (theNode->Slot >= SLOT_OF_DUMB+1)					// shadow *must* be after parent!
 		gNewObjectDefinition.slot 	= theNode->Slot+1;
 	else
@@ -240,8 +238,6 @@ ObjNode	*shadowObj;
 }
 
 
-
-
 /************************ UPDATE SHADOW *************************/
 
 void UpdateShadow(ObjNode *theNode)
@@ -256,12 +252,12 @@ float	dist;
 	shadowNode = theNode->ShadowNode;
 	if (shadowNode == nil)
 		return;
-		
+
 			/* SEE IF SHADOW OWNER IS IN WATER */
 			//
 			// Owner is in water dont draw shadows
 			//
-			
+
 	if (theNode->StatusBits & STATUS_BIT_UNDERWATER)
 	{
 		shadowNode->StatusBits |= STATUS_BIT_HIDDEN;
@@ -285,7 +281,7 @@ float	dist;
 		/****************************************************/
 		/* SEE IF SHADOW IS ON BLOCKER OBJECT OR ON TERRAIN */
 		/****************************************************/
-		
+
 	if (shadowNode->CheckForBlockers)
 	{
 		thisNodePtr = gFirstNodePtr;
@@ -312,25 +308,25 @@ float	dist;
 					shadowNode->RenderModifiers.drawOrder = thisNodePtr->RenderModifiers.drawOrder;
 
 					shadowNode->Coord.y = thisNodePtr->CollisionBoxes[0].top + SHADOW_Y_OFF;
-					
+
 					if (thisNodePtr->CType & CTYPE_LIQUID)						// if liquid, move to top
 					{
 						shadowNode->Coord.y += gLiquidCollisionTopOffset[thisNodePtr->Kind];
 					}
-					
+
 					shadowNode->Scale.x = shadowNode->SpecialF[0];				// use preset scale
 					shadowNode->Scale.z = shadowNode->SpecialF[1];
 					UpdateObjectTransforms(shadowNode);
 					return;
-					
+
 				}
-			}		
-	next:					
+			}
+	next:
 			thisNodePtr = (ObjNode *)thisNodePtr->NextNode;		// next node
 		}
 		while (thisNodePtr != nil);
-	}		
-		
+	}
+
 			/************************/
 			/* SHADOW IS ON TERRAIN */
 			/************************/
@@ -338,20 +334,19 @@ float	dist;
 	RotateOnTerrain(shadowNode, SHADOW_Y_OFF);							// set transform matrix
 
 			/* CALC SCALE OF SHADOW */
-			
+
 	dist = (y - shadowNode->Coord.y) * (1.0f/400.0f);					// as we go higher, shadow gets smaller
 	if (dist > .5f)
 		dist = .5f;
 	else
 	if (dist < 0.0f)
 		dist = 0;
-		
+
 	dist = 1.0f - dist;
-	
+
 	shadowNode->Scale.x = dist * shadowNode->SpecialF[0];				// this scale wont get updated until next frame (RotateOnTerrain).
 	shadowNode->Scale.z = dist * shadowNode->SpecialF[1];
 }
-
 
 
 //============================================================================================================
@@ -376,12 +371,12 @@ ObjNode				*theNode;
 		return;
 
 					/* PROCESS EACH OBJECT */
-					
+
 	do
-	{	
+	{
 		if (theNode->StatusBits & STATUS_BIT_ALWAYSCULL)
 			goto try_cull;
-			
+
 		if (theNode->StatusBits & STATUS_BIT_HIDDEN)			// if hidden then treat as OFF
 			goto draw_off;
 
@@ -408,13 +403,13 @@ draw_on:
 
 draw_off:
 		theNode->StatusBits |= STATUS_BIT_ISCULLED;								// set cull bit
-	
-	
+
+
 				/* NEXT NODE */
-next:			
+next:
 		theNode = theNode->NextNode;		// next node
 	}
-	while (theNode != nil);	
+	while (theNode != nil);
 }
 
 

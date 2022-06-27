@@ -15,7 +15,7 @@
 #define	INFOBAR_SLOT	(CAMERA_SLOT+1)
 #define	MORPH_SLOT		(SLOT_OF_DUMB + 2000)
 
-	
+
 enum
 {
 	SKELETON_GENRE,

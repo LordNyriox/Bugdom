@@ -148,7 +148,6 @@ typedef struct
 //=====================================================================
 
 
-
 void CreateSuperTileMemoryList(void);
 void DisposeSuperTileMemoryList(void);
 extern 	void DisposeTerrain(void);
@@ -158,7 +157,6 @@ extern	void InitTerrainManager(void);
 extern	void ClearScrollBuffer(void);
 float	GetTerrainHeightAtCoord(float x, float z, long layer);
 void InitCurrentScrollSettings(void);
-
 
 
 extern 	void BuildTerrainItemList(void);

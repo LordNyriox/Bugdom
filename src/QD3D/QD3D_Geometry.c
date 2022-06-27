@@ -133,8 +133,6 @@ void QD3D_CalcObjectBoundingSphere(int numMeshes, TQ3TriMeshData** meshList, TQ3
 }
 
 
-
-
 //===================================================================================================
 //===================================================================================================
 //===================================================================================================
@@ -292,7 +290,7 @@ static void ExplodeTriMesh(
 			/*******************************/
 			/* SCAN THRU ALL TRIMESH FACES */
 			/*******************************/
-					
+
 	for (int t = 0; t < inMesh->numTriangles; t += particleDensity)		// scan thru all faces
 	{
 				/* GET FREE PARTICLE INDEX */
@@ -462,7 +460,7 @@ TQ3Matrix4x4	matrix,matrix2;
 		if (particle->scale <= 0.0f)
 		{
 				/* DEACTIVATE THIS PARTICLE */
-	del:	
+	del:
 			particle->isUsed = false;
 			gNumParticles--;
 			continue;
@@ -481,7 +479,7 @@ TQ3Matrix4x4	matrix,matrix2;
 
 		Q3Matrix4x4_SetRotate_XYZ(&matrix, particle->rot.x, particle->rot.y, particle->rot.z);
 		MatrixMultiplyFast(&particle->matrix,&matrix, &matrix2);
-	
+
 					/* NOW TRANSLATE IT */
 
 		Q3Matrix4x4_SetTranslate(&matrix, particle->coord.x, particle->coord.y, particle->coord.z);
@@ -510,11 +508,9 @@ void QD3D_DrawParticles(const QD3DSetupOutputType *setupInfo)
 }
 
 
-
 //============================================================================================
 //============================================================================================
 //============================================================================================
-
 
 
 #pragma mark -
@@ -534,7 +530,6 @@ void QD3D_ScrollUVs(TQ3TriMeshData* mesh, float du, float dv)
 		mesh->vertexUVs[j].v += dv;
 	}
 }
-
 
 
 #pragma mark -

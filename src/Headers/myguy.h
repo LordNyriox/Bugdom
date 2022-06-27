@@ -59,7 +59,6 @@ enum
 #define	INVINCIBILITY_DURATION_DEATH		3.0f	// from death
 
 
-
 //=======================================================
 
 void InitPlayerAtStartOfLevel(void);
@@ -71,23 +70,22 @@ void PlayerHitEnemy(ObjNode *enemy);
 void KillPlayer(Boolean changeAnims);
 
 		/* BALL */
-		
+
 void InitPlayer_Ball(ObjNode *oldObj, TQ3Point3D *where);
 bool BallHasHeadroomToMorphToBug(void);
 
 		/* BUG */
-		
+
 ObjNode *InitPlayer_Bug(ObjNode *oldObj, TQ3Point3D *where, float rotY, int animNum);
 void KnockPlayerBugOnButt(TQ3Vector3D *delta, Boolean allowBall, Boolean playerIsCurrent);
 void PlayerGrabRootSwing(ObjNode *root, int joint);
 
 
 		/* BUDDY */
-		
+
 void CreateMyBuddy(float x, float z);
 
 
 void UpdatePlayerShield(void);
-
 
 

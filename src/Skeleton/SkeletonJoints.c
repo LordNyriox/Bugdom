@@ -17,7 +17,6 @@
 /****************************/
 
 
-
 /****************************/
 /*    CONSTANTS             */
 /****************************/
@@ -29,8 +28,6 @@
 /*********************/
 /*    VARIABLES      */
 /*********************/
-
-
 
 
 /******************** UPDATE JOINT TRANSFORMS ****************************/
@@ -54,32 +51,32 @@ const JointKeyframeType	*kfPtr;
 	if ((kfPtr->scale.x != 1.0f) || (kfPtr->scale.y != 1.0f) || (kfPtr->scale.z != 1.0f))				// SEE IF CAN IGNORE SCALE
 	{
 						/* ROTATE IT */
-				
+
 		Q3Matrix4x4_SetRotate_XYZ(&matrix1, kfPtr->rotation.x, kfPtr->rotation.y, kfPtr->rotation.z);	// set matrix for x/y/z rot
 
 
 					/* SCALE & TRANSLATE */
-	
-		matrix2.value[0][0] = kfPtr->scale.x;									
-												matrix2.value[1][1] = kfPtr->scale.y;											
+
+		matrix2.value[0][0] = kfPtr->scale.x;
+												matrix2.value[1][1] = kfPtr->scale.y;
 																						matrix2.value[2][2] = kfPtr->scale.z;
 		matrix2.value[3][0] = kfPtr->coord.x;	matrix2.value[3][1] = kfPtr->coord.y;	matrix2.value[3][2] = kfPtr->coord.z;
-		
-		MatrixMultiplyFast(&matrix1,&matrix2,destMatPtr);		
+
+		MatrixMultiplyFast(&matrix1,&matrix2,destMatPtr);
 	}
 	else
 	{
 						/* ROTATE IT */
-				
+
 		Q3Matrix4x4_SetRotate_XYZ(destMatPtr, kfPtr->rotation.x, kfPtr->rotation.y, kfPtr->rotation.z);	// set matrix for x/y/z rot
-	
+
 						/* NOW TRANSLATE IT */
-	
+
 		destMatPtr->value[3][0] =  kfPtr->coord.x;
 		destMatPtr->value[3][1] =  kfPtr->coord.y;
 		destMatPtr->value[3][2] =  kfPtr->coord.z;
 	}
-													
+
 }
 
 
@@ -117,7 +114,6 @@ TQ3Matrix4x4	matrix;
 }
 
 
-
 /************* FIND JOINT FULL MATRIX ****************/
 //
 // Returns an accumulated matrix for a joint's coordinates.
@@ -132,7 +128,7 @@ BoneDefinitionType	*bonePtr;
 	GAME_ASSERT_MESSAGE(theNode->Skeleton, "Node has no skeleton");
 
 			/* ACCUMULATE A MATRIX DOWN THE CHAIN */
-			
+
 	*outMatrix = theNode->Skeleton->jointTransformMatrix[jointNum];		// init matrix
 
 	skeletonPtr =  theNode->Skeleton;									// point to skeleton
@@ -141,7 +137,7 @@ BoneDefinitionType	*bonePtr;
 		Q3Matrix4x4_SetTranslate(outMatrix, theNode->Coord.x, theNode->Coord.y, theNode->Coord.z);
 		return;
 	}
-		
+
 	skeletonDefPtr = skeletonPtr->skeletonDefinition;					// point to skeleton defintion
 
 	if ((jointNum >= skeletonDefPtr->NumBones)	||						// check for illegal joints
@@ -153,10 +149,10 @@ BoneDefinitionType	*bonePtr;
 	while(bonePtr[jointNum].parentBone != NO_PREVIOUS_JOINT)
 	{
 		jointNum = bonePtr[jointNum].parentBone;
-		
-  		MatrixMultiply(outMatrix,&skeletonPtr->jointTransformMatrix[jointNum],outMatrix);				
+
+  		MatrixMultiply(outMatrix,&skeletonPtr->jointTransformMatrix[jointNum],outMatrix);
 	}
-	
+
 			/* ALSO FACTOR IN THE BASE MATRIX */
 			//
 			// Caller should make sure this is up to date!
@@ -164,8 +160,5 @@ BoneDefinitionType	*bonePtr;
 
 	MatrixMultiply(outMatrix,&theNode->BaseTransformMatrix,outMatrix);
 }
-
-
-
 
 

@@ -46,13 +46,13 @@ static void  MoveRoach_OnButt(ObjNode *theNode);
 
 #define	ROACH_FOOT_OFFSET			0.0f
 
-#define	ROACH_KNOCKDOWN_SPEED		1700.0f	
+#define	ROACH_KNOCKDOWN_SPEED		1700.0f
 
 #define	GAS_DIST					1200.0f
 
 
 		/* ANIMS */
-	
+
 
 enum
 {
@@ -95,44 +95,41 @@ ObjNode	*newObj;
 	}
 
 
-
 				/*******************************/
 				/* MAKE DEFAULT SKELETON ENEMY */
 				/*******************************/
-				
+
 	newObj = MakeEnemySkeleton(SKELETON_TYPE_ROACH,x,z, ROACH_SCALE);
 	if (newObj == nil)
 		return(false);
 	newObj->TerrainItemPtr = itemPtr;
 
 	SetSkeletonAnim(newObj->Skeleton, ROACH_ANIM_STAND);
-	
+
 
 				/*******************/
 				/* SET BETTER INFO */
 				/*******************/
-			
-	newObj->Coord.y 	-= ROACH_FOOT_OFFSET;			
+
+	newObj->Coord.y 	-= ROACH_FOOT_OFFSET;
 	newObj->MoveCall 	= MoveRoach;							// set move call
 	newObj->Health 		= 1.0;
 	newObj->Damage 		= .1;
 	newObj->Kind 		= ENEMY_KIND_ROACH;
-	newObj->CType		|= CTYPE_KICKABLE|CTYPE_HURTME|CTYPE_HURTNOKNOCK;		
-		
-	
+	newObj->CType		|= CTYPE_KICKABLE|CTYPE_HURTME|CTYPE_HURTNOKNOCK;
+
+
 				/* SET COLLISION INFO */
-				
+
 	SetObjectCollisionBounds(newObj, 250,ROACH_FOOT_OFFSET,-100,100,100,-100);
 	CalcNewTargetOffsets(newObj,ROACH_TARGET_OFFSET);
 
 
-	
-
 				/* MAKE SHADOW */
-				
+
 	AttachShadowToObject(newObj, 8, 8,false);
-	
-		
+
+
 	gNumEnemies++;
 	gNumEnemyOfKind[ENEMY_KIND_ROACH]++;
 	return(true);
@@ -158,9 +155,8 @@ static	void(*myMoveTable[])(ObjNode *) =
 	}
 
 	GetObjectInfo(theNode);
-	myMoveTable[theNode->Skeleton->AnimNum](theNode);	
+	myMoveTable[theNode->Skeleton->AnimNum](theNode);
 }
-
 
 
 /********************** MOVE ROACH: STANDING ******************************/
@@ -170,42 +166,39 @@ static void  MoveRoach_Standing(ObjNode *theNode)
 float	dist;
 
 				/* TURN TOWARDS ME */
-				
-	TurnObjectTowardTarget(theNode, &gCoord, gMyCoord.x, gMyCoord.z, ROACH_TURN_SPEED, false);			
 
-		
+	TurnObjectTowardTarget(theNode, &gCoord, gMyCoord.x, gMyCoord.z, ROACH_TURN_SPEED, false);
+
 
 				/* SEE IF CHASE */
 
 	dist = CalcQuickDistance(gMyCoord.x, gMyCoord.z, gCoord.x, gCoord.z);
 	if (dist < ROACH_CHASE_DIST)
-	{					
+	{
 		MorphToSkeletonAnim(theNode->Skeleton, ROACH_ANIM_WALK, 8);
 	}
 
 			/* MOVE */
-				
+
 	gDelta.y -= ENEMY_GRAVITY*gFramesPerSecondFrac;				// add gravity
 	MoveEnemy(theNode);
-				
+
 
 				/* DO ENEMY COLLISION */
-				
+
 	if (DoEnemyCollisionDetect(theNode,DEFAULT_ENEMY_COLLISION_CTYPES))
 		return;
 
 				/* SEE IF IN LIQUID */
-				
+
 	if (theNode->StatusBits & STATUS_BIT_UNDERWATER)
 	{
 		KillRoach(theNode);
 	}
 
 
-	UpdateRoach(theNode, false);		
+	UpdateRoach(theNode, false);
 }
-
-
 
 
 /********************** MOVE ROACH: WALKING ******************************/
@@ -217,35 +210,35 @@ float		r,fps;
 	fps = gFramesPerSecondFrac;
 
 			/* MOVE TOWARD PLAYER */
-			
-	TurnObjectTowardTarget(theNode, &gCoord, gMyCoord.x, gMyCoord.z, ROACH_TURN_SPEED, false);			
+
+	TurnObjectTowardTarget(theNode, &gCoord, gMyCoord.x, gMyCoord.z, ROACH_TURN_SPEED, false);
 
 	r = theNode->Rot.y;
 	gDelta.x = -sin(r) * ROACH_WALK_SPEED;
 	gDelta.z = -cos(r) * ROACH_WALK_SPEED;
 	gDelta.y -= ENEMY_GRAVITY*fps;				// add gravity
 	MoveEnemy(theNode);
-		
-		
+
+
 				/* UPDATE ANIM SPEED */
 
 	if (theNode->Skeleton->AnimNum == ROACH_ANIM_WALK)
 		theNode->Skeleton->AnimSpeed = ROACH_WALK_SPEED * .004f;
-	
+
 
 				/* DO ENEMY COLLISION */
-				
+
 	if (DoEnemyCollisionDetect(theNode,DEFAULT_ENEMY_COLLISION_CTYPES))
 		return;
-	
+
 				/* SEE IF IN LIQUID */
-				
+
 	if (theNode->StatusBits & STATUS_BIT_UNDERWATER)
 	{
 		KillRoach(theNode);
 	}
-	
-	UpdateRoach(theNode, true);		
+
+	UpdateRoach(theNode, true);
 }
 
 
@@ -255,14 +248,14 @@ static void  MoveRoach_OnButt(ObjNode *theNode)
 {
 	if (theNode->StatusBits & STATUS_BIT_ONGROUND)			// if on ground, add friction
 		ApplyFrictionToDeltas(140.0,&gDelta);
-		
+
 	gDelta.y -= ENEMY_GRAVITY*gFramesPerSecondFrac;			// add gravity
 
 	MoveEnemy(theNode);
 
 
 				/* SEE IF DONE */
-			
+
 	theNode->ButtTimer -= gFramesPerSecondFrac;
 	if (theNode->ButtTimer <= 0.0)
 	{
@@ -271,7 +264,7 @@ static void  MoveRoach_OnButt(ObjNode *theNode)
 
 
 				/* DO ENEMY COLLISION */
-				
+
 	if (DoEnemyCollisionDetect(theNode,DEFAULT_ENEMY_COLLISION_CTYPES))
 		return;
 
@@ -280,25 +273,24 @@ static void  MoveRoach_OnButt(ObjNode *theNode)
 }
 
 
-
 /********************** MOVE ROACH: DEATH ******************************/
 
 static void  MoveRoach_Death(ObjNode *theNode)
 {
 			/* SEE IF GONE */
-			
+
 	if (theNode->StatusBits & STATUS_BIT_ISCULLED)		// if was culled on last frame and is far enough away, then delete it
 	{
 		if (CalcQuickDistance(gCoord.x, gCoord.z, gMyCoord.x, gMyCoord.z) > 1000.0f)
 		{
 			DeleteEnemy(theNode);
 			return;
-		}		
+		}
 	}
 
 
 				/* MOVE IT */
-				
+
 	if (theNode->StatusBits & STATUS_BIT_ONGROUND)		// if on ground, add friction
 		ApplyFrictionToDeltas(60.0,&gDelta);
 	gDelta.y -= ENEMY_GRAVITY*gFramesPerSecondFrac;		// add gravity
@@ -306,14 +298,14 @@ static void  MoveRoach_Death(ObjNode *theNode)
 
 
 				/* DO ENEMY COLLISION */
-				
+
 	if (DoEnemyCollisionDetect(theNode,DEATH_ENEMY_COLLISION_CTYPES))
 		return;
 
 
 				/* UPDATE */
-			
-	UpdateRoach(theNode, false);		
+
+	UpdateRoach(theNode, false);
 
 }
 
@@ -321,7 +313,6 @@ static void  MoveRoach_Death(ObjNode *theNode)
 //===============================================================================================================
 //===============================================================================================================
 //===============================================================================================================
-
 
 
 #pragma mark -
@@ -335,38 +326,38 @@ float			x,z,placement;
 
 			/* GET SPLINE INFO */
 
-	placement = itemPtr->placement;	
-	
+	placement = itemPtr->placement;
+
 	GetCoordOnSpline(&(*gSplineList)[splineNum], placement, &x, &z);
 
 
 				/* MAKE DEFAULT SKELETON ENEMY */
-				
+
 	newObj = MakeEnemySkeleton(SKELETON_TYPE_ROACH,x,z, ROACH_SCALE);
 	if (newObj == nil)
 		return(false);
-		
+
 	DetachObject(newObj);										// detach this object from the linked list
-		
+
 	newObj->SplineItemPtr = itemPtr;
 	newObj->SplineNum = splineNum;
-	
+
 	SetSkeletonAnim(newObj->Skeleton, ROACH_ANIM_WALK);
-		
+
 
 				/* SET BETTER INFO */
-			
+
 	newObj->StatusBits		|= STATUS_BIT_ONSPLINE;
 	newObj->SplinePlacement = placement;
-	newObj->Coord.y 		-= ROACH_FOOT_OFFSET;			
+	newObj->Coord.y 		-= ROACH_FOOT_OFFSET;
 	newObj->SplineMoveCall 	= MoveRoachOnSpline;				// set move call
 	newObj->Health 			= 1.0;
 	newObj->Damage 			= 0;
 	newObj->Kind 			= ENEMY_KIND_ROACH;
 	newObj->CType			|= CTYPE_KICKABLE|CTYPE_HURTNOKNOCK|CTYPE_HURTME;	// these can be kicked
-	
+
 				/* SET COLLISION INFO */
-				
+
 	SetObjectCollisionBounds(newObj, 70,ROACH_FOOT_OFFSET,-70,70,70,-70);
 	CalcNewTargetOffsets(newObj,ROACH_TARGET_OFFSET);
 
@@ -374,13 +365,13 @@ float			x,z,placement;
 	newObj->InitCoord = newObj->Coord;							// remember where started
 
 				/* MAKE SHADOW */
-				
+
 	shadowObj = AttachShadowToObject(newObj, 8, 8, false);
 	DetachObject(shadowObj);									// detach this object from the linked list
 
 
 			/* ADD SPLINE OBJECT TO SPLINE OBJECT LIST */
-			
+
 	AddToSplineObjectList(newObj);
 
 	return(true);
@@ -402,36 +393,34 @@ Boolean isVisible;
 
 
 			/* UPDATE STUFF IF VISIBLE */
-			
+
 	if (isVisible)
 	{
 		theNode->Rot.y = CalcYAngleFromPointToPoint(theNode->Rot.y, theNode->OldCoord.x, theNode->OldCoord.z,			// calc y rot aim
-												theNode->Coord.x, theNode->Coord.z);		
+												theNode->Coord.x, theNode->Coord.z);
 
 		theNode->Coord.y = GetTerrainHeightAtCoord(theNode->Coord.x, theNode->Coord.z, FLOOR) - ROACH_FOOT_OFFSET;	// calc y coord
 		UpdateObjectTransforms(theNode);																// update transforms
 		CalcObjectBoxFromNode(theNode);																	// update collision box
-		UpdateShadow(theNode);	
-		
+		UpdateShadow(theNode);
+
 		if (CalcQuickDistance(theNode->Coord.x, theNode->Coord.z, gMyCoord.x, gMyCoord.z) < GAS_DIST)
 			LeaveGasTrail(theNode);
 
 				/* DO SOME COLLISION CHECKING */
-				
+
 		if (DoEnemyCollisionDetect(theNode,CTYPE_HURTENEMY))					// just do this to see if explosions hurt
 			return;
 	}
-	
+
 			/* HIDE SOME THINGS SINCE INVISIBLE */
 	else
 	{
 //		if (theNode->ShadowNode)						// hide shadow
-//			theNode->ShadowNode->StatusBits |= STATUS_BIT_HIDDEN;	
+//			theNode->ShadowNode->StatusBits |= STATUS_BIT_HIDDEN;
 	}
-	
+
 }
-
-
 
 
 #pragma mark -
@@ -450,18 +439,18 @@ Boolean	killed = false;
 				/************************/
 				/* HURT & KNOCK ON BUTT */
 				/************************/
-				
+
 	if (me->Speed > ROACH_KNOCKDOWN_SPEED)
-	{	
+	{
 				/*****************/
 				/* KNOCK ON BUTT */
 				/*****************/
-					
+
 		killed = KnockRoachOnButt(enemy, me->Delta.x * .8f, me->Delta.y * .8f + 250.0f, me->Delta.z * .8f, .5);
 
 		PlayEffect_Parms3D(EFFECT_POUND, &gCoord, kMiddleC+2, 2.0);
 	}
-	
+
 	return(killed);
 }
 
@@ -475,34 +464,34 @@ Boolean KnockRoachOnButt(ObjNode *enemy, float dx, float dy, float dz, float dam
 {
 	if (enemy->Skeleton->AnimNum == ROACH_ANIM_ONBUTT)		// see if already in butt mode
 		return(false);
-		
+
 		/* IF ON SPLINE, DETACH */
-		
+
 	DetachEnemyFromSpline(enemy, MoveRoach);
 
 
 			/* GET IT MOVING */
-		
+
 	enemy->Delta.x = dx;
 	enemy->Delta.y = dy;
 	enemy->Delta.z = dz;
 
 	MorphToSkeletonAnim(enemy->Skeleton, ROACH_ANIM_ONBUTT, 9.0);
 	enemy->ButtTimer = 2.0;
-	
+
 
 		/* SLOW DOWN PLAYER */
-		
+
 	gDelta.x *= .2f;
 	gDelta.y *= .2f;
 	gDelta.z *= .2f;
 
 
 		/* HURT & SEE IF KILLED */
-			
+
 	if (EnemyGotHurt(enemy, damage))
 		return(true);
-		
+
 	return(false);
 }
 
@@ -514,24 +503,21 @@ Boolean KnockRoachOnButt(ObjNode *enemy, float dx, float dy, float dz, float dam
 
 Boolean KillRoach(ObjNode *theNode)
 {
-	
+
 		/* IF ON SPLINE, DETACH */
-		
+
 	DetachEnemyFromSpline(theNode, MoveRoach);
 
 
 			/* DEACTIVATE */
-			
+
 	theNode->TerrainItemPtr = nil;				// dont ever come back
 	theNode->CType = CTYPE_MISC;
 
-	MorphToSkeletonAnim(theNode->Skeleton, ROACH_ANIM_DEATH, 2.0);	
-	
+	MorphToSkeletonAnim(theNode->Skeleton, ROACH_ANIM_DEATH, 2.0);
+
 	return(false);
 }
-
-
-
 
 
 /***************** UPDATE ROACH ************************/
@@ -539,7 +525,7 @@ Boolean KillRoach(ObjNode *theNode)
 static void UpdateRoach(ObjNode *theNode, Boolean gas)
 {
 	UpdateEnemy(theNode);
-	
+
 	if (gas)
 	{
 		if (CalcQuickDistance(gCoord.x, gCoord.z, gMyCoord.x, gMyCoord.z) < GAS_DIST)
@@ -563,10 +549,10 @@ ObjNode	*newObj;
 	theNode->GasTimer = RandomFloat()*.1f;
 
 			/* MAKE CLOUD OBJECT */
-			
-	gNewObjectDefinition.group 		= MODEL_GROUP_LEVELSPECIFIC;	
+
+	gNewObjectDefinition.group 		= MODEL_GROUP_LEVELSPECIFIC;
 	if (gLevelType == LEVEL_TYPE_ANTHILL)
-		gNewObjectDefinition.type 	= ANTHILL_MObjType_GasCloud;	
+		gNewObjectDefinition.type 	= ANTHILL_MObjType_GasCloud;
 	else
 		gNewObjectDefinition.type 	= NIGHT_MObjType_GasCloud;
 
@@ -584,18 +570,18 @@ ObjNode	*newObj;
 		return;
 
 			/* SET COLLISION */
-			
+
 	newObj->CType = CTYPE_DRAINBALLTIME;
 	newObj->CBits = CBITS_TOUCHABLE;
 	newObj->Damage = .2;
-	
+
 	SetObjectCollisionBounds(newObj,90,-90,-100,100,100,-100);
 
 	newObj->Health = 5.0f + RandomFloat()*3.0f;
 
 	newObj->Delta.x = (RandomFloat()-.5f) * 50.0f;
 	newObj->Delta.z = (RandomFloat()-.5f) * 50.0f;
-	
+
 	newObj->RotDeltaY = (RandomFloat()-.5f) * 2.0f;
 }
 
@@ -609,7 +595,7 @@ float fps = gFramesPerSecondFrac;
 	GetObjectInfo(theNode);
 
 	theNode->Rot.y += fps * theNode->RotDeltaY;
-	
+
 	if (theNode->Scale.x < 2.0f)
 		theNode->Scale.z = theNode->Scale.x += fps * 1.0f; 
 
@@ -618,14 +604,14 @@ float fps = gFramesPerSecondFrac;
 	gCoord.z += gDelta.z * fps;
 
 			/* DISPERSE GAS */
-			
+
 	theNode->Health -= fps;
 	if (theNode->Health <= 0.0f)
 	{
 		DeleteObject(theNode);
 		return;
 	}
-	
+
 	if (theNode->Health < 1.0f)
 	{
 		MakeObjectTransparent(theNode, theNode->Health);
@@ -633,7 +619,7 @@ float fps = gFramesPerSecondFrac;
 	}
 
 		/* SEE IF IGNITE */
-		
+
 	if (theNode->Health < 5.0f)
 	{
 		if (ParticleHitObject(theNode, PARTICLE_FLAGS_HOT))
@@ -645,7 +631,7 @@ float fps = gFramesPerSecondFrac;
 
 
 		/* UPDATE */
-		
+
 	UpdateObject(theNode);
 }
 
@@ -658,7 +644,7 @@ long			pg,i;
 TQ3Vector3D		delta;
 
 			/* SEE IF NEED TO CREATE NEW PARTICLE GROUP */
-						
+
 	if ((gCurrentGasParticleGroup == -1) || (!VerifyParticleGroupMagicNum(gCurrentGasParticleGroup, gCurrentGasParticleMagicNum)))
 	{
 		gCurrentGasParticleMagicNum = MyRandomLong();			// generate a random magic num
@@ -672,11 +658,11 @@ TQ3Vector3D		delta;
 								-1.5,							// decay rate
 								1.2,							// fade rate
 								PARTICLE_TEXTURE_ORANGESPOT);	// texture
-		gCurrentGasParticleGroup = pg;	
+		gCurrentGasParticleGroup = pg;
 	}
 	else
 		pg = gCurrentGasParticleGroup;
-		
+
 
 			/* ADD PARTICLES TO CURRENT GROUP */
 
@@ -693,20 +679,12 @@ TQ3Vector3D		delta;
 				break;
 			}
 		}
-	}		
+	}
 
 	PlayEffect_Parms3D(EFFECT_FIRECRACKER, &theNode->Coord, kMiddleC-10, .9);
 
 	DeleteObject(theNode);
 
 }
-
-
-
-
-
-
-
-
 
 

@@ -33,7 +33,6 @@ static SkeletonDefType		*gLoadedSkeletonsList[MAX_SKELETON_TYPES];
 static TQ3BoundingSphere	gSkeletonBoundingSpheres[MAX_SKELETON_TYPES];
 
 
-
 /**************** INIT SKELETON MANAGER *********************/
 
 void InitSkeletonManager(void)
@@ -70,7 +69,6 @@ void LoadASkeleton(Byte num)
 		gLoadedSkeletonsList[num]->decomposedTriMeshPtrs[9]->texturingMode |= kQ3TexturingModeExt_NullShaderFlag;	// beard
 	}
 }
-
 
 
 /****************** FREE SKELETON FILE **************************/
@@ -123,16 +121,16 @@ float	scale;
 	scale = newObjDef->scale;
 
 			/* CREATE NEW OBJECT NODE */
-			
+
 	newObjDef->genre = SKELETON_GENRE;
-	newNode = MakeNewObject(newObjDef);		
+	newNode = MakeNewObject(newObjDef);
 	if (newNode == nil)
 		return(nil);
-		
-	newNode->StatusBits |= STATUS_BIT_ANIM;						// turn on animation		
-		
+
+	newNode->StatusBits |= STATUS_BIT_ANIM;						// turn on animation
+
 			/* LOAD SKELETON FILE INTO OBJECT */
-			
+
 	newNode->Skeleton = MakeNewSkeletonBaseData(type); 			// alloc & set skeleton data
 	GAME_ASSERT(newNode->Skeleton);
 
@@ -173,8 +171,6 @@ float	scale;
 }
 
 
-
-
 /***************** ALLOC SKELETON DEFINITION MEMORY **********************/
 //
 // Allocates all of the sub-arrays for a skeleton file's definition data.
@@ -207,11 +203,11 @@ long	numAnims,numJoints;
 //		skeleton->AnimEventsList[i] = (AnimEventType *)AllocPtr(sizeof(AnimEventType)*MAX_ANIM_EVENTS);	// alloc 2nd dimension (for max events)
 //		if (skeleton->AnimEventsList[i] == nil)
 //			DoFatalAlert("Not enough memory to alloc AnimEventsList");
-//	}	
-	
+//	}
+
 			/* ALLOC BONE INFO */
-			
-	skeleton->Bones = (BoneDefinitionType *)AllocPtr(sizeof(BoneDefinitionType)*numJoints);	
+
+	skeleton->Bones = (BoneDefinitionType *)AllocPtr(sizeof(BoneDefinitionType)*numJoints);
 	GAME_ASSERT(skeleton->Bones);
 
 
@@ -220,10 +216,10 @@ long	numAnims,numJoints;
 	skeleton->decomposedTriMeshPtrs = (TQ3TriMeshData **)AllocPtr(sizeof(TQ3TriMeshData*)*MAX_DECOMPOSED_TRIMESHES);
 	GAME_ASSERT(skeleton->decomposedTriMeshPtrs);
 
-	skeleton->decomposedPointList = (DecomposedPointType *)AllocPtr(sizeof(DecomposedPointType)*MAX_DECOMPOSED_POINTS);		
+	skeleton->decomposedPointList = (DecomposedPointType *)AllocPtr(sizeof(DecomposedPointType)*MAX_DECOMPOSED_POINTS);
 	GAME_ASSERT(skeleton->decomposedPointList);
 
-	skeleton->decomposedNormalsList = (TQ3Vector3D *)AllocPtr(sizeof(TQ3Vector3D)*MAX_DECOMPOSED_NORMALS);		
+	skeleton->decomposedNormalsList = (TQ3Vector3D *)AllocPtr(sizeof(TQ3Vector3D)*MAX_DECOMPOSED_NORMALS);
 	GAME_ASSERT(skeleton->decomposedNormalsList);
 }
 
@@ -241,26 +237,26 @@ static void DisposeSkeletonDefinitionMemory(SkeletonDefType *skeleton)
 	int numJoints = skeleton->NumBones;
 
 			/* NUKE THE SKELETON BONE POINT & NORMAL INDEX ARRAYS */
-			
+
 	for (int j=0; j < numJoints; j++)
 	{
 		if (skeleton->Bones[j].pointList)
 			DisposePtr((Ptr)skeleton->Bones[j].pointList);
 		if (skeleton->Bones[j].normalList)
-			DisposePtr((Ptr)skeleton->Bones[j].normalList);			
+			DisposePtr((Ptr)skeleton->Bones[j].normalList);
 	}
 	DisposePtr((Ptr)skeleton->Bones);									// free bones array
 	skeleton->Bones = nil;
 
 				/* DISPOSE ANIM EVENTS LISTS */
-				
+
 	DisposePtr((Ptr)skeleton->NumAnimEvents);
-	
+
 	Free2DArray((void**) skeleton->AnimEventsList);
 	skeleton->AnimEventsList = nil;
 
 			/* DISPOSE JOINT INFO */
-			
+
 	for (int j=0; j < numJoints; j++)
 	{
 		Free2DArray((void**) skeleton->JointKeyframes[j].keyFrames);		// dispose 2D array of keyframe data
@@ -309,7 +305,7 @@ static void DisposeSkeletonDefinitionMemory(SkeletonDefType *skeleton)
 	}
 
 			/* DISPOSE OF MASTER DEFINITION BLOCK */
-			
+
 	DisposePtr((Ptr)skeleton);
 }
 
@@ -331,7 +327,7 @@ SkeletonObjDataType	*skeletonData;
 
 
 			/* ALLOC MEMORY FOR NEW SKELETON OBJECT DATA STRUCTURE */
-			
+
 	skeletonData = (SkeletonObjDataType *)AllocPtr(sizeof(SkeletonObjDataType));
 	GAME_ASSERT(skeletonData);
 
@@ -350,9 +346,9 @@ SkeletonObjDataType	*skeletonData;
 
 void FreeSkeletonBaseData(SkeletonObjDataType *data)
 {
-	
+
 			/* FREE THE SKELETON DATA */
-			
-	DisposePtr((Ptr)data);			
+
+	DisposePtr((Ptr)data);
 }
 

@@ -62,7 +62,6 @@ enum
 };
 
 
-
 //=================================================================
 
 void ShowHighScoresScreen(unsigned long newScore);

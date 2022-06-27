@@ -39,7 +39,7 @@ static void UpdateBoxerFly(ObjNode *theNode);
 
 #define	MAX_BOXERFLY_RANGE			(BOXERFLY_CHASE_RANGE+1000.0f)	// max distance this enemy can go from init coord
 
-#define	BOXERFLY_HEALTH				1.0f		
+#define	BOXERFLY_HEALTH				1.0f
 #define	BOXERFLY_DAMAGE				0.04f
 #define	BOXERFLY_PUNCH_DAMAGE		.2f
 #define	BOXERFLY_SCALE				.9f
@@ -70,7 +70,6 @@ enum
 #define	BOXERFLY_KNOCKDOWN_SPEED	1400.0f		// speed ball needs to go to knock this down
 
 
-
 /*********************/
 /*    VARIABLES      */
 /*********************/
@@ -95,35 +94,35 @@ ObjNode	*newObj;
 		return(false);
 
 				/* MAKE DEFAULT SKELETON ENEMY */
-				
+
 	newObj = MakeEnemySkeleton(SKELETON_TYPE_BOXERFLY,x,z,BOXERFLY_SCALE);
 	if (newObj == nil)
 		return(false);
 	newObj->TerrainItemPtr = itemPtr;
 
 	SetSkeletonAnim(newObj->Skeleton, BOXERFLY_ANIM_FLY);
-	
+
 
 				/* SET BETTER INFO */
-			
-	newObj->Coord.y 	+= BOXERFLY_FLIGHT_HEIGHT;			
+
+	newObj->Coord.y 	+= BOXERFLY_FLIGHT_HEIGHT;
 	newObj->MoveCall 	= MoveBoxerFly;							// set move call
 	newObj->Health 		= BOXERFLY_HEALTH;
 	newObj->Damage 		= BOXERFLY_DAMAGE;
 	newObj->Kind 		= ENEMY_KIND_BOXERFLY;
 	newObj->CType		|= CTYPE_KICKABLE|CTYPE_AUTOTARGET;		// these can be kicked
 	newObj->CBits		= CBITS_NOTTOP;
-	
+
 	newObj->Mode		= BOXERFLY_MODE_WAITING;
 	newObj->HonorRange	= true;
-	
+
 				/* SET COLLISION INFO */
-				
+
 	SetObjectCollisionBounds(newObj, 70,-40,-40,40,40,-40);
 
 
 				/* MAKE SHADOW */
-				
+
 	AttachShadowToObject(newObj, 7, 7, false);
 
 	newObj->InitCoord = newObj->Coord;							// remember where started
@@ -135,9 +134,6 @@ ObjNode	*newObj;
 	gNumEnemyOfKind[ENEMY_KIND_BOXERFLY]++;
 	return(true);
 }
-
-
-
 
 
 /********************* MOVE BOXERFLY **************************/
@@ -158,7 +154,7 @@ static	void(*myMoveTable[])(ObjNode *) =
 	}
 
 	GetObjectInfo(theNode);
-	
+
 	myMoveTable[theNode->Skeleton->AnimNum](theNode);
 }
 
@@ -175,62 +171,61 @@ float	r,aim;
 			/*****************************/
 			/* JUST HOVERING AND WAITING */
 			/*****************************/
-			
+
 		case	BOXERFLY_MODE_WAITING:
-				TurnObjectTowardTarget(theNode, &gCoord, gMyCoord.x, gMyCoord.z, BOXERFLY_TURN_SPEED, false);			
-				
+				TurnObjectTowardTarget(theNode, &gCoord, gMyCoord.x, gMyCoord.z, BOXERFLY_TURN_SPEED, false);
+
 					/* SEE IF CLOSE ENOUGH TO ATTACK */
-					
+
 				if (CalcQuickDistance(gCoord.x, gCoord.z, gMyCoord.x, gMyCoord.z) < BOXERFLY_CHASE_RANGE)
-					theNode->Mode = BOXERFLY_MODE_CHASE;				
+					theNode->Mode = BOXERFLY_MODE_CHASE;
 				break;
-	
-				
+
+
 				/*****************/
 				/* FLY BACK HOME */
 				/*****************/
-				
+
 		case	BOXERFLY_MODE_GOHOME:
-		
+
 						/* MOVE TOWARD HOME */
-						
+
 				TurnObjectTowardTarget(theNode, &gCoord, theNode->InitCoord.x, theNode->InitCoord.z, BOXERFLY_TURN_SPEED, false);
 
 				r = theNode->Rot.y;
 				gDelta.x = sin(r) * -BOXERFLY_CHASE_SPEED;
 				gDelta.z = cos(r) * -BOXERFLY_CHASE_SPEED;
-				
+
 				gCoord.x += gDelta.x * fps;
 				gCoord.z += gDelta.z * fps;
 
 						/* SEE IF THERE */
-						
+
 				if (CalcQuickDistance(gCoord.x, gCoord.z, theNode->InitCoord.x, theNode->InitCoord.z) < 400.0f)
 					theNode->Mode = BOXERFLY_MODE_WAITING;
 				break;
-				
-		
-		
+
+
 				/**************/
 				/* CHASE MODE */
 				/**************/
-				
+
 		default:
-		
+
 						/* MOVE TOWARD PLAYER */
-						
-				aim = TurnObjectTowardTarget(theNode, &gCoord, gMyCoord.x, gMyCoord.z, BOXERFLY_TURN_SPEED, false);			
+
+				aim = TurnObjectTowardTarget(theNode, &gCoord, gMyCoord.x, gMyCoord.z, BOXERFLY_TURN_SPEED, false);
 
 				r = theNode->Rot.y;
 				gDelta.x = sin(r) * -BOXERFLY_CHASE_SPEED;
 				gDelta.z = cos(r) * -BOXERFLY_CHASE_SPEED;
-				
+
 				gCoord.x += gDelta.x * fps;
 				gCoord.z += gDelta.z * fps;
-				
+
 				/* SEE IF CLOSE ENOUGH TO PUNCH */
-					
-				if (aim < (PI/3))										// must be aiming at me	
+
+				if (aim < (PI/3))										// must be aiming at me
 				{
 					if (CalcQuickDistance(gCoord.x, gCoord.z, gMyCoord.x, gMyCoord.z) < BOXERFLY_PUNCH_RANGE)
 					{
@@ -238,13 +233,13 @@ float	r,aim;
 						theNode->PunchActive = false;
 					}
 				}
-				
+
 					/* SEE IF TOO FAR AWAY AND NEED TO FLY BACK HOME */
-					
+
 				if (theNode->HonorRange)								// see if we care about range
 				{
 					if (CalcQuickDistance(theNode->InitCoord.x, theNode->InitCoord.z, gCoord.x, gCoord.z) > MAX_BOXERFLY_RANGE)
-						theNode->Mode = BOXERFLY_MODE_GOHOME;				
+						theNode->Mode = BOXERFLY_MODE_GOHOME;
 				}
 	}
 
@@ -258,12 +253,12 @@ float	r,aim;
 				/**********************/
 				/* DO ENEMY COLLISION */
 				/**********************/
-				
+
 	if (DoEnemyCollisionDetect(theNode,DEFAULT_ENEMY_COLLISION_CTYPES))
 		return;
 
-	UpdateBoxerFly(theNode);		
-	
+	UpdateBoxerFly(theNode);
+
 }
 
 
@@ -280,8 +275,8 @@ int		i;
 				/**********************/
 				/* MOVE TOWARD PLAYER */
 				/**********************/
-						
-	TurnObjectTowardTarget(theNode, &gCoord, gMyCoord.x, gMyCoord.z, BOXERFLY_TURN_SPEED, false);			
+
+	TurnObjectTowardTarget(theNode, &gCoord, gMyCoord.x, gMyCoord.z, BOXERFLY_TURN_SPEED, false);
 
 	r = theNode->Rot.y;
 	gDelta.x = sin(r) * -BOXERFLY_CHASE_SPEED;
@@ -289,12 +284,12 @@ int		i;
 
 	gCoord.x += gDelta.x * fps;
 	gCoord.z += gDelta.z * fps;
-	gCoord.y = GetTerrainHeightAtCoord(gCoord.x, gCoord.z, FLOOR) + BOXERFLY_FLIGHT_HEIGHT;	// calc y coord				
+	gCoord.y = GetTerrainHeightAtCoord(gCoord.x, gCoord.z, FLOOR) + BOXERFLY_FLIGHT_HEIGHT;	// calc y coord
 	gCoord.y += BoxerFlyWobbleOff;
 
 
 				/* SEE IF DONE WITH ANIM */
-				
+
 	if (theNode->Skeleton->AnimHasStopped)
 	{
 		MorphToSkeletonAnim(theNode->Skeleton, BOXERFLY_ANIM_FLY,3.0);
@@ -314,32 +309,31 @@ int		i;
 												glovePt.z+25, glovePt.z-25))
 			{
 					/* HURT THE PLAYER VIA NORMAL METHODS */
-					
+
 				PlayerGotHurt(nil, BOXERFLY_PUNCH_DAMAGE, false, false, true, INVINCIBILITY_DURATION);
-				
-			
+
+
 					/* ALSO SEND PLAYER FLYING FROM PUNCH */
-				
+
 				gPlayerObj->Delta.x = gDelta.x * 4.0f;
 				gPlayerObj->Delta.z = gDelta.z * 4.0f;
 				gPlayerObj->Delta.y = 1400.0f;
-				
+
 				theNode->Mode = BOXERFLY_MODE_GOHOME;				// fly should go home now
-			}	
+			}
 		}
 	}
 
-		
 
 				/**********************/
 				/* DO ENEMY COLLISION */
 				/**********************/
-				
+
 	if (DoEnemyCollisionDetect(theNode,DEFAULT_ENEMY_COLLISION_CTYPES))
 		return;
 
-	UpdateBoxerFly(theNode);		
-	
+	UpdateBoxerFly(theNode);
+
 }
 
 
@@ -355,7 +349,7 @@ static void  MoveBoxerFly_Death(ObjNode *theNode)
 
 
 				/* MOVE IT */
-				
+
 	if (theNode->StatusBits & STATUS_BIT_ONGROUND)			// if on ground, add friction
 		ApplyFrictionToDeltas(60.0,&gDelta);
 	gDelta.y -= ENEMY_GRAVITY*gFramesPerSecondFrac;			// add gravity
@@ -363,14 +357,14 @@ static void  MoveBoxerFly_Death(ObjNode *theNode)
 
 
 				/* DO ENEMY COLLISION */
-				
+
 	if (DoEnemyCollisionDetect(theNode,DEATH_ENEMY_COLLISION_CTYPES))
 		return;
 
 
 				/* UPDATE */
-			
-	UpdateBoxerFly(theNode);		
+
+	UpdateBoxerFly(theNode);
 }
 
 /********************* UPDATE BOXERFLY ****************************/
@@ -385,7 +379,7 @@ static void UpdateBoxerFly(ObjNode *theNode)
 			Update3DSoundChannel(EFFECT_BUZZ, &theNode->EffectChannel, &theNode->Coord);
 	}
 
-	UpdateEnemy(theNode);		
+	UpdateEnemy(theNode);
 }
 
 #pragma mark -
@@ -399,29 +393,29 @@ float			x,z,placement;
 
 			/* GET SPLINE INFO */
 
-	placement = itemPtr->placement;	
+	placement = itemPtr->placement;
 	GetCoordOnSpline(&(*gSplineList)[splineNum], placement, &x, &z);
 
 
 				/* MAKE DEFAULT SKELETON ENEMY */
-				
+
 	newObj = MakeEnemySkeleton(SKELETON_TYPE_BOXERFLY,x,z, BOXERFLY_SCALE);
 	if (newObj == nil)
 		return(false);
-		
+
 	DetachObject(newObj);									// detach this object from the linked list
-		
+
 	newObj->SplineItemPtr = itemPtr;
 	newObj->SplineNum = splineNum;
-	
+
 	SetSkeletonAnim(newObj->Skeleton, BOXERFLY_ANIM_FLY);
-	
+
 
 				/* SET BETTER INFO */
-			
+
 	newObj->StatusBits		|= STATUS_BIT_ONSPLINE;
 	newObj->SplinePlacement = placement;
-	newObj->Coord.y 		+= BOXERFLY_FLIGHT_HEIGHT;			
+	newObj->Coord.y 		+= BOXERFLY_FLIGHT_HEIGHT;
 	newObj->SplineMoveCall 	= MoveBoxerFlyOnSpline;				// set move call
 	newObj->Health 			= BOXERFLY_HEALTH;
 	newObj->Damage 			= BOXERFLY_DAMAGE;
@@ -431,20 +425,20 @@ float			x,z,placement;
 
 	newObj->Wobble = 0;
 
-	
+
 				/* SET COLLISION INFO */
-				
+
 	SetObjectCollisionBounds(newObj, 70,-40,-40,40,40,-40);
 
 
 				/* MAKE SHADOW */
-				
+
 	shadowObj = AttachShadowToObject(newObj, 7, 7, false);
 	DetachObject(shadowObj);									// detach this object from the linked list
 
 
 			/* ADD SPLINE OBJECT TO SPLINE OBJECT LIST */
-			
+
 	AddToSplineObjectList(newObj);
 
 	return(true);
@@ -473,47 +467,47 @@ float	fps = gFramesPerSecondFrac;
 			/***************************/
 			/* UPDATE STUFF IF VISIBLE */
 			/***************************/
-			
+
 	if (isVisible)
 	{
 			/* START/UPDATE BUZZ */
-	
+
 		if (theNode->EffectChannel == -1)
 			theNode->EffectChannel = PlayEffect3D(EFFECT_BUZZ, &theNode->Coord);
 		else
 			Update3DSoundChannel(EFFECT_BUZZ, &theNode->EffectChannel, &theNode->Coord);
-	
+
 		theNode->Rot.y = CalcYAngleFromPointToPoint(theNode->Rot.y, theNode->OldCoord.x, theNode->OldCoord.z,			// calc y rot aim
-												theNode->Coord.x, theNode->Coord.z);		
+												theNode->Coord.x, theNode->Coord.z);
 
 		theNode->Coord.y = GetTerrainHeightAtCoord(theNode->Coord.x, theNode->Coord.z, FLOOR) + BOXERFLY_FLIGHT_HEIGHT;	// calc y coord
 		theNode->Coord.y += BoxerFlyWobbleOff;															// do wobble
 		UpdateObjectTransforms(theNode);																// update transforms
 		CalcObjectBoxFromNode(theNode);																	// update collision box
-		UpdateShadow(theNode);																			// update shadow		
-		
+		UpdateShadow(theNode);																			// update shadow
+
 				/*********************************/
 				/* SEE IF CLOSE ENOUGH TO ATTACK */
 				/*********************************/
-				
+
 		if (CalcQuickDistance(theNode->Coord.x, theNode->Coord.z, gMyCoord.x, gMyCoord.z) < BOXERFLY_CHASE_RANGE)
 		{
 					/* REMOVE FROM SPLINE */
-					
+
 			DetachEnemyFromSpline(theNode, MoveBoxerFly);
 
 			theNode->Mode		= BOXERFLY_MODE_CHASE;
 			theNode->HonorRange = false;
-		}		
+		}
 	}
-	
+
 			/* NOT VISIBLE */
 	else
 	{
 		StopObjectStreamEffect(theNode);
-	
+
 //		if (theNode->ShadowNode)									// hide shadow
-//			theNode->ShadowNode->StatusBits |= STATUS_BIT_HIDDEN;	
+//			theNode->ShadowNode->StatusBits |= STATUS_BIT_HIDDEN;
 	}
 }
 
@@ -533,14 +527,14 @@ Boolean	killed = false;
 				/************************/
 				/* HURT & KNOCK ON BUTT */
 				/************************/
-				
+
 	if (me->Speed > BOXERFLY_KNOCKDOWN_SPEED)
-	{	
+	{
 		KillBoxerFly(enemy, me->Delta.x*.5f, 400, me->Delta.z*.5f);
    		killed = true;
 		PlayEffect_Parms3D(EFFECT_POUND, &gCoord, kMiddleC+2, 2.0);
 	}
-	
+
 	return(killed);
 }
 
@@ -553,48 +547,40 @@ Boolean	killed = false;
 Boolean KillBoxerFly(ObjNode *theNode, float dx, float dy, float dz)
 {
 		/* STOP BUZZ */
-		
+
 	if (theNode->EffectChannel != -1)
 		StopAChannel(&theNode->EffectChannel);
 
-	
+
 		/* IF ON SPLINE, DETACH */
-		
+
 	DetachEnemyFromSpline(theNode, MoveBoxerFly);
 
 
 			/* DEACTIVATE */
-			
+
 	theNode->TerrainItemPtr = nil;									// dont ever come back
 	theNode->CType = CTYPE_MISC;
 	theNode->BottomOff = 0;
-	
+
 			/* NUKE SHADOW */
-			
+
 	if (theNode->ShadowNode)
 	{
 		DeleteObject(theNode->ShadowNode);
-		theNode->ShadowNode = nil;	
+		theNode->ShadowNode = nil;
 	}
-	
+
 		/* DO DEATH ANIM */
-			
+
 	if (theNode->Skeleton->AnimNum != BOXERFLY_ANIM_DEATH)
 		SetSkeletonAnim(theNode->Skeleton, BOXERFLY_ANIM_DEATH);
-		
-	theNode->Delta.x = dx;	
-	theNode->Delta.y = dy;	
-	theNode->Delta.z = dz;	
-	
+
+	theNode->Delta.x = dx;
+	theNode->Delta.y = dy;
+	theNode->Delta.z = dz;
+
 	return(false);
 }
-
-
-
-
-
-
-
-
 
 

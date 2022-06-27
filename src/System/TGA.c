@@ -318,6 +318,6 @@ OSErr ReadTGA(const FSSpec* spec, uint8_t** outPtr, TGAHeader* outHeader, bool f
 	if (outHeader != nil)
 		*outHeader = header;
 	*outPtr = pixelData;
-	
+
 	return noErr;
 }

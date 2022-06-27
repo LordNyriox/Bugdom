@@ -36,7 +36,6 @@ static void MoveLadyBug(ObjNode *theNode);
 #define LADYBUG_MAX_ALTITUDE_FOR_SHADOW		1250.0f
 
 
-
 /**********************/
 /*     VARIABLES      */
 /**********************/
@@ -73,8 +72,8 @@ int		checkpointNum = itemPtr->parm[0];
 			/* CREATE STRAW */
 			/****************/
 
-	gNewObjectDefinition.group 		= GLOBAL1_MGroupNum_Straw;	
-	gNewObjectDefinition.type 		= GLOBAL1_MObjType_Straw;	
+	gNewObjectDefinition.group 		= GLOBAL1_MGroupNum_Straw;
+	gNewObjectDefinition.type 		= GLOBAL1_MObjType_Straw;
 	gNewObjectDefinition.coord.x 	= x;
 	gNewObjectDefinition.coord.y 	= GetTerrainHeightAtCoord(x,z,FLOOR);
 	gNewObjectDefinition.coord.z 	= z;
@@ -91,8 +90,8 @@ int		checkpointNum = itemPtr->parm[0];
 	straw->CType = CTYPE_MISC|CTYPE_BLOCKCAMERA;
 	straw->CBits = CBITS_ALLSOLID;
 	SetObjectCollisionBounds(straw,300,0,-20,20,20,-20);
-		
-		
+
+
 			/******************/
 			/* CREATE DROPLET */
 			/******************/
@@ -100,9 +99,9 @@ int		checkpointNum = itemPtr->parm[0];
 			// only add this if the checkpoint is newer than or equal to most recent checkpoint.
 			//
 
-	if (checkpointNum > gBestCheckPoint)	
-	{		
-		gNewObjectDefinition.type 		= GLOBAL1_MObjType_Droplet;	
+	if (checkpointNum > gBestCheckPoint)
+	{
+		gNewObjectDefinition.type 		= GLOBAL1_MObjType_Droplet;
 		gNewObjectDefinition.coord.x 	+= 192.0f * CHECKPOINT_SCALE;
 		gNewObjectDefinition.coord.y 	+= 224.0f * CHECKPOINT_SCALE;
 		gNewObjectDefinition.flags 		= gAutoFadeStatusBits | STATUS_BIT_NOZWRITE;
@@ -111,28 +110,28 @@ int		checkpointNum = itemPtr->parm[0];
 		droplet = MakeNewDisplayGroupObject(&gNewObjectDefinition);
 		if (droplet == nil)
 			return(false);
-			
+
 		MakeObjectTransparent(droplet, .6);						// make xparent
-			
+
 		droplet->DropletScaleXI = RandomFloat();
 		droplet->DropletScaleYI = RandomFloat();
 		droplet->DropletScaleZI = RandomFloat();
 		droplet->CheckPointNum	= itemPtr->parm[0];				// save checkpoint #
-	
-	
+
+
 				/* SET TRIGGER STUFF */
-	
+
 		droplet->CType 			= CTYPE_TRIGGER|CTYPE_PLAYERTRIGGERONLY|CTYPE_AUTOTARGET|CTYPE_AUTOTARGETJUMP;
 		droplet->CBits 			= CBITS_ALLSOLID;
 		droplet->TriggerSides 	= ALL_SOLID_SIDES;				// side(s) to activate it
 		droplet->Kind 			= TRIGTYPE_CHECKPOINT;
-	
+
 		droplet->PlayerRot 		= (float)itemPtr->parm[1] * (PI2/4);
-	
+
 		SetObjectCollisionBounds(droplet,0,-73*CHECKPOINT_SCALE,
 								-21*CHECKPOINT_SCALE,21*CHECKPOINT_SCALE,
 								21*CHECKPOINT_SCALE,-21*CHECKPOINT_SCALE);
-	
+
 		straw->ChainNode = droplet;								// link drop to straw
 		droplet->ChainHead = straw;
 	}
@@ -151,23 +150,23 @@ ObjNode	*droplet;
 		DeleteObject(straw);
 		return;
 	}
-	
+
 			/* UPDATE DROPLET */
-			
+
 	droplet = straw->ChainNode;										// this might be gone, so check
 	if (droplet)
-	{		
+	{
 		droplet->DropletScaleXI += gFramesPerSecondFrac * 8.0f;
 		droplet->DropletScaleYI += gFramesPerSecondFrac * 9.0f;
 		droplet->DropletScaleZI += gFramesPerSecondFrac * 7.0f;
-	
+
 		droplet->Scale.x = CHECKPOINT_SCALE + (sin(droplet->DropletScaleXI) * .4f);
 		droplet->Scale.y = CHECKPOINT_SCALE + (sin(droplet->DropletScaleYI) * .4f);
 		droplet->Scale.z = CHECKPOINT_SCALE + (sin(droplet->DropletScaleZI) * .4f);
-		
+
 		UpdateObjectTransforms(droplet);
 	}
-	
+
 }
 
 
@@ -192,9 +191,9 @@ TQ3Vector3D		delta;
 	{
 		gBestCheckPoint = num;
 		gMostRecentCheckPointCoord = theNode->Coord;	// remember where this checkpoint is
-		gCheckPointRot = theNode->PlayerRot;			// see what rot to restore player to				
-	}		
-	
+		gCheckPointRot = theNode->PlayerRot;			// see what rot to restore player to
+	}
+
 			/******************/
 			/* POP THE BUBBLE */
 			/******************/
@@ -208,7 +207,7 @@ TQ3Vector3D		delta;
 							-1.7,						// decay rate
 							.9,							// fade rate
 							PARTICLE_TEXTURE_BLUEFIRE);	// texture
-	
+
 	if (pg != -1)
 	{
 		for (i = 0; i < 15; i++)
@@ -217,16 +216,16 @@ TQ3Vector3D		delta;
 			delta.y = (RandomFloat()-.5f) * 500.0f;
 			delta.z = (RandomFloat()-.5f) * 500.0f;
 			AddParticleToGroup(pg, &theNode->Coord, &delta, RandomFloat() + 1.0f, FULL_ALPHA);
-		}			
-	}	
-	
+		}
+	}
+
 			/* PLAY SOUND */
-			
+
 	PlayEffect3D(EFFECT_CHECKPOINT, &theNode->Coord);
-	
-	
+
+
 			/* REMOVE DROPLET FROM CHECKPOINT */
-			
+
 	theNode->ChainHead->ChainNode = nil;					// remove from parent chain
 	DeleteObject(theNode);
 	return(false);
@@ -250,9 +249,9 @@ float		y;
 			/********************/
 			/* ADD MODEL OF LOG */
 			/********************/
-			
-	gNewObjectDefinition.group 		= GLOBAL2_MGroupNum_ExitLog;	
-	gNewObjectDefinition.type 		= GLOBAL2_MObjType_ExitLog;	
+
+	gNewObjectDefinition.group 		= GLOBAL2_MGroupNum_ExitLog;
+	gNewObjectDefinition.type 		= GLOBAL2_MObjType_ExitLog;
 	gNewObjectDefinition.coord.x 	= x;
 	gNewObjectDefinition.coord.y 	= y = GetTerrainHeightAtCoord(x,z,FLOOR);
 	gNewObjectDefinition.coord.z 	= z;
@@ -270,11 +269,11 @@ float		y;
 	logObj->CType = CTYPE_MISC|CTYPE_BLOCKCAMERA|CTYPE_IMPENETRABLE;
 	logObj->CBits = CBITS_ALLSOLID;
 
-			/* BUILD COLLISION BOXES */			
-	
+			/* BUILD COLLISION BOXES */
+
 	AllocateCollisionBoxMemory(logObj, 3);							// alloc 3 collision boxes
 
-	boxPtr = logObj->CollisionBoxes;			
+	boxPtr = logObj->CollisionBoxes;
 
 	boxPtr[0].top 		= y + (90*LOG_SCALE);
 	boxPtr[0].bottom	= y + (0*LOG_SCALE);
@@ -317,7 +316,7 @@ float		y;
 				boxPtr[2].right 	= x + (104*LOG_SCALE);
 				boxPtr[2].front 	= z + (30*LOG_SCALE);
 				boxPtr[2].back 		= z - (30*LOG_SCALE);
-				break;					
+				break;
 
 		case	2:
 				boxPtr[0].left 		= x - (63*LOG_SCALE);
@@ -357,14 +356,14 @@ float		y;
 	}
 
 	KeepOldCollisionBoxes(logObj);							// set old stuff
-		
-		
+
+
 			/*************************/
 			/* CREATE TRIGGER AT END */
 			/*************************/
 
 				/* FRONT END */
-			
+
 	gNewObjectDefinition.genre 		= EVENT_GENRE;
 	gNewObjectDefinition.flags 		= 0;
 	gNewObjectDefinition.slot++;
@@ -377,8 +376,8 @@ float		y;
 	end->CBits 			= CBITS_ALLSOLID;
 	end->TriggerSides 	= ALL_SOLID_SIDES;					// side(s) to activate it
 	end->Kind 			= TRIGTYPE_EXITLOG;
-	
-	
+
+
 	switch(rot)
 	{
 		case	0:
@@ -404,14 +403,13 @@ float		y;
 										24*LOG_SCALE,80*LOG_SCALE,
 										30*LOG_SCALE,-30*LOG_SCALE);
 				break;
-				
+
 	}
-	
+
 	logObj->ChainNode = end;
-	
+
 	return(true);											// item was added
 }
-
 
 
 /************** DO TRIGGER - EXIT LOG ********************/
@@ -441,13 +439,13 @@ Boolean DoTrig_ExitLog(ObjNode *theNode, ObjNode *whoNode, Byte sideBits)
 Boolean AddKingWaterPipe(TerrainItemEntryType *itemPtr, long  x, long z)
 {
 ObjNode	*newObj;
-	
+
 	if (gRealLevel != LEVEL_NUM_ANTKING)
 		DoFatalAlert("AddKingWaterPipe: not on this level!");
-	
-			
-	gNewObjectDefinition.group 		= MODEL_GROUP_LEVELSPECIFIC;	
-	gNewObjectDefinition.type 		= ANTHILL_MObjType_KingPipe;	
+
+
+	gNewObjectDefinition.group 		= MODEL_GROUP_LEVELSPECIFIC;
+	gNewObjectDefinition.type 		= ANTHILL_MObjType_KingPipe;
 	gNewObjectDefinition.coord.x 	= x;
 	gNewObjectDefinition.coord.y 	= GetTerrainHeightAtCoord(x,z,FLOOR);
 	gNewObjectDefinition.coord.z 	= z;
@@ -464,13 +462,13 @@ ObjNode	*newObj;
 
 
 				/* SET TRIGGER STUFF */
-	
+
 	newObj->CType 			= CTYPE_MISC|CTYPE_TRIGGER|CTYPE_PLAYERTRIGGERONLY|CTYPE_AUTOTARGET|
 							CTYPE_KICKABLE|CTYPE_IMPENETRABLE;
 	newObj->CBits 			= CBITS_ALLSOLID;
 	newObj->TriggerSides 	= ALL_SOLID_SIDES;				// side(s) to activate it
 	newObj->Kind 			= TRIGTYPE_KINGPIPE;
-	
+
 	SetObjectCollisionBounds(newObj,900,0,-120,120,120,-120);
 
 
@@ -478,7 +476,7 @@ ObjNode	*newObj;
 
 	newObj->PipeID = itemPtr->parm[0];						// get pipe ID#
 	newObj->SpewWater = false;
-	
+
 	newObj->InitCoord.y += 300.0f;
 	return(true);											// item was added
 }
@@ -497,27 +495,27 @@ long	i;
 	if (theNode->SpewWater)
 	{
 				/* UPDATE WATER EFFECT */
-				
+
 		if (theNode->EffectChannel == -1)
 			theNode->EffectChannel = PlayEffect_Parms3D(EFFECT_WATERLEAK, &theNode->InitCoord, kMiddleC-3, 1.5);
 		else
 			Update3DSoundChannel(EFFECT_WATERLEAK, &theNode->EffectChannel, &theNode->InitCoord);
-	
+
 				/* UPDATE PARTICLES */
-				
+
 		theNode->SpewWaterRegulator += gFramesPerSecondFrac;			// check timer
 		if (theNode->SpewWaterRegulator > .03f)
 		{
 			theNode->SpewWaterRegulator = 0;
-			
-			
+
+
 				/* MAKE PARTICLE GROUP */
-				
+
 			if ((theNode->ParticleGroup == -1) || (!VerifyParticleGroupMagicNum(theNode->ParticleGroup, theNode->FireParticleMagicNum)))
 			{
-new_group:			
+new_group:
 				theNode->FireParticleMagicNum = MyRandomLong();			// generate a random magic num
-					
+
 				theNode->ParticleGroup = NewParticleGroup(theNode->FireParticleMagicNum, // magic num
 														PARTICLE_TYPE_FALLINGSPARKS,// type
 														PARTICLE_FLAGS_BOUNCE|PARTICLE_FLAGS_EXTINGUISH,		// flags
@@ -528,14 +526,14 @@ new_group:
 														.8,							// fade rate
 														PARTICLE_TEXTURE_PATCHY);	// texture
 			}
-			
-			
+
+
 					/* ADD PARTICLES */
-					
+
 			if (theNode->ParticleGroup != -1)
 			{
 				TQ3Vector3D	delta;
-				
+
 				for (i = 0; i < 8; i++)
 				{
 					delta.x = (RandomFloat()-.5f) * 950.0f;
@@ -546,9 +544,9 @@ new_group:
 				}
 			}
 		}
-		
+
 			/* SEE IF TIME TO STOP */
-			
+
 		theNode->WaterTimer	-= gFramesPerSecondFrac;
 		if (theNode->WaterTimer <= 0.0f)
 		{
@@ -556,19 +554,19 @@ new_group:
 			theNode->RefillTimer = 5;
 		}
 	}
-	
+
 		/*******************/
 		/* DONT SPEW WATER */
 		/*******************/
-		
+
 	else
 	{
-		theNode->RefillTimer -= gFramesPerSecondFrac;	
-	
+		theNode->RefillTimer -= gFramesPerSecondFrac;
+
 		if (theNode->EffectChannel != -1)
 			StopAChannel(&theNode->EffectChannel);
 	}
-		
+
 }
 
 
@@ -580,7 +578,7 @@ new_group:
 Boolean DoTrig_KingWaterPipe(ObjNode *theNode, ObjNode *whoNode, Byte sideBits)
 {
 	(void) sideBits;
-	
+
 	if (whoNode->Speed < 500.0f)					// must hit it with reasonable speed
 		return(true);
 
@@ -593,10 +591,10 @@ Boolean DoTrig_KingWaterPipe(ObjNode *theNode, ObjNode *whoNode, Byte sideBits)
 		theNode->SpewWater = true;
 		theNode->WaterTimer = 4;
 	}
-	
-	
+
+
 	PlayEffect3D(EFFECT_PIPECLANG, &theNode->InitCoord);
-	
+
 	return(true);
 }
 
@@ -638,11 +636,11 @@ float	y;
 			/******************/
 
 	gNewObjectDefinition.slot 			= TRIGGER_SLOT;
-	
+
 	for (i = 0; i < 4; i++)
 	{
-		gNewObjectDefinition.group 		= GLOBAL1_MGroupNum_LadyBug;	
-		gNewObjectDefinition.type 		= GLOBAL1_MObjType_LadyBugPost;	
+		gNewObjectDefinition.group 		= GLOBAL1_MGroupNum_LadyBug;
+		gNewObjectDefinition.type 		= GLOBAL1_MObjType_LadyBugPost;
 		gNewObjectDefinition.coord.x 	= x + po[i].x;
 		gNewObjectDefinition.coord.y 	= y + 10.0f;
 		gNewObjectDefinition.coord.z 	= z + po[i].y;
@@ -660,14 +658,14 @@ float	y;
 		if (i == 0)
 			post[0]->TerrainItemPtr = itemPtr;			// keep ptr to item list
 		else
-			post[i-1]->ChainNode = post[i];				// keep in chain						
-	}		
-		
+			post[i-1]->ChainNode = post[i];				// keep in chain
+	}
+
 			/***************/
 			/* CREATE CAGE */
 			/***************/
 
-	gNewObjectDefinition.type 		= GLOBAL1_MObjType_LadyBugCage;	
+	gNewObjectDefinition.type 		= GLOBAL1_MObjType_LadyBugCage;
 	gNewObjectDefinition.coord.x 	= x;
 	gNewObjectDefinition.coord.z 	= z;
 	gNewObjectDefinition.flags 		= STATUS_BIT_KEEPBACKFACES | gAutoFadeStatusBits;
@@ -684,19 +682,18 @@ float	y;
 
 	SetObjectCollisionBounds(cage,200,0,-130,130,130,-130);
 
-	post[3]->ChainNode = cage;	
+	post[3]->ChainNode = cage;
 	cage->ChainHead = post[0];
-
 
 
 			/****************/
 			/* MAKE LADYBUG */
 			/****************/
-				
+
 	gNewObjectDefinition.type 		= SKELETON_TYPE_LADYBUG;
-	gNewObjectDefinition.animNum 	= LADYBUG_ANIM_WAIT;							
+	gNewObjectDefinition.animNum 	= LADYBUG_ANIM_WAIT;
 	gNewObjectDefinition.coord.y 	= y + 100.0f;
-	gNewObjectDefinition.flags 		= gAutoFadeStatusBits;	
+	gNewObjectDefinition.flags 		= gAutoFadeStatusBits;
 	gNewObjectDefinition.slot++;
 	gNewObjectDefinition.scale 		= LADYBUG_SCALE;
 	bug = MakeNewSkeletonObject(&gNewObjectDefinition);
@@ -718,7 +715,7 @@ static void MoveLadyBugBonus(ObjNode *box)
 		DeleteObject(box);
 		return;
 	}
-	
+
 }
 
 
@@ -732,7 +729,7 @@ Boolean KickLadyBugBox(ObjNode *cage)
 ObjNode	*bug,*p0,*p1,*p2,*p3;
 
 		/* RELEASE THE LADY BUG */
-		
+
 	bug = cage->ChainNode;
 	if (bug)
 	{
@@ -743,12 +740,12 @@ ObjNode	*bug,*p0,*p1,*p2,*p3;
 		cage->ChainNode = nil;					// detach bug from chain
 		AttachShadowToObject(bug, 5, 5, false);	// give her a shadow
 	}
-	
+
 	GetLadyBug();								// give me credit for this
 
 
 		/* GET HEAD OF CHAIN */
-		
+
 	p0 = cage->ChainHead;
 	p0->TerrainItemPtr = nil;					// dont ever come back!
 
@@ -759,7 +756,7 @@ ObjNode	*bug,*p0,*p1,*p2,*p3;
 
 
 		/* EXPLODE THE CAGE */
-				
+
 	QD3D_ExplodeGeometry(cage, 700.0f, PARTICLE_MODE_BOUNCE|PARTICLE_MODE_NULLSHADER, 1, .6);
 	DeleteObject(cage);
 
@@ -776,7 +773,7 @@ static void MoveLadyBug(ObjNode *theNode)
 		DeleteObject(theNode);
 		return;
 	}
-	
+
 	GetObjectInfo(theNode);
 
 	if (theNode->Skeleton->AnimHasStopped)
@@ -785,7 +782,7 @@ static void MoveLadyBug(ObjNode *theNode)
 	if (theNode->Skeleton->AnimNum == LADYBUG_ANIM_FLY)
 	{
 		gDelta.y += 100.0 * gFramesPerSecondFrac;
-		gCoord.y += gDelta.y * gFramesPerSecondFrac;	
+		gCoord.y += gDelta.y * gFramesPerSecondFrac;
 		theNode->Rot.y += gFramesPerSecondFrac;
 
 		float altitude = gCoord.y - theNode->InitCoord.y;
@@ -803,9 +800,9 @@ static void MoveLadyBug(ObjNode *theNode)
 	}
 
 	UpdateObject(theNode);
-	
+
 		/* UPDATE SOUND */
-		
+
 	if (theNode->Skeleton->AnimNum == LADYBUG_ANIM_FLY)
 	{
 		if (theNode->EffectChannel == -1)
@@ -823,12 +820,12 @@ static void MoveLadyBug(ObjNode *theNode)
 Boolean DoTrig_Cage(ObjNode *theNode, ObjNode *whoNode, Byte sideBits)
 {
 	(void) sideBits;
-	
+
 			/********************************/
 			/* IF BALL, THEN SMASH OPEN NOW */
 			/********************************/
-			
-	if (gPlayerMode == PLAYER_MODE_BALL)	
+
+	if (gPlayerMode == PLAYER_MODE_BALL)
 	{
 		if (whoNode->Speed > 900.0f)					// gotta be going fast enough
 		{
@@ -836,17 +833,8 @@ Boolean DoTrig_Cage(ObjNode *theNode, ObjNode *whoNode, Byte sideBits)
 			PlayEffect_Parms3D(EFFECT_POUND, &gCoord, kMiddleC+2, 2.0);
 		}
 	}
-	
+
 	return(true);
 }
-
-
-
-
-
-
-
-
-
 
 

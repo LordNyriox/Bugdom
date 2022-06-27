@@ -49,7 +49,6 @@ static void  MoveWorkerBee_Pound(ObjNode *theNode);
 #define	WORKERBEE_TARGET_OFFSET			200.0f
 
 
-
 #define WORKERBEE_TURN_SPEED			2.4f
 #define WORKERBEE_WALK_SPEED			600.0f
 #define	STINGER_SPEED					1000.0f
@@ -60,7 +59,7 @@ static void  MoveWorkerBee_Pound(ObjNode *theNode);
 
 
 		/* ANIMS */
-	
+
 
 enum
 {
@@ -97,56 +96,56 @@ ObjNode	*newObj;
 		return(false);
 
 		/* SEE IF KEYED ENEMY ON HIVE */
-		
+
 	if (gRealLevel == LEVEL_NUM_HIVE)
 	{
 		if (itemPtr->parm[3] & 1)										// see if we care
 		{
 			if (!gDetonatorBlown[itemPtr->parm[0]])									// see if detonator has been triggered
-				return(false);		
+				return(false);
 		}
 	}
 
 				/*******************************/
 				/* MAKE DEFAULT SKELETON ENEMY */
 				/*******************************/
-				
+
 	newObj = MakeEnemySkeleton(SKELETON_TYPE_WORKERBEE,x,z, WORKERBEE_SCALE);
 	if (newObj == nil)
 		return(false);
 	newObj->TerrainItemPtr = itemPtr;
 
 	SetSkeletonAnim(newObj->Skeleton, WORKERBEE_ANIM_STAND);
-	
+
 
 				/*******************/
 				/* SET BETTER INFO */
 				/*******************/
-			
-	newObj->Coord.y 	-= WORKERBEE_FOOT_OFFSET;			
+
+	newObj->Coord.y 	-= WORKERBEE_FOOT_OFFSET;
 	newObj->MoveCall 	= MoveWorkerBee;							// set move call
 	newObj->Health 		= 1.0;
 	newObj->Damage 		= 0;
 	newObj->Kind 		= ENEMY_KIND_WORKERBEE;
 	newObj->CType		|= CTYPE_KICKABLE|CTYPE_AUTOTARGET;		// these can be kicked
-		
-	
+
+
 				/* SET COLLISION INFO */
-				
+
 	SetObjectCollisionBounds(newObj, 140,WORKERBEE_FOOT_OFFSET,-100,100,100,-100);
 	CalcNewTargetOffsets(newObj,WORKERBEE_TARGET_OFFSET);
 
 
 				/* ADD STINGER */
-				
+
 	GiveWorkerBeeStinger(newObj);
-	
+
 
 				/* MAKE SHADOW */
-				
+
 	AttachShadowToObject(newObj, 8, 8,false);
-	
-		
+
+
 	gNumEnemies++;
 	gNumEnemyOfKind[ENEMY_KIND_WORKERBEE]++;
 	return(true);
@@ -163,7 +162,7 @@ static	void(*myMoveTable[])(ObjNode *) =
 					MoveWorkerBee_Walking,
 					MoveWorkerBee_ShootButt,
 					MoveWorkerBee_Death,
-					MoveWorkerBee_Pound	
+					MoveWorkerBee_Pound
 				};
 
 	if (TrackTerrainItem(theNode))						// just check to see if it's gone
@@ -173,9 +172,8 @@ static	void(*myMoveTable[])(ObjNode *) =
 	}
 
 	GetObjectInfo(theNode);
-	myMoveTable[theNode->Skeleton->AnimNum](theNode);	
+	myMoveTable[theNode->Skeleton->AnimNum](theNode);
 }
-
 
 
 /********************** MOVE WORKERBEE: STANDING ******************************/
@@ -185,41 +183,38 @@ static void  MoveWorkerBee_Standing(ObjNode *theNode)
 float	dist;
 
 				/* TURN TOWARDS ME */
-				
-	TurnObjectTowardTarget(theNode, &gCoord, gMyCoord.x, gMyCoord.z, WORKERBEE_TURN_SPEED, false);			
 
-		
+	TurnObjectTowardTarget(theNode, &gCoord, gMyCoord.x, gMyCoord.z, WORKERBEE_TURN_SPEED, false);
+
 
 				/* SEE IF CHASE */
 
 	dist = CalcQuickDistance(gMyCoord.x, gMyCoord.z, gCoord.x, gCoord.z);
 	if (dist < WORKERBEE_CHASE_DIST)
-	{					
+	{
 		MorphToSkeletonAnim(theNode->Skeleton, WORKERBEE_ANIM_WALK, 8);
 	}
 
 			/* MOVE */
-				
+
 	gDelta.y -= ENEMY_GRAVITY*gFramesPerSecondFrac;				// add gravity
 	MoveEnemy(theNode);
-				
+
 
 				/* DO ENEMY COLLISION */
-				
+
 	if (DoEnemyCollisionDetect(theNode,DEFAULT_ENEMY_COLLISION_CTYPES))
 		return;
 
 				/* SEE IF IN LIQUID */
-				
+
 	if (theNode->StatusBits & STATUS_BIT_UNDERWATER)
 	{
 		KillWorkerBee(theNode);
 	}
 
-	UpdateWorkerBee(theNode);		
+	UpdateWorkerBee(theNode);
 }
-
-
 
 
 /********************** MOVE WORKERBEE: WALKING ******************************/
@@ -231,46 +226,46 @@ float		r,fps,aim,dist;
 	fps = gFramesPerSecondFrac;
 
 			/* MOVE TOWARD PLAYER */
-			
-	aim = TurnObjectTowardTarget(theNode, &gCoord, gMyCoord.x, gMyCoord.z, WORKERBEE_TURN_SPEED, false);			
+
+	aim = TurnObjectTowardTarget(theNode, &gCoord, gMyCoord.x, gMyCoord.z, WORKERBEE_TURN_SPEED, false);
 
 	r = theNode->Rot.y;
 	gDelta.x = -sin(r) * WORKERBEE_WALK_SPEED;
 	gDelta.z = -cos(r) * WORKERBEE_WALK_SPEED;
 	gDelta.y -= ENEMY_GRAVITY*fps;				// add gravity
 	MoveEnemy(theNode);
-		
-		
+
+
 				/* UPDATE ANIM SPEED */
 
 	if (theNode->Skeleton->AnimNum == WORKERBEE_ANIM_WALK)
 		theNode->Skeleton->AnimSpeed = WORKERBEE_WALK_SPEED * .004f;
-	
+
 
 				/* DO ENEMY COLLISION */
-				
+
 	if (DoEnemyCollisionDetect(theNode,DEFAULT_ENEMY_COLLISION_CTYPES))
 		return;
-	
+
 				/* SEE IF IN LIQUID */
-				
+
 	if (theNode->StatusBits & STATUS_BIT_UNDERWATER)
 	{
 		KillWorkerBee(theNode);
 		goto update;
 	}
-	
-	
+
+
 			/*********************************/
 			/* SEE IF CLOSE ENOUGH TO ATTACK */
 			/**********************************/
-	
+
 				/* SHOOT STINGER */
-				
+
 	if (gPlayerMode == PLAYER_MODE_BUG)					// only shoot at bug
 	{
 		short anim = gPlayerObj->Skeleton->AnimNum;
-		
+
 		if ((anim == PLAYER_ANIM_STAND) || (anim == PLAYER_ANIM_WALK) ||	// only shoot if player is in one of these anims
 			(anim == PLAYER_ANIM_KICK) || (anim == PLAYER_ANIM_LAND))
 		{
@@ -278,18 +273,18 @@ float		r,fps,aim,dist;
 			{
 				dist = CalcQuickDistance(gMyCoord.x, gMyCoord.z, gCoord.x, gCoord.z);
 				if (dist < WORKERBEE_ATTACK_DIST)
-				{					
+				{
 					MorphToSkeletonAnim(theNode->Skeleton, WORKERBEE_ANIM_SHOOTBUTT, 2);
 					theNode->ShootButtFlag = false;
 					theNode->TargetRot = theNode->Rot.y + PI;
 					gDelta.x = gDelta.z = 0;
 				}
-			}		
+			}
 		}
 	}
-	
+
 			/* SEE IF POUND THE BALL */
-			
+
 	else
 	{
 		if (theNode->TimeUntilPound <= 0.0f)				// see if can go now
@@ -298,17 +293,17 @@ float		r,fps,aim,dist;
 			{
 				dist = CalcQuickDistance(gMyCoord.x, gMyCoord.z, gCoord.x, gCoord.z);
 				if (dist < 140.0f)
-				{					
+				{
 					MorphToSkeletonAnim(theNode->Skeleton, WORKERBEE_ANIM_POUND, 5);
 					gDelta.x = gDelta.z = 0;
 					theNode->PoundFlag = false;
 				}
-			}		
+			}
 		}
 	}
-	
-update:	
-	UpdateWorkerBee(theNode);		
+
+update:
+	UpdateWorkerBee(theNode);
 }
 
 
@@ -318,57 +313,55 @@ static void  MoveWorkerBee_ShootButt(ObjNode *theNode)
 {
 float	r,fps = gFramesPerSecondFrac;
 
-	TurnObjectTowardTarget(theNode, &gCoord, gMyCoord.x, gMyCoord.z, WORKERBEE_TURN_SPEED, false);			
+	TurnObjectTowardTarget(theNode, &gCoord, gMyCoord.x, gMyCoord.z, WORKERBEE_TURN_SPEED, false);
 
 			/* MOVE */
-				
+
 	gDelta.y -= ENEMY_GRAVITY*fps;				// add gravity
 	MoveEnemy(theNode);
-		
+
 
 				/* DO ENEMY COLLISION */
-				
+
 	if (DoEnemyCollisionDetect(theNode,DEFAULT_ENEMY_COLLISION_CTYPES))
 		return;
 
 
-			/********************/	
+			/********************/
 			/* SEE IF SHOOT NOW */
-			/********************/	
+			/********************/
 
 	if (theNode->ShootButtFlag)
 	{
 			/* SHOOT STINGER */
-			
+
 		ShootStinger(theNode);
-		
-		
+
+
 		/* ENEMY FALLS ON FACE */
-			
+
 		r = theNode->Rot.y;
 		gDelta.x = sin(r) * 800.0f;
 		gDelta.y = 300.0f;
 		gDelta.z = cos(r) * 800.0f;
 		MorphToSkeletonAnim(theNode->Skeleton, WORKERBEE_ANIM_FALLONFACE, 3);
 	}
-				
 
-	UpdateWorkerBee(theNode);		
+
+	UpdateWorkerBee(theNode);
 }
-
-
 
 
 /********************** MOVE WORKERBEE: DEATH ******************************/
 
 static void  MoveWorkerBee_Death(ObjNode *theNode)
 {
-	
+
 			/* SEE IF GONE */
-			
+
 	if (TrackTerrainItem(theNode))						// just check to see if it's gone
 	{
-nukeit:	
+nukeit:
 		DeleteEnemy(theNode);
 		return;
 	}
@@ -381,7 +374,7 @@ nukeit:
 
 
 				/* MOVE IT */
-				
+
 	if (theNode->StatusBits & STATUS_BIT_ONGROUND)		// if on ground, add friction
 		ApplyFrictionToDeltas(60.0,&gDelta);
 	gDelta.y -= ENEMY_GRAVITY*gFramesPerSecondFrac;		// add gravity
@@ -389,14 +382,14 @@ nukeit:
 
 
 				/* DO ENEMY COLLISION */
-				
+
 	if (DoEnemyCollisionDetect(theNode,DEATH_ENEMY_COLLISION_CTYPES))
 		return;
 
 
 				/* UPDATE */
-			
-	UpdateWorkerBee(theNode);		
+
+	UpdateWorkerBee(theNode);
 
 }
 
@@ -407,13 +400,13 @@ static void  MoveWorkerBee_Pound(ObjNode *theNode)
 float	fps = gFramesPerSecondFrac;
 
 			/* MOVE */
-				
+
 	gDelta.y -= ENEMY_GRAVITY*fps;				// add gravity
 	MoveEnemy(theNode);
-		
+
 
 		/* DO ENEMY COLLISION */
-				
+
 	if (DoEnemyCollisionDetect(theNode,DEFAULT_ENEMY_COLLISION_CTYPES))
 		return;
 
@@ -421,12 +414,12 @@ float	fps = gFramesPerSecondFrac;
 		/***********************/
 		/* SEE IF TRY TO POUND */
 		/***********************/
-		
+
 	if (theNode->PoundFlag)
 	{
 		static const TQ3Point3D off = {0,0,-100};
 		TQ3Point3D	pp;
-		
+
 		FindCoordOnJoint(theNode, 0, &off, &pp);
 
 		if (DoSimpleBoxCollisionAgainstPlayer(pp.y+10.0f, pp.y+10.0f,
@@ -436,26 +429,23 @@ float	fps = gFramesPerSecondFrac;
 			PlayerGotHurt(theNode, .4, false, false, true, 1.1);
 		}
 	}
-	
+
 
 		/* SEE IF ANIM IS DONE */
-		
+
 	if (theNode->Skeleton->AnimHasStopped)
 	{
 		MorphToSkeletonAnim(theNode->Skeleton, WORKERBEE_ANIM_STAND, 6);
 		theNode->TimeUntilPound = 1.5;					// n seconds until can pound again
 	}
 
-	UpdateWorkerBee(theNode);		
+	UpdateWorkerBee(theNode);
 }
 
 
-
-
 //===============================================================================================================
 //===============================================================================================================
 //===============================================================================================================
-
 
 
 #pragma mark -
@@ -469,37 +459,37 @@ float			x,z,placement;
 
 			/* GET SPLINE INFO */
 
-	placement = itemPtr->placement;	
+	placement = itemPtr->placement;
 	GetCoordOnSpline(&(*gSplineList)[splineNum], placement, &x, &z);
 
 			/*******************************/
 			/* MAKE DEFAULT SKELETON ENEMY */
 			/*******************************/
-				
+
 	newObj = MakeEnemySkeleton(SKELETON_TYPE_WORKERBEE,x,z, WORKERBEE_SCALE);
 	if (newObj == nil)
 		return(false);
-		
-		
+
+
 	newObj->SplineItemPtr = itemPtr;
 	newObj->SplineNum = splineNum;
-	
+
 	SetSkeletonAnim(newObj->Skeleton, WORKERBEE_ANIM_WALK);
-		
+
 
 				/* SET BETTER INFO */
-			
+
 	newObj->StatusBits		|= STATUS_BIT_ONSPLINE;
 	newObj->SplinePlacement = placement;
-	newObj->Coord.y 		-= WORKERBEE_FOOT_OFFSET;			
+	newObj->Coord.y 		-= WORKERBEE_FOOT_OFFSET;
 	newObj->SplineMoveCall 	= MoveWorkerBeeOnSpline;				// set move call
 	newObj->Health 			= 1.0;
 	newObj->Damage 			= 0;
 	newObj->Kind 			= ENEMY_KIND_WORKERBEE;
 	newObj->CType			|= CTYPE_KICKABLE|CTYPE_AUTOTARGET;	// these can be kicked
-	
+
 				/* SET COLLISION INFO */
-				
+
 	SetObjectCollisionBounds(newObj, 70,WORKERBEE_FOOT_OFFSET,-70,70,70,-70);
 	CalcNewTargetOffsets(newObj,WORKERBEE_TARGET_OFFSET);
 
@@ -507,22 +497,21 @@ float			x,z,placement;
 	newObj->InitCoord = newObj->Coord;							// remember where started
 
 				/* MAKE SHADOW */
-				
+
 	shadowObj = AttachShadowToObject(newObj, 8, 8, false);
 
 				/* MAKE STINGER */
-				
+
 	GiveWorkerBeeStinger(newObj);
-				
 
 
 			/* ADD SPLINE OBJECT TO SPLINE OBJECT LIST */
-			
+
 	AddToSplineObjectList(newObj);
 
 
 			/* DETACH FROM LINKED LIST */
-			
+
 	DetachObject(newObj);							// detach enemy
 	DetachObject(newObj->ChainNode);				// detach stinger
 	DetachObject(shadowObj);						// detach shadow
@@ -548,42 +537,40 @@ Boolean isVisible;
 			/***************************/
 			/* UPDATE STUFF IF VISIBLE */
 			/***************************/
-			
+
 	if (isVisible)
 	{
 		theNode->Rot.y = CalcYAngleFromPointToPoint(theNode->Rot.y, theNode->OldCoord.x, theNode->OldCoord.z,			// calc y rot aim
-												theNode->Coord.x, theNode->Coord.z);		
+												theNode->Coord.x, theNode->Coord.z);
 
 		theNode->Coord.y = GetTerrainHeightAtCoord(theNode->Coord.x, theNode->Coord.z, FLOOR) - WORKERBEE_FOOT_OFFSET;	// calc y coord
 
 		UpdateObjectTransforms(theNode);																// update transforms
 		CalcObjectBoxFromNode(theNode);																	// update collision box
-		UpdateShadow(theNode);																			// update shadow		
-		AlignStingerOnBee(theNode);	
-		
+		UpdateShadow(theNode);																			// update shadow
+		AlignStingerOnBee(theNode);
+
 			/* SEE IF CLOSE ENOUGH TO ATTACK */
-			
+
 		if (CalcQuickDistance(gMyCoord.x, gMyCoord.z, theNode->Coord.x, theNode->Coord.z) < WORKERBEE_DETACH_DIST)
-		{					
+		{
 			MorphToSkeletonAnim(theNode->Skeleton, WORKERBEE_ANIM_WALK, 8);
 			DetachEnemyFromSpline(theNode, MoveWorkerBee);
 			return;
 		}
-			
+
 	}
-	
+
 			/* HIDE SOME THINGS SINCE INVISIBLE */
 	else
 	{
 //		if (theNode->ShadowNode)						// hide shadow
-//			theNode->ShadowNode->StatusBits |= STATUS_BIT_HIDDEN;	
+//			theNode->ShadowNode->StatusBits |= STATUS_BIT_HIDDEN;
 //		if (theNode->ChainNode)							// hide stinger
-//			theNode->ChainNode->StatusBits |= STATUS_BIT_HIDDEN;	
+//			theNode->ChainNode->StatusBits |= STATUS_BIT_HIDDEN;
 	}
-	
+
 }
-
-
 
 
 #pragma mark -
@@ -600,10 +587,8 @@ Boolean BallHitWorkerBee(ObjNode *me, ObjNode *enemy)
 	enemy->TimeUntilPound = 0;			// let enemy pound now
 	if (me->Speed > 500.0f)				// play effect if hit fast enough
 		PlayEffect_Parms3D(EFFECT_POUND, &gCoord, kMiddleC+2, 2.0);
-	return(false);		
+	return(false);
 }
-
-
 
 
 /****************** KILL FIRE WORKERBEE *********************/
@@ -613,24 +598,21 @@ Boolean BallHitWorkerBee(ObjNode *me, ObjNode *enemy)
 
 Boolean KillWorkerBee(ObjNode *theNode)
 {
-	
+
 		/* IF ON SPLINE, DETACH */
-		
+
 	DetachEnemyFromSpline(theNode, MoveWorkerBee);
 
 
 			/* DEACTIVATE */
-			
+
 	if (gRealLevel != LEVEL_NUM_QUEENBEE)			// always come back on queen level
 		theNode->TerrainItemPtr = nil;				// dont ever come back 
 	theNode->CType = CTYPE_MISC;
-	
-	
+
+
 	return(false);
 }
-
-
-
 
 
 /***************** UPDATE WORKERBEE ************************/
@@ -640,7 +622,7 @@ static void UpdateWorkerBee(ObjNode *theNode)
 	theNode->TimeUntilPound -= gFramesPerSecondFrac;
 
 	UpdateEnemy(theNode);
-	AlignStingerOnBee(theNode);	
+	AlignStingerOnBee(theNode);
 }
 
 
@@ -654,8 +636,8 @@ ObjNode	*stinger;
 
 			/* MAKE SPEAR OBJECT */
 
-	gNewObjectDefinition.group 		= MODEL_GROUP_LEVELSPECIFIC;	
-	gNewObjectDefinition.type 		= HIVE_MObjType_Stinger;	
+	gNewObjectDefinition.group 		= MODEL_GROUP_LEVELSPECIFIC;
+	gNewObjectDefinition.type 		= HIVE_MObjType_Stinger;
 	gNewObjectDefinition.coord		= theNode->Coord;
 	gNewObjectDefinition.flags 		= theNode->StatusBits;
 	gNewObjectDefinition.slot 		= theNode->Slot+1;
@@ -689,13 +671,13 @@ TQ3Matrix4x4	m,m2,m3;
 	m2.value[3][1] = -14.0 * WORKERBEE_SCALE;								// insert translation
 	m2.value[3][2] = 38.0 * WORKERBEE_SCALE;
 	MatrixMultiplyFast(&m3, &m2, &m);
-			
+
 	FindJointFullMatrix(bee, WORKERBEE_JOINT_BUTT, &m2);
 
 	MatrixMultiplyFast(&m, &m2, &stinger->BaseTransformMatrix);
 
 			/* CALC COORD OF STINGER */
-			
+
 	Q3Point3D_Transform(&zero, &stinger->BaseTransformMatrix, &stinger->Coord);
 }
 
@@ -719,12 +701,12 @@ TQ3Vector3D		delta;
 
 	stinger->Delta.x = -sin(bee->Rot.y) * STINGER_SPEED;
 	stinger->Delta.z = -cos(bee->Rot.y) * STINGER_SPEED;
-	
+
 	stinger->Rot.y = bee->Rot.y + PI;
-	
+
 
 		/* SET STINGER COLLISION INFO */
-			
+
 	stinger->CType = CTYPE_HURTME;
 	stinger->CBits = CBITS_TOUCHABLE;
 	stinger->Damage = .3;
@@ -734,7 +716,7 @@ TQ3Vector3D		delta;
 		/***************/
 		/* MAKE SPARKS */
 		/***************/
-				
+
 	pg = NewParticleGroup(	0,							// magic num
 							PARTICLE_TYPE_FALLINGSPARKS,	// type
 							PARTICLE_FLAGS_BOUNCE,		// flags
@@ -744,7 +726,7 @@ TQ3Vector3D		delta;
 							1.3,						// decay rate
 							0,							// fade rate
 							PARTICLE_TEXTURE_YELLOWBALL);// texture
-	
+
 	if (pg != -1)
 	{
 		for (i = 0; i < 15; i++)
@@ -755,9 +737,9 @@ TQ3Vector3D		delta;
 			AddParticleToGroup(pg, &stinger->Coord, &delta, RandomFloat() + 1.0f, FULL_ALPHA);
 		}
 	}
-	
+
 			/* PLAY EFFECT */
-			
+
 	PlayEffect3D(EFFECT_STINGERSHOOT, &stinger->Coord);
 }
 
@@ -769,7 +751,7 @@ static void MoveStinger(ObjNode *theNode)
 float fps = gFramesPerSecondFrac;
 
 			/* SEE IF GONE */
-			
+
 	if (TrackTerrainItem(theNode))
 	{
 adios:
@@ -787,25 +769,15 @@ adios:
 
 
 		/* SEE IF HIT FLOOR OR CEILING */
-		
+
 	if ((gCoord.y < GetTerrainHeightAtCoord(gCoord.x, gCoord.z, FLOOR)) ||
 		(gCoord.y > GetTerrainHeightAtCoord(gCoord.x, gCoord.z, CEILING)))
 	{
-		goto adios;	
+		goto adios;
 	}
-	
+
 
 	UpdateObject(theNode);
 }
-
-
-
-
-
-
-
-
-
-
 
 

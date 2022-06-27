@@ -52,7 +52,7 @@ void EnvironmentMapTriMesh(
 
 		/****************************/
 		/* CALC UVS FOR EACH VERTEX */
-		/****************************/	
+		/****************************/
 
 	for (int vertNum = 0; vertNum < mesh->numPoints; vertNum++)
 	{

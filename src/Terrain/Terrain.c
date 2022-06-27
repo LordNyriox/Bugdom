@@ -89,8 +89,8 @@ static int		gTextureSizePerLOD[MAX_LODS] = { 0, 0, 0 };
 static RenderModifiers gTerrainRenderMods;
 
 			/* TILE SPLITTING TABLES */
-			
-					
+
+
 					/* /  */
 static const	Byte			gTileTriangles1_A[SUPERTILE_SIZE][SUPERTILE_SIZE][3] =
 {
@@ -136,12 +136,10 @@ static const	Byte			gTileTriangleWinding[2][3] =
 };
 
 
-
 TQ3Point3D		gWorkGrid[SUPERTILE_SIZE+1][SUPERTILE_SIZE+1];
 uint16_t		*gTempTextureBuffer = nil;
 
 TQ3Vector3D		gRecentTerrainNormal[2];							// from _Planar
-
 
 
 /****************** INIT TERRAIN MANAGER ************************/
@@ -154,13 +152,13 @@ void InitTerrainManager(void)
  	gSuperTileRadius = sqrt(2) * (TERRAIN_SUPERTILE_UNIT_SIZE/2);
 
 	ClearScrollBuffer();
-	
-	
+
+
 			/* ALLOC TEMP TEXTURE BUFF */
 			//
 			// This is the full 160x160 buffer that tiles are drawn into.
 			//
-			
+
 	if (gTempTextureBuffer == nil)
 	{
 		gTempTextureBuffer = (uint16_t*) AllocPtr(SUPERTILE_TEXSIZE_MAX * SUPERTILE_TEXSIZE_MAX * sizeof(uint16_t));
@@ -190,7 +188,7 @@ long	dummy1,dummy2;
 			/* INIT THE SCROLL BUFFER */
 
 	ClearScrollBuffer();
-	ReleaseAllSuperTiles();			
+	ReleaseAllSuperTiles();
 }
 
 
@@ -203,7 +201,7 @@ long	row,col;
 	for (row = 0; row < MAX_SUPERTILES_DEEP; row++)
 		for (col = 0; col < MAX_SUPERTILES_WIDE; col++)
 			gTerrainScrollBuffer[row][col] = EMPTY_SUPERTILE;
-			
+
 	gHiccupEliminator = 0;
 }
 
@@ -228,7 +226,7 @@ int	i;
 		DisposeHandle((Handle)gMasterItemList);
 		gMasterItemList = nil;
 	}
-	
+
 	if (gTerrainItemLookupTableX != nil)
 	{
 	  	DisposePtr((Ptr)gTerrainItemLookupTableX);
@@ -252,7 +250,7 @@ int	i;
 		Free2DArray((void**) gMapYCoords);
 		gMapYCoords = nil;
 	}
-	
+
 	if (gMapInfoMatrix)
 	{
 		Free2DArray((void**) gMapInfoMatrix);
@@ -295,7 +293,7 @@ int	i;
 		gFenceList = nil;										// make sure to clear pointer to prevent double-free next time
 	}
 
-	
+
 	ReleaseAllSuperTiles();
 }
 
@@ -309,7 +307,6 @@ void CreateSuperTileMemoryList(void)
 long							u,v,i,numLayers;
 static 	TQ3TriMeshTriangleData	newTriangle[NUM_TRIS_IN_SUPERTILE];
 static	TQ3Param2D				uvs[NUM_VERTICES_IN_SUPERTILE];
-
 
 
 	gSupertileBudget = gSuperTileActiveRange * gSuperTileActiveRange * 4;		// calc # supertiles we will need
@@ -372,10 +369,9 @@ retryParseLODPref:
 	}
 
 
-	
 			/* INIT UV LIST */
-	
-	i = 0;	
+
+	i = 0;
 	if (gTerrainTextureDetail == SUPERTILE_DETAIL_SEAMLESS)
 	{
 		for (v = 0; v <= SUPERTILE_SIZE; v++)						// sets uv's 0.0 -> 1.0 for single texture map
@@ -385,7 +381,7 @@ retryParseLODPref:
 				uvs[i].u = (1.0f + u) / (2.0f + SUPERTILE_SIZE);
 				uvs[i].v = (1.0f + v) / (2.0f + SUPERTILE_SIZE);
 				i++;
-			}	
+			}
 		}
 	}
 	else
@@ -397,15 +393,15 @@ retryParseLODPref:
 				uvs[i].u = (float)u / (float)SUPERTILE_SIZE;
 				uvs[i].v = (float)v / (float)SUPERTILE_SIZE;
 				i++;
-			}	
+			}
 		}
 	}
 
 
 #if 0
 		/* INIT COLOR LIST */
-		
-	i = 0;	
+
+	i = 0;
 	for (v = 0; v <= SUPERTILE_SIZE; v++)						// sets uv's 0.0 -> 1.0 for single texture map
 	{
 		for (u = 0; u <= SUPERTILE_SIZE; u++)
@@ -414,7 +410,7 @@ retryParseLODPref:
 			vertexColors[i].g = 1;
 			vertexColors[i].b = 1;
 			i++;
-		}	
+		}
 	}
 #endif
 
@@ -510,7 +506,7 @@ int		numLayers;
 		numLayers = 2;
 	else
 		numLayers = 1;
-		
+
 
 			/*************************************/
 			/* FOR EACH SUPERTILE DEALLOC MEMORY */
@@ -545,7 +541,7 @@ int		numLayers;
 			gSuperTileMemoryList[i].triMeshDataPtrs[layer] = nil;
 		}
 	}
-	
+
 	gSuperTileMemoryListExists = false;
 }
 
@@ -646,13 +642,13 @@ static TQ3Vector3D	faceNormal[NUM_TRIS_IN_SUPERTILE];
 
 	brightness = gGameViewInfoPtr->lightList.ambientBrightness;				// get ambient brightness
 	ambientR = gGameViewInfoPtr->lightList.ambientColor.r * brightness;		// calc ambient color
-	ambientG = gGameViewInfoPtr->lightList.ambientColor.g * brightness;		
+	ambientG = gGameViewInfoPtr->lightList.ambientColor.g * brightness;
 	ambientB = gGameViewInfoPtr->lightList.ambientColor.b * brightness;
 
 	brightness = gGameViewInfoPtr->lightList.fillBrightness[0];				// get fill brightness 0
 	fillR0 = gGameViewInfoPtr->lightList.fillColor[0].r * brightness;		// calc ambient color
-	fillG0 = gGameViewInfoPtr->lightList.fillColor[0].g * brightness;		
-	fillB0 = gGameViewInfoPtr->lightList.fillColor[0].b * brightness;		
+	fillG0 = gGameViewInfoPtr->lightList.fillColor[0].g * brightness;
+	fillB0 = gGameViewInfoPtr->lightList.fillColor[0].b * brightness;
 	fillDir0 = &gGameViewInfoPtr->lightList.fillDirection[0];		// get fill direction
 
 	numFillLights = gGameViewInfoPtr->lightList.numFillLights;
@@ -660,8 +656,8 @@ static TQ3Vector3D	faceNormal[NUM_TRIS_IN_SUPERTILE];
 	{
 		brightness = gGameViewInfoPtr->lightList.fillBrightness[1];			// get fill brightness 1
 		fillR1 = gGameViewInfoPtr->lightList.fillColor[1].r * brightness;	// calc ambient color
-		fillG1 = gGameViewInfoPtr->lightList.fillColor[1].g * brightness;		
-		fillB1 = gGameViewInfoPtr->lightList.fillColor[1].b * brightness;		
+		fillG1 = gGameViewInfoPtr->lightList.fillColor[1].g * brightness;
+		fillB1 = gGameViewInfoPtr->lightList.fillColor[1].b * brightness;
 		fillDir1 = &gGameViewInfoPtr->lightList.fillDirection[1];
 	}
 	else
@@ -681,7 +677,7 @@ static TQ3Vector3D	faceNormal[NUM_TRIS_IN_SUPERTILE];
 					/*******************/
 					/* GET THE TRIMESH */
 					/*******************/
-					
+
 		triMeshData = gSuperTileMemoryList[superTileNum].triMeshDataPtrs[layer];	// get ptr to triMesh data
 		pointList = triMeshData->points;									// get ptr to point/vertex list
 		triangleList = triMeshData->triangles;								// get ptr to triangle index list
@@ -690,37 +686,37 @@ static TQ3Vector3D	faceNormal[NUM_TRIS_IN_SUPERTILE];
 
 		miny = 1000000;														// init bbox counters
 		maxy = -miny;
-				
-	
+
+
 				/**********************************/
 				/* CREATE VERTICES FOR THIS LAYER */
 				/**********************************/
-	
+
 		for (row2 = 0; row2 <= SUPERTILE_SIZE; row2++)
 		{
 			row = row2 + startRow;
-			
+
 			for (col2 = 0; col2 <= SUPERTILE_SIZE; col2++)
 			{
 				col = col2 + startCol;
-				
+
 				if ((row >= gTerrainTileDepth) || (col >= gTerrainTileWidth)) // check for edge vertices (off map array)
 					height = 0;
 				else
 					height = gMapYCoords[row][col].layerY[layer];			// get pixel height here
-	
+
 				gWorkGrid[row2][col2].x = (col*TERRAIN_POLYGON_SIZE);
 				gWorkGrid[row2][col2].z = (row*TERRAIN_POLYGON_SIZE);
 				gWorkGrid[row2][col2].y = height;							// save height @ this tile's upper left corner
-					
-				
+
+
 				if (height > maxy)											// keep track of min/max
 					maxy = height;
 				if (height < miny)
-					miny = height;			
+					miny = height;
 			}
-		}	
-	
+		}
+
 				/*********************************/
 				/* CREATE TERRAIN MESH POLYGONS  */
 				/*********************************/
@@ -728,13 +724,13 @@ static TQ3Vector3D	faceNormal[NUM_TRIS_IN_SUPERTILE];
 		int i;
 						/* SET VERTEX COORDS */
 
-		i = 0;			
+		i = 0;
 		for (row = 0; row < (SUPERTILE_SIZE+1); row++)
 		{
 			for (col = 0; col < (SUPERTILE_SIZE+1); col++)
 				pointList[i++] = gWorkGrid[row][col];						// copy from other list
 		}
-	
+
 					/* UPDATE TRIMESH DATA WITH NEW INFO */
 #if _DEBUG
 		memset(gTempTextureBuffer, 0xFF, SUPERTILE_TEXSIZE_MAX * SUPERTILE_TEXSIZE_MAX * sizeof(uint16_t));
@@ -744,12 +740,12 @@ static TQ3Vector3D	faceNormal[NUM_TRIS_IN_SUPERTILE];
 		for (row2 = 0; row2 < SUPERTILE_SIZE; row2++)
 		{
 			row = row2 + startRow;
-	
+
 			for (col2 = 0; col2 < SUPERTILE_SIZE; col2++)
 			{
-	
+
 				col = col2 + startCol;
-	
+
 						/* SET SPLITTING INFO */
 
 				const Byte* tri1;
@@ -778,7 +774,7 @@ static TQ3Vector3D	faceNormal[NUM_TRIS_IN_SUPERTILE];
 		}
 
 							/* CALC FACE NORMALS */
-						
+
 		for (i = 0; i < NUM_TRIS_IN_SUPERTILE; i++)
 		{
 			CalcFaceNormal( &pointList[triangleList[i].pointIndices[0]],
@@ -790,7 +786,7 @@ static TQ3Vector3D	faceNormal[NUM_TRIS_IN_SUPERTILE];
 				/******************************/
 				/* CALCULATE VERTEX NORMALS   */
 				/******************************/
-	
+
 		i = 0;
 		for (row = 0; row <= SUPERTILE_SIZE; row++)
 		{
@@ -800,25 +796,25 @@ static TQ3Vector3D	faceNormal[NUM_TRIS_IN_SUPERTILE];
 				float		avX,avY,avZ;
 				TQ3Vector3D	nA,nB;
 				long		ro,co;
-				
+
 				/* SCAN 4 TILES AROUND THIS TILE TO CALC AVERAGE NORMAL FOR THIS VERTEX */
 				//
 				// We use the face normal already calculated for triangles inside the supertile,
 				// but for tiles/tris outside the supertile (on the borders), we need to calculate
 				// the face normals there.
 				//
-				
-				avX = avY = avZ = 0;									// init the normal	
-				
+
+				avX = avY = avZ = 0;									// init the normal
+
 				for (ro = -1; ro <= 0; ro++)
 				{
 					for (co = -2; co <= 0; co+=2)
 					{
 						long	cc = col + co;
 						long	rr = row + ro;
-						
+
 						if ((cc >= 0) && (cc < (SUPERTILE_SIZE*2)) && (rr >= 0) && (rr < SUPERTILE_SIZE)) // see if this vertex is in supertile bounds							 
-						{					
+						{
 							n1 = &faceNormal[rr * (SUPERTILE_SIZE*2) + cc];					// average 2 triangles...
 							n2 = n1+1;
 							avX += n1->x + n2->x;											// ...and average with current average
@@ -834,16 +830,16 @@ static TQ3Vector3D	faceNormal[NUM_TRIS_IN_SUPERTILE];
 						}
 					}
 				}
-				FastNormalizeVector(avX, avY, avZ, &vertexNormalList[i++]);					// normalize the vertex normal	
+				FastNormalizeVector(avX, avY, avZ, &vertexNormalList[i++]);					// normalize the vertex normal
 			}
 		}
-		
+
 		if (vertexColorList)
 		{
 				/*****************************/
 				/* CALCULATE VERTEX COLORS   */
 				/*****************************/
-					
+
 			i = 0;
 			for (row = 0; row <= SUPERTILE_SIZE; row++)
 			{
@@ -852,46 +848,46 @@ static TQ3Vector3D	faceNormal[NUM_TRIS_IN_SUPERTILE];
 					u_short	color = gVertexColors[layer][row+startRow][col+startCol];
 					float	r,g,b,dot;
 					float	lr,lg,lb;
-					
+
 							/* GET VERTEX DIFFUSE COLOR */
-							
+
 					r = (float)(color>>11) * (1.0f/32.0f);
 					g = (float)((color>>5) & 0x3f) * (1.0f/64.0f);
 					b = (float)(color&0x1f) * (1.0f/32.0f);
-	
+
 							/* APPLY LIGHTING TO THE VERTEX */
-					
+
 					lr = ambientR;												// factor in the ambient
 					lg = ambientG;
 					lb = ambientB;
-					
+
 					dot = vertexNormalList[i].x * fillDir0->x;					// calc dot product of fill #0
 					dot += vertexNormalList[i].y * fillDir0->y;
 					dot += vertexNormalList[i].z * fillDir0->z;
 					dot = -dot;
-	
+
 					if (dot > 0.0f)
-					{					
+					{
 						lr += fillR0 * dot;
 						lg += fillG0 * dot;
-						lb += fillB0 * dot;					
+						lb += fillB0 * dot;
 					}
-	
+
 					if (numFillLights > 1)
 					{
 						dot = vertexNormalList[i].x * fillDir1->x;				// calc dot product of fill #1
 						dot += vertexNormalList[i].y * fillDir1->y;
 						dot += vertexNormalList[i].z * fillDir1->z;
 						dot = -dot;
-						
+
 						if (dot > 0.0f)
-						{					
+						{
 							lr += fillR1 * dot;
 							lg += fillG1 * dot;
-							lb += fillB1 * dot;					
+							lb += fillB1 * dot;
 						}
 					}
-					
+
 					r *= lr;													// apply final lighting to diffuse color
 					if (r > 1.0f)
 						r = 1.0f;
@@ -901,10 +897,10 @@ static TQ3Vector3D	faceNormal[NUM_TRIS_IN_SUPERTILE];
 					b *= lb;
 					if (b > 1.0f)
 						b = 1.0f;
-										
-	
+
+
 							/* SAVE COLOR INTO LIST */
-							
+
 					vertexColorList[i].r = r;
 					vertexColorList[i].g = g;
 					vertexColorList[i].b = b;
@@ -933,11 +929,11 @@ static TQ3Vector3D	faceNormal[NUM_TRIS_IN_SUPERTILE];
 		for (row2 = textureMinRow; row2 < textureMaxRow; row2++)
 		{
 			row = row2 + startRow;
-	
+
 			for (col2 = textureMinCol; col2 < textureMaxRow; col2++)
 			{
 				col = col2 + startCol;
-	
+
 						/* ADD TILE TO PIXMAP */
 
 				if (row < 0 || row >= gTerrainTileDepth ||
@@ -1007,16 +1003,16 @@ static TQ3Vector3D	faceNormal[NUM_TRIS_IN_SUPERTILE];
 		height = (maxy-miny) * .5f;
 		if (height > gSuperTileRadius)
 			superTilePtr->radius[layer] = height;
-		else						
+		else
 			superTilePtr->radius[layer] = gSuperTileRadius;
-	
-	
+
+
 				/**********************/
 				/* UPDATE THE TRIMESH */
 				/**********************/
-	
+
 				/* SET BOUNDING BOX */
-				
+
 		triMeshData->bBox.min.x = gWorkGrid[0][0].x;
 		triMeshData->bBox.max.x = triMeshData->bBox.min.x+TERRAIN_SUPERTILE_UNIT_SIZE;
 		triMeshData->bBox.min.y = miny;
@@ -1026,10 +1022,9 @@ static TQ3Vector3D	faceNormal[NUM_TRIS_IN_SUPERTILE];
 
 
 	}	// j (layer)
-									
+
 	return(superTileNum);
 }
-
 
 
 /********************** BUILD SUPERTILE LEVEL OF DETAIL ********************/
@@ -1082,8 +1077,6 @@ static void BuildSuperTileLOD(SuperTileMemoryType *superTilePtr, short lod)
 }
 
 
-
-
 /********************* DRAW TILE INTO MIPMAP *************************/
 
 static void DrawTileIntoMipmap(uint16_t tile, int row, int col, uint16_t *buffer)
@@ -1101,7 +1094,7 @@ const int bufWidth
 
 
 			/* EXTRACT BITS INFO FROM TILE */
-				
+
 	flipRotBits = tile&(TILE_FLIPXY_MASK|TILE_ROTATE_MASK);		// get flip & rotate bits
 	texMapNum = tile&TILENUM_MASK; 								// filter out texture #
 
@@ -1193,7 +1186,7 @@ const int bufWidth
 				{
 					for (int x = 0; x < tileSize; x++)
 						buffer[bufWidth*x] = tileData[x];
-						
+
 					buffer--;								// prev col in dest
 					tileData += tileSize;					// next line in src
 				}
@@ -1361,7 +1354,6 @@ static void ShrinkHalf(const uint16_t* input, uint16_t* output, int outputSize)
 }
 
 
-
 /******************* RELEASE SUPERTILE OBJECT *******************/
 //
 // Deactivates the terrain object and releases its memory block
@@ -1403,9 +1395,9 @@ void DrawTerrain(const QD3DSetupOutputType *setupInfo)
 	int numLayers = gDoCeiling? 2: 1;
 
 		/* GET CURRENT CAMERA COORD */
-		
+
 	TQ3Point3D cameraCoord = setupInfo->currentCameraCoords;
-	
+
 
 				/* DRAW STUFF */
 
@@ -1413,9 +1405,9 @@ void DrawTerrain(const QD3DSetupOutputType *setupInfo)
 	{
 		if (gSuperTileMemoryList[i].mode != SUPERTILE_MODE_USED)		// if supertile is being used, then draw it
 			continue;
-		
+
 				/* SEE IF DO HICCUP PREVENTION */
-				
+
 		if (!gDisableHiccupTimer)
 		{
 			if (gSuperTileMemoryList[i].hiccupTimer != 0)				// see if this supertile is still in hiccup prevention mode
@@ -1526,27 +1518,26 @@ float				xi,zi;
 
 	if (!gFloorMap)														// make sure there's a terrain
 		return(0);
-		
+
 	if (layer == CEILING)												// make sure there is a ceiling
 		if (!gDoCeiling)
-			return(10000000);											// no ceiling, so just return a really high number	
+			return(10000000);											// no ceiling, so just return a really high number
 
 
 	col = x * TERRAIN_POLYGON_SIZE_Frac;								// see which row/col we're on
-	row = z * TERRAIN_POLYGON_SIZE_Frac;			
-				
+	row = z * TERRAIN_POLYGON_SIZE_Frac;
+
 	if ((col < 0) || (col >= gTerrainTileWidth))						// check bounds
 		return(0);
 	if ((row < 0) || (row >= gTerrainTileDepth))
 		return(0);
-				
+
 	xi = x - (col * TERRAIN_POLYGON_SIZE);								// calc x/z offset into the tile
 	zi = z - (row * TERRAIN_POLYGON_SIZE);
-				
-				
-				
+
+
 					/* BUILD VERTICES FOR THE 4 CORNERS OF THE TILE */
-				
+
 	p[0].x = col * TERRAIN_POLYGON_SIZE;								// far left
 	p[0].y = gMapYCoords[row][col].layerY[layer];
 	p[0].z = row * TERRAIN_POLYGON_SIZE;
@@ -1563,12 +1554,11 @@ float				xi,zi;
 	p[3].y = gMapYCoords[row+1][col].layerY[layer];
 	p[3].z = p[2].z;
 
-				
 
 		/************************************/
 		/* CALC PLANE EQUATION FOR TRIANGLE */
 		/************************************/
-		
+
 	if (gMapInfoMatrix[row][col].splitMode[layer] == SPLIT_BACKWARD)			// if \ split
 	{
 		if (layer == 0)
@@ -1590,21 +1580,21 @@ float				xi,zi;
 	{
 		xi = TERRAIN_POLYGON_SIZE-xi;											// flip x
 		if (layer == 0)
-		{	
+		{
 			if (xi > zi)
 				CalcPlaneEquationOfTriangle(&planeEq, &p[0], &p[1], &p[3]);		// calc plane equation for left triangle
 			else
 				CalcPlaneEquationOfTriangle(&planeEq, &p[1], &p[2], &p[3]);		// calc plane equation for right triangle
 		}
 		else																	// clockwise for ceiling
-		{			
+		{
 			if (xi > zi)
 				CalcPlaneEquationOfTriangle(&planeEq, &p[3], &p[1], &p[0]);		// calc plane equation for left triangle
 			else
 				CalcPlaneEquationOfTriangle(&planeEq, &p[3], &p[2], &p[1]);		// calc plane equation for right triangle
 		}
-			
-	}			
+
+	}
 
 	gRecentTerrainNormal[layer] = planeEq.normal;								// remember the normal here
 
@@ -1653,7 +1643,7 @@ TQ3Vector2D	look;
 			//
 			// Use point projected n units in front of camera as the "location"
 			//
-			
+
 
 //	x = gMyCoord.x-(SUPERTILE_ACTIVE_RANGE*SUPERTILE_SIZE*TERRAIN_POLYGON_SIZE);
 //	y = gMyCoord.z-(SUPERTILE_ACTIVE_RANGE*SUPERTILE_SIZE*TERRAIN_POLYGON_SIZE);
@@ -1729,7 +1719,7 @@ float	temp,temp2;
 				/* CALC LEFT SIDE OF WINDOW */
 
 	temp = gCurrentSuperTileCol*TERRAIN_SUPERTILE_UNIT_SIZE;			// convert to unit coords
-	temp2 = temp - (ITEM_WINDOW+OUTER_SIZE)*TERRAIN_SUPERTILE_UNIT_SIZE;// factor window left			
+	temp2 = temp - (ITEM_WINDOW+OUTER_SIZE)*TERRAIN_SUPERTILE_UNIT_SIZE;// factor window left
 	gTerrainItemDeleteWindow_Left = temp2;
 
 
@@ -1751,10 +1741,9 @@ float	temp,temp2;
 
 	temp += SUPERTILE_DIST_DEEP*TERRAIN_SUPERTILE_UNIT_SIZE;			// calc offset to bottom side
 	temp += (ITEM_WINDOW+OUTER_SIZE)*TERRAIN_SUPERTILE_UNIT_SIZE;		// factor window bottom/front
-			
+
 	gTerrainItemDeleteWindow_Near = temp;
 }
-
 
 
 /********************** SCROLL TERRAIN UP *************************/
@@ -2036,9 +2025,9 @@ next:
 		goto exit;
 
 	ScanForPlayfieldItems(top,bottom,right,right);
-	
+
 exit:
-    gCurrentSuperTileCol++;	
+    gCurrentSuperTileCol++;
 }
 
 
@@ -2137,17 +2126,17 @@ void PrimeInitialTerrain(Boolean justReset)
 long	i,w;
 
 	gDisableHiccupTimer = true;
-	
+
 			/* PRIME OTHER STUFF */
-			
+
 	if (!justReset)
 	{
 		PrimeSplines();
 		PrimeFences();
-	}		
+	}
 
 			/* PRIME THE SUPERTILES */
-			
+
 	w = SUPERTILE_DIST_WIDE+ITEM_WINDOW+1;
 
 	gCurrentSuperTileCol -= w;								// start left and scroll into position
@@ -2156,8 +2145,8 @@ long	i,w;
 	{
 		ScrollTerrainLeft();
 		CalcNewItemDeleteWindow();							// recalc item delete window
-	}	
-	
+	}
+
 }
 
 
@@ -2191,21 +2180,21 @@ float	y0,y1,y2,y3;
 	for (j = 0; j < numLayers; j++)							// floor & ceiling
 	{
 		for (row = 0; row < gTerrainTileDepth; row++)
-		{	
+		{
 			for (col = 0; col < gTerrainTileWidth; col++)
 			{
 					/* GET Y COORDS OF 4 VERTICES */
-					
+
 				y0 = gMapYCoords[row][col].layerY[j];
 				y1 = gMapYCoords[row][col+1].layerY[j];
 				y2 = gMapYCoords[row+1][col+1].layerY[j];
 				y3 = gMapYCoords[row+1][col].layerY[j];
 
 						/* QUICK CHECK FOR FLAT POLYS */
-	
+
 				if ((y0 == y1) && (y0 == y2) && (y0 == y3))							// see if all same level
 					gMapInfoMatrix[row][col].splitMode[j] = SPLIT_BACKWARD;
-					
+
 					/* CALC FOLD-SPLIT */
 				else
 				{
@@ -2213,14 +2202,12 @@ float	y0,y1,y2,y3;
 						gMapInfoMatrix[row][col].splitMode[j] = SPLIT_BACKWARD; 	// use \ splits
 					else
 						gMapInfoMatrix[row][col].splitMode[j] = SPLIT_FORWARD;		// use / splits
-				}				
-				
+				}
 
-	
+
 			}
 		}
 	}
-
 
 
 }

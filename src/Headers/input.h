@@ -11,7 +11,7 @@
 
 
 			/* ASCII */
-			
+
 #define	CHAR_RETURN			0x0d	/* ASCII code for Return key */
 #define CHAR_UP				0x1e
 #define CHAR_DOWN			0x1f
@@ -61,7 +61,6 @@ enum
 
 	kKey_MAX
 };
-
 
 
 //============================================================================================

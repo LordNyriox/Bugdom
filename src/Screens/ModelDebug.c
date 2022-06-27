@@ -47,7 +47,6 @@ static const char* gModelFiles[gNumModelFiles] =
 #define	CAMERA_FARTHEST		800.0f
 
 
-
 static void MoveCamera_ModelDebug(void)
 {
 	TQ3Point3D	from,to,target;
@@ -154,7 +153,7 @@ static void MoveCamera_ModelDebug(void)
 
 	if (from.y < (to.y+CAM_MINY))													// make sure camera never under the "to" point (insures against camera flipping over)
 		from.y = (to.y+CAM_MINY);
-	
+
 	/**********************/
 	/* UPDATE CAMERA INFO */
 	/**********************/
@@ -170,7 +169,6 @@ static int IncrementWrap(int input, int delta, unsigned int modulo)
 		input += modulo;
 	return input % modulo;
 }
-
 
 
 static ObjNode* MakeSkeleton(void)
@@ -218,7 +216,6 @@ static void Regen(void)
 }
 
 
-
 void DoModelDebug(void)
 {
 	TQ3Point3D			cameraFrom = { 0, 0, 70.0 };
@@ -227,7 +224,6 @@ void DoModelDebug(void)
 	TQ3ColorRGB				lightColor = { 1.0, 1.0, .9 };
 	TQ3Vector3D				fillDirection1 = { 1, -.4, -.8 };			// key
 	TQ3Vector3D				fillDirection2 = { -.7, -.2, -.9 };			// fill
-
 
 
 	gDisableAnimSounds = true;
@@ -274,7 +270,7 @@ void DoModelDebug(void)
 	for (int i = 0; i < MAX_SKELETON_TYPES; i++)
 		LoadASkeleton(i);
 
-	
+
 	/***************/
 	/* MAKE MODELS */
 	/***************/
@@ -293,7 +289,7 @@ void DoModelDebug(void)
 	do
 	{
 		changeWindowTitle = false;
-		
+
 		QD3D_CalcFramesPerSecond();
 
 		UpdateInput();
@@ -402,10 +398,9 @@ void DoModelDebug(void)
 			}
 			SDL_SetWindowTitle(gSDLWindow, titlebuf);
 		}
-		
+
 	} while (!GetKeyState(kKey_UI_Cancel));
 
-	
 
 	DeleteAllObjects();
 	Free3DMFGroup(MODEL_GROUP_LEVELSPECIFIC);

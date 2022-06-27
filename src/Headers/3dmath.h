@@ -43,12 +43,9 @@ void FastNormalizeVector2D(float vx, float vy, TQ3Vector2D *outV);
 void MatrixMultiplyFast(TQ3Matrix4x4 *a, TQ3Matrix4x4 *b, TQ3Matrix4x4 *result);
 
 
-
-
-
 /*********** INTERSECTION OF Y AND PLANE ********************/
 //
-// INPUT:	
+// INPUT:
 //			x/z		:	xz coords of point
 //			p		:	ptr to the plane
 //
@@ -72,7 +69,6 @@ static inline void AngleToVector(float angle, TQ3Vector2D *theVector)
 	theVector->x = -sin(angle);
 	theVector->y = -cos(angle);
 }
-
 
 
 /******************** FAST RECIPROCAL **************************/

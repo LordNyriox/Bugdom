@@ -85,22 +85,22 @@ start_again:
 			/*********/
 			/* SETUP */
 			/*********/
-	
+
 	gRestoringSavedGame = false;
 	SetupMainMenu();
-			
+
 				/****************/
 				/* PROCESS LOOP */
 				/****************/
-			
+
 	gDisableAnimSounds = true;
-	
+
 	QD3D_CalcFramesPerSecond();
 	QD3D_CalcFramesPerSecond();
 
 	InitAnalogCursor();
 
-	while(true)	
+	while(true)
 	{
 		MoveObjects();
 		MoveMenuCamera();
@@ -117,11 +117,11 @@ start_again:
 			if (PickObject(mouseX, mouseY, &gMenuSelection))
 				break;
 		}
-		
+
 		QD3D_CalcFramesPerSecond();
 		DoSDLMaintenance();
 		UpdateInput();									// keys get us out
-		
+
 				/* UPDATE TIMER */
 
 		if (didMove)									// reset timer if mouse moved
@@ -137,15 +137,15 @@ start_again:
 			}
 		}
 	}
-	
+
 		/***********************/
 		/* WALK SPIDER TO ICON */
 		/***********************/
 
 	ShutdownAnalogCursor();
 	WalkSpiderToIcon();
-	
-	
+
+
 		/********************/
 		/* HANDLE SELECTION */
 		/********************/
@@ -155,7 +155,7 @@ start_again:
 		CleanQuit();
 		return false;
 	}
-	
+
 			/***********/
 			/* CLEANUP */
 			/***********/
@@ -182,19 +182,19 @@ getout:
 	DeleteAllObjects();
 	FreeAllSkeletonFiles(-1);
 	DeleteAll3DMFGroups();
-	QD3D_DisposeWindowSetup(&gGameViewInfoPtr);		
+	QD3D_DisposeWindowSetup(&gGameViewInfoPtr);
 	GameScreenToBlack();
 	Pomme_FlushPtrTracking(true);
 	gDisableAnimSounds = false;
 
 			/* SEE WHAT TO DO */
-			
+
 	switch(gMenuSelection)
 	{
 		case	kMenuChoice_About:
 				DoAboutScreens();
 				goto start_again;
-				
+
 		case	kMenuChoice_Scores:
 				ShowHighScoresScreen(0);
 				goto start_again;
@@ -247,7 +247,7 @@ ObjNode					*newObj;
 			/*************/
 
 	QD3D_NewViewDef(&viewDef);
-	
+
 	viewDef.camera.hither 			= 20;
 	viewDef.camera.yon 				= 1000;
 	viewDef.camera.fov 				= .9;
@@ -256,7 +256,7 @@ ObjNode					*newObj;
 	viewDef.camera.from.y 			= gCamCenter.y - 35;
 	viewDef.camera.from.z 			= gCamCenter.z;
 	viewDef.camera.to	 			= cameraTo;
-	
+
 	viewDef.lights.numFillLights 	= 2;
 	viewDef.lights.ambientBrightness = 0.3;
 	viewDef.lights.fillDirection[0] = fillDirection1;
@@ -273,16 +273,16 @@ ObjNode					*newObj;
 			/************/
 			/* LOAD ART */
 			/************/
-			
+
 	LoadASkeleton(SKELETON_TYPE_SPIDER);
 	FSMakeFSSpec(gDataSpec.vRefNum, gDataSpec.parID, ":models:MainMenu.3dmf", &spec);
-	LoadGrouped3DMF(&spec,MODEL_GROUP_MENU);	
+	LoadGrouped3DMF(&spec,MODEL_GROUP_MENU);
 
 
 			/***************/
 			/* MAKE SPIDER */
 			/***************/
-		
+
 	gNewObjectDefinition.type 		= SKELETON_TYPE_SPIDER;
 	gNewObjectDefinition.animNum 	= 0;
 	gNewObjectDefinition.scale 		= .2;
@@ -293,19 +293,19 @@ ObjNode					*newObj;
 	gNewObjectDefinition.flags 		= 0;
 	gNewObjectDefinition.moveCall 	= nil;
 	gNewObjectDefinition.rot 		= 0;
-	gSpider 						= MakeNewSkeletonObject(&gNewObjectDefinition);	
-	gSpider->Rot.x = PI/2;	
+	gSpider 						= MakeNewSkeletonObject(&gNewObjectDefinition);
+	gSpider->Rot.x = PI/2;
 	UpdateObjectTransforms(gSpider);
 
 
 			/*******************/
 			/* MAKE BACKGROUND */
 			/*******************/
-			
+
 			/* WEB */
-			
-	gNewObjectDefinition.group 		= MODEL_GROUP_MENU;	
-	gNewObjectDefinition.type 		= MENU_MObjType_Background;	
+
+	gNewObjectDefinition.group 		= MODEL_GROUP_MENU;
+	gNewObjectDefinition.type 		= MENU_MObjType_Background;
 	gNewObjectDefinition.coord.z 	= 0;
 	gNewObjectDefinition.flags 		= STATUS_BIT_NOTRICACHE | STATUS_BIT_NOZWRITE;
 	gNewObjectDefinition.moveCall 	= nil;
@@ -322,7 +322,7 @@ ObjNode					*newObj;
 	gNewObjectDefinition.coord.y 	= -6;		// Source port change from -40 (looks better in widescreen)
 	gNewObjectDefinition.coord.z 	= 0;
 	gNewObjectDefinition.scale 		= .3f;
-	gNewObjectDefinition.type 		= MENU_MObjType_Cyc;	
+	gNewObjectDefinition.type 		= MENU_MObjType_Cyc;
 	gNewObjectDefinition.flags 		= STATUS_BIT_NOFOG | STATUS_BIT_NULLSHADER;
 	ObjNode* cyc = MakeNewDisplayGroupObject(&gNewObjectDefinition);
 	QD3D_MirrorMeshesZ(cyc);
@@ -334,14 +334,14 @@ ObjNode					*newObj;
 	gNewObjectDefinition.coord.y 	= 100;
 	gNewObjectDefinition.coord.z 	= 0;
 	gNewObjectDefinition.scale 		= .3f;
-	gNewObjectDefinition.type 		= MENU_MObjType_MainMenu;	
+	gNewObjectDefinition.type 		= MENU_MObjType_MainMenu;
 	gNewObjectDefinition.flags 		= 0; 
 	MakeNewDisplayGroupObject(&gNewObjectDefinition);
 
 			/**************/
 			/* MAKE ICONS */
 			/**************/
-			
+
 	for (int i = 0; i < NUM_MENU_ICONS; i++)
 	{
 		static const short iconType[NUM_MENU_ICONS] =
@@ -364,7 +364,7 @@ ObjNode					*newObj;
 			[kMenuChoice_Settings]	= {  80,  30, 4 },			// settings
 		};
 
-		gNewObjectDefinition.type 		= iconType[i];	
+		gNewObjectDefinition.type 		= iconType[i];
 		gNewObjectDefinition.coord		= iconCoords[i];
 		gNewObjectDefinition.flags 		= STATUS_BIT_NULLSHADER;
 		gNewObjectDefinition.moveCall 	= nil;
@@ -374,7 +374,7 @@ ObjNode					*newObj;
 		gMenuIcons[i]->IsPickable = true;
 		gMenuIcons[i]->PickID = i;
 	}
-	
+
 	MakeFadeEvent(true);
 }
 
@@ -388,12 +388,12 @@ TQ3Vector3D	grav;
 float		d,fps = gFramesPerSecondFrac;
 
 	p = gGameViewInfoPtr->currentCameraCoords;
-	
+
 	grav.x = gCamCenter.x - p.x;						// calc vector to center
 	grav.y = gCamCenter.y - p.y;
-	grav.z = gCamCenter.z - p.z;	
+	grav.z = gCamCenter.z - p.z;
 	Q3Vector3D_Normalize(&grav,&grav);
-	
+
 	d =  Q3Point3D_Distance(&p, &gCamCenter);
 	if (d != 0.0f)
 	{
@@ -403,7 +403,7 @@ float		d,fps = gFramesPerSecondFrac;
 	}
 	else
 		d = 10;
-	
+
 	gCamDX += grav.x * fps * d * 600.0f;
 	gCamDY += grav.y * fps * d * 600.0f;
 	gCamDZ += grav.z * fps * d * 600.0f;
@@ -411,8 +411,8 @@ float		d,fps = gFramesPerSecondFrac;
 	p.x += gCamDX * fps;
 	p.y += gCamDY * fps;
 	p.z += gCamDZ * fps;
-	
-	QD3D_UpdateCameraFrom(gGameViewInfoPtr, &p);	
+
+	QD3D_UpdateCameraFrom(gGameViewInfoPtr, &p);
 }
 
 
@@ -425,8 +425,8 @@ Boolean	b = FlushMouseButtonPress() || GetNewKeyState(kKey_UI_PadConfirm);
 
 	MorphToSkeletonAnim(gSpider->Skeleton, 2, 6);
 
-	while(true)	
-	{		
+	while(true)
+	{
 		if (FlushMouseButtonPress() || GetNewKeyState(kKey_UI_PadConfirm))			// see if user wants to hurry up
 		{
 			if (!b)
@@ -434,29 +434,29 @@ Boolean	b = FlushMouseButtonPress() || GetNewKeyState(kKey_UI_PadConfirm);
 		}
 		else
 			b = false;
-	
-			
+
+
 		/* SEE IF CLOSE ENOUGH */
-		
+
 		if (CalcDistance(gSpider->Coord.x, gSpider->Coord.y,
 						 gMenuIcons[gMenuSelection]->Coord.x, gMenuIcons[gMenuSelection]->Coord.y) < 20.0f)
 			break;
 
-		
+
 		/* MOVE SPIDER */
-		
+
 		TurnObjectTowardTargetZ(gSpider, gMenuIcons[gMenuSelection]->Coord.x,
 								gMenuIcons[gMenuSelection]->Coord.y, 1.0);
 		gSpider->Coord.x += -sin(gSpider->Rot.z) * gFramesPerSecondFrac * 40.0f;
 		gSpider->Coord.y += cos(gSpider->Rot.z) * gFramesPerSecondFrac * 40.0f;
-								
+
 		UpdateObjectTransforms(gSpider);
-		
+
 		/* DO OTHER STUFF */
-		
+
 		MoveObjects();
 		MoveMenuCamera();
-		QD3D_DrawScene(gGameViewInfoPtr,DrawObjects);		
+		QD3D_DrawScene(gGameViewInfoPtr,DrawObjects);
 		QD3D_CalcFramesPerSecond();
 		DoSDLMaintenance();
 		UpdateInput();									// keys get us out
@@ -464,11 +464,5 @@ Boolean	b = FlushMouseButtonPress() || GetNewKeyState(kKey_UI_PadConfirm);
 
 	MorphToSkeletonAnim(gSpider->Skeleton, 0, 4);
 }
-
-
-
-
-
-
 
 

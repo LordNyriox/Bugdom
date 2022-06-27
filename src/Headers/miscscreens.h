@@ -14,7 +14,6 @@ void DoTitleScreen(void);
 bool DoLevelSelect(void);
 
 
-
 // UIRoutines.c
 
 enum

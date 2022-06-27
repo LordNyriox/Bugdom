@@ -105,17 +105,17 @@ DecomposedPointType	*decomposedPoint;
 				/*******************************/
 
 	for (long vertNum = 0; vertNum < numVertices; vertNum++)
-	{				
+	{
 			/* SEE IF THIS POINT IS ALREADY IN DECOMPOSED LIST */
-				
+
 		for (pointNum=0; pointNum < gCurrentSkeleton->numDecomposedPoints; pointNum++)
 		{
 			decomposedPoint = &gCurrentSkeleton->decomposedPointList[pointNum];					// point to this decomposed point
-			
+
 			if (PointsAreCloseEnough(&vertexList[vertNum],&decomposedPoint->realPoint))			// see if close enough to match
 			{
 					/* ADD ANOTHER REFERENCE */
-					
+
 				refNum = decomposedPoint->numRefs;												// get # refs for this point
 				GAME_ASSERT(refNum < MAX_POINT_REFS);
 
@@ -126,53 +126,52 @@ DecomposedPointType	*decomposedPoint;
 			}
 		}
 				/* IT'S A NEW POINT SO ADD TO LIST */
-				
+
 		pointNum = gCurrentSkeleton->numDecomposedPoints;
 		GAME_ASSERT(pointNum < MAX_DECOMPOSED_POINTS);
-		
+
 		refNum = 0;																			// it's the 1st entry (need refNum for below).
-		
+
 		decomposedPoint = &gCurrentSkeleton->decomposedPointList[pointNum];					// point to this decomposed point
-		decomposedPoint->realPoint = vertexList[vertNum];									// add new point to list			
+		decomposedPoint->realPoint = vertexList[vertNum];									// add new point to list
 		decomposedPoint->whichTriMesh[refNum] = n;											// set triMesh #
 		decomposedPoint->whichPoint[refNum] = vertNum;										// set point #
 		decomposedPoint->numRefs = 1;														// set # refs to 1
-		
+
 		gCurrentSkeleton->numDecomposedPoints++;											// inc # decomposed points
-		
+
 added_vert:
-		
-		
+
+
 				/***********************************************/
 				/* ADD THIS POINT'S NORMAL TO THE NORMALS LIST */
 				/***********************************************/
-				
+
 					/* SEE IF NORMAL ALREADY IN LIST */
-					
+
 		Q3Vector3D_Normalize(&normalPtr[vertNum],&normalPtr[vertNum]);						// normalize to be safe
-					
+
 		for (i=0; i < gCurrentSkeleton->numDecomposedNormals; i++)
 			if (VectorsAreCloseEnough(&normalPtr[vertNum],&gCurrentSkeleton->decomposedNormalsList[i]))	// if already in list, then dont add it again
 				goto added_norm;
-	
+
 
 				/* ADD NEW NORMAL TO LIST */
-				
+
 		i = gCurrentSkeleton->numDecomposedNormals;										// get # decomposed normals already in list
 		GAME_ASSERT(i < MAX_DECOMPOSED_NORMALS);
 
-		gCurrentSkeleton->decomposedNormalsList[i] = normalPtr[vertNum];				// add new normal to list			
+		gCurrentSkeleton->decomposedNormalsList[i] = normalPtr[vertNum];				// add new normal to list
 		gCurrentSkeleton->numDecomposedNormals++;										// inc # decomposed normals
-		
+
 added_norm:
 					/* KEEP REF TO NORMAL IN POINT LIST */
 
-		decomposedPoint->whichNormal[refNum] = i;										// save index to normal	
+		decomposedPoint->whichNormal[refNum] = i;										// save index to normal
 	}
 
 	gCurrentSkeleton->numDecomposedTriMeshes++;											// inc # of trimeshes in decomp list
 }
-
 
 
 /************************** UPDATE SKINNED GEOMETRY *******************************/
@@ -191,7 +190,7 @@ void UpdateSkinnedGeometry(ObjNode *theNode)
 			// Detecting this is too complex to be worth-while, so it's
 			// easier to just verify the objNode here instead.
 			//
-			
+
 	if (theNode->CType == INVALID_NODE_FLAG)
 		return;
 
@@ -203,7 +202,7 @@ void UpdateSkinnedGeometry(ObjNode *theNode)
 	if (theNode->Skeleton->JointsAreGlobal)
 		Q3Matrix4x4_SetIdentity(&gMatrix);
 	else
-		gMatrix = theNode->BaseTransformMatrix;	
+		gMatrix = theNode->BaseTransformMatrix;
 
 	gBBox.min.x = gBBox.min.y = gBBox.min.z = 10000000;
 	gBBox.max.x = gBBox.max.y = gBBox.max.z = -gBBox.min.x;								// init bounding box calc
@@ -246,13 +245,13 @@ TQ3TriMeshData			**localTriMeshes = skelNode->MeshList;
 				/*********************************/
 				/* FACTOR IN THIS JOINT'S MATRIX */
 				/*********************************/
-				
+
 	jointMat = &currentSkelObjData->jointTransformMatrix[joint].value[0][0];
 	matPtr = &gMatrix.value[0][0];
-	
+
 	if (!currentSkelObjData->JointsAreGlobal)
 	{
-		MatrixMultiply((TQ3Matrix4x4 *)jointMat, (TQ3Matrix4x4 *)matPtr, (TQ3Matrix4x4 *)matPtr);				
+		MatrixMultiply((TQ3Matrix4x4 *)jointMat, (TQ3Matrix4x4 *)matPtr, (TQ3Matrix4x4 *)matPtr);
 
 		m00 = matPtr[0];	m01 = matPtr[1];	m02 = matPtr[2];
 		m10 = matPtr[4];	m11 = matPtr[5];	m12 = matPtr[6];
@@ -272,17 +271,17 @@ TQ3TriMeshData			**localTriMeshes = skelNode->MeshList;
 			/*************************/
 
 		/* APPLY MATRIX TO EACH NORMAL VECTOR */
-			
+
 	bonePtr = &currentSkeleton->Bones[joint];									// point to bone def
 	numNormals = bonePtr->numNormalsAttachedToBone;								// get # normals attached to this bone
-				
-				
+
+
 	for (p=0; p < numNormals; p++)
 	{
 		float	x,y,z;
 
 		i = bonePtr->normalList[p];												// get index to normal in gDecomposedNormalsList
-		
+
 		x = currentSkeleton->decomposedNormalsList[i].x;						// get xyz of normal
 		y = currentSkeleton->decomposedNormalsList[i].y;
 		z = currentSkeleton->decomposedNormalsList[i].z;
@@ -291,17 +290,16 @@ TQ3TriMeshData			**localTriMeshes = skelNode->MeshList;
 		gTransformedNormals[i].y = (m01*x) + (m11*y) + (m21*z);
 		gTransformedNormals[i].z = (m02*x) + (m12*y) + (m22*z);
 	}
-	
-	
+
 
 			/* APPLY TRANSFORMED VECTORS TO ALL REFERENCES */
-	
+
 	numPoints = bonePtr->numPointsAttachedToBone;									// get # points attached to this bone
 
 	for (p = 0; p < numPoints; p++)
 	{
 		i = bonePtr->pointList[p];													// get index to point in gDecomposedPointList
-				
+
 		numRefs = decomposedPointList[i].numRefs;									// get # times this point is referenced
 		if (numRefs == 1)															// SPECIAL CASE IF ONLY 1 REF (OPTIMIZATION)
 		{
@@ -313,12 +311,12 @@ TQ3TriMeshData			**localTriMeshes = skelNode->MeshList;
 			normalAttribs[p2] = gTransformedNormals[n];								// copy transformed normal into triMesh
 		}
 		else																		// handle multi-case
-		{		
+		{
 			for (r = 0; r < numRefs; r++)
-			{		
-				triMeshNum = decomposedPointList[i].whichTriMesh[r];					
-				p2 = decomposedPointList[i].whichPoint[r];								
-				n = decomposedPointList[i].whichNormal[r];								
+			{
+				triMeshNum = decomposedPointList[i].whichTriMesh[r];
+				p2 = decomposedPointList[i].whichPoint[r];
+				n = decomposedPointList[i].whichNormal[r];
 
 				normalAttribs = localTriMeshes[triMeshNum]->vertexNormals;
 				normalAttribs[p2] = gTransformedNormals[n];
@@ -341,14 +339,14 @@ TQ3TriMeshData			**localTriMeshes = skelNode->MeshList;
 	for (p = 0; p < numPoints; p++)
 	{
 		float	x,y,z;
-		
+
 		i = bonePtr->pointList[p];														// get index to point in gDecomposedPointList
 		x = decomposedPointList[i].boneRelPoint.x;										// get xyz of point
 		y = decomposedPointList[i].boneRelPoint.y;
 		z = decomposedPointList[i].boneRelPoint.z;
 
 				/* TRANSFORM & UPDATE BBOX */
-				
+
 		newX = (m00*x) + (m10*y) + (m20*z) + m30;										// transform x value
 		if (newX < minX)																// update bbox
 			minX = newX;
@@ -366,27 +364,27 @@ TQ3TriMeshData			**localTriMeshes = skelNode->MeshList;
 			maxZ = newZ;
 		if (newZ < minZ)
 			minZ = newZ;
-		
-	
+
+
 				/* APPLY NEW POINT TO ALL REFERENCES */
-				
+
 		numRefs = decomposedPointList[i].numRefs;										// get # times this point is referenced
 		if (numRefs == 1)																// SPECIAL CASE IF ONLY 1 REF (OPTIMIZATION)
 		{
 			triMeshNum = decomposedPointList[i].whichTriMesh[0];						// get triMesh # that uses this point
 			p2 = decomposedPointList[i].whichPoint[0];									// get point # in the triMesh
-	
+
 			localTriMeshes[triMeshNum]->points[p2].x = newX;								// set the point in local copy of trimesh
 			localTriMeshes[triMeshNum]->points[p2].y = newY;
 			localTriMeshes[triMeshNum]->points[p2].z = newZ;
 		}
 		else																			// multi-refs
-		{		
+		{
 			for (r = 0; r < numRefs; r++)
 			{
-				triMeshNum = decomposedPointList[i].whichTriMesh[r];					
-				p2 = decomposedPointList[i].whichPoint[r];								
-		
+				triMeshNum = decomposedPointList[i].whichTriMesh[r];
+				p2 = decomposedPointList[i].whichPoint[r];
+
 				localTriMeshes[triMeshNum]->points[p2].x = newX;
 				localTriMeshes[triMeshNum]->points[p2].y = newY;
 				localTriMeshes[triMeshNum]->points[p2].z = newZ;
@@ -395,7 +393,7 @@ TQ3TriMeshData			**localTriMeshes = skelNode->MeshList;
 	}
 
 				/* UPDATE GLOBAL BBOX */
-				
+
 	if (minX < gBBox.min.x)
 		gBBox.min.x = minX;
 	if (maxX > gBBox.max.x)
@@ -413,7 +411,7 @@ TQ3TriMeshData			**localTriMeshes = skelNode->MeshList;
 
 
 			/* RECURSE THRU ALL CHILDREN */
-			
+
 	numChildren = currentSkeleton->numChildren[joint];									// get # children
 	for (c = 0; c < numChildren; c++)
 	{
@@ -435,13 +433,13 @@ long	i,b,j;
 
 	GAME_ASSERT(skeleton->NumBones != 0);
 
-			
+
 			/* SET THE FORWARD LINKS */
-			
+
 	for (b = 0; b < skeleton->NumBones; b++)
 	{
 		skeleton->numChildren[b] = 0;								// init child counter
-		
+
 		for (i = 0; i < skeleton->NumBones; i++)					// look for a child
 		{
 			if (skeleton->Bones[i].parentBone == b)					// is this "i" a child of "b"?
@@ -450,19 +448,11 @@ long	i,b,j;
 				GAME_ASSERT(j < MAX_CHILDREN);
 
 				skeleton->childIndecies[b][j] = i;					// set index to child
-	
+
 				skeleton->numChildren[b]++;							// inc # children
 			}
 		}
 	}
 }
-
-
-
-
-
-
-
-
 
 

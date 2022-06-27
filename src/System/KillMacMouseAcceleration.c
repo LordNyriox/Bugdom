@@ -51,7 +51,7 @@ void KillMacMouseAcceleration(void)
 		printf("%s: accel already tainted, bailing out.\n", __func__);
 		return;
 	}
-	
+
 	io_connect_t handle = NXOpenEventStatus();
 
 	if (!handle)
@@ -59,13 +59,13 @@ void KillMacMouseAcceleration(void)
 		printf("%s: NXOpenEventStatus failed!\n", __func__);
 		return;
 	}
-	
+
 	kern_return_t ret;
-	
+
 	IOByteCount actualSize;
 	ret = IOHIDGetParameter(handle, CFSTR(kIOHIDMouseAccelerationType),
 							sizeof(gAccelerationBackup), &gAccelerationBackup, &actualSize);
-	
+
 	if (ret != KERN_SUCCESS)
 	{
 		printf("%s: IOHIDGetParameter failed! Error %d.\n", __func__, (int)ret);
@@ -87,7 +87,7 @@ void KillMacMouseAcceleration(void)
 			printf("%s: success. Was %d, now %d.\n", __func__, gAccelerationBackup, kNoAcceleration);
 		}
 	}
-	
+
 	NXCloseEventStatus(handle);
 }
 
@@ -98,7 +98,7 @@ void RestoreMacMouseAcceleration(void)
 		printf("%s: Acceleration value not tainted (%d).\n", __func__, gAccelerationBackup);
 		return;
 	}
-	
+
 	io_connect_t handle = NXOpenEventStatus();
 
 	if (!handle)
@@ -106,9 +106,9 @@ void RestoreMacMouseAcceleration(void)
 		printf("%s: NXOpenEventStatus failed!\n", __func__);
 		return;
 	}
-	
+
 	kern_return_t ret;
-	
+
 	ret = IOHIDSetParameter(handle, CFSTR(kIOHIDMouseAccelerationType), &gAccelerationBackup, sizeof(gAccelerationBackup));
 	if (ret != KERN_SUCCESS)
 	{
@@ -119,7 +119,7 @@ void RestoreMacMouseAcceleration(void)
 		gAccelerationTainted = false;
 		printf("%s: success. Restored %d.\n", __func__, gAccelerationBackup);
 	}
-	
+
 	NXCloseEventStatus(handle);
 }
 

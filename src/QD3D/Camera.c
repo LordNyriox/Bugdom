@@ -207,27 +207,27 @@ void DisposeLensFlares(void)
 //
 
 void InitCamera(void)
-{		
+{
 int	i;
 
 	InitLensFlares();
 
 	ResetCameraSettings();
-					
+
 			/******************************/
 			/* SET CAMERA STARTING COORDS */
 			/******************************/
-			
-			
+
+
 			/* FIRST CHOOSE AN ARBITRARY POINT BEHIND PLAYER */
-			
+
 	if (gPlayerObj)
 	{
 		float	dx,dz;
-	
+
 		dx = sin(gPlayerObj->Rot.y) * 10.0f;
 		dz = cos(gPlayerObj->Rot.y) * 10.0f;
-		
+
 		gGameViewInfoPtr->currentCameraCoords.x = gPlayerObj->Coord.x + dx;			// camera coords
 		gGameViewInfoPtr->currentCameraCoords.z = gPlayerObj->Coord.z + dz;
 		gGameViewInfoPtr->currentCameraCoords.y = gPlayerObj->Coord.y + 300.0f;
@@ -236,15 +236,15 @@ int	i;
 		gGameViewInfoPtr->currentCameraLookAt.y = gPlayerObj->Coord.y + 100.0f;
 		gGameViewInfoPtr->currentCameraLookAt.z = gPlayerObj->Coord.z;
 	}
-			
-			
+
+
 			/* CALL SOME STUFF TO GET IT INTO POSITION */
-			
+
 	gFramesPerSecondFrac = 1.0/20.0;
 	for (i = 0; i < 100; i++)
 		UpdateCamera();														// prime it
 
-	QD3D_UpdateCameraFromTo(gGameViewInfoPtr, &gTargetFrom, &gTargetTo);	// set desired numbers	
+	QD3D_UpdateCameraFromTo(gGameViewInfoPtr, &gTargetFrom, &gTargetTo);	// set desired numbers
 }
 
 
@@ -265,29 +265,29 @@ void ResetCameraSettings(void)
 void UpdateCamera(void)
 {
 float	fps = gFramesPerSecondFrac;
-	
+
 
 			/************************/
 			/* HANDLE CAMERA MOTION */
 			/************************/
 
-	if (GetKeyState(kKey_ZoomIn))	
+	if (GetKeyState(kKey_ZoomIn))
 	{
 		gCameraDistFromMe -= fps * 200.0f;		// closer camera
 		if (gCameraDistFromMe < CAMERA_CLOSEST)
 			gCameraDistFromMe = CAMERA_CLOSEST;
 	}
 	else
-	if (GetKeyState(kKey_ZoomOut))	
+	if (GetKeyState(kKey_ZoomOut))
 	{
 		gCameraDistFromMe += fps * 200.0f;		// farther camera
 		if (gCameraDistFromMe > CAMERA_FARTHEST)
 			gCameraDistFromMe = CAMERA_FARTHEST;
 	}
-		
+
 
 	MoveCamera_Manual();
-	
+
 }
 
 
@@ -436,13 +436,13 @@ float		fps = gFramesPerSecondFrac;
 
 	gPlayerToCameraAngle = PI - CalcYAngleFromPointToPoint(PI-gPlayerToCameraAngle, gMyCoord.x, gMyCoord.z,	// calc angle of camera around player
 												 gGameViewInfoPtr->currentCameraCoords.x,
-												 gGameViewInfoPtr->currentCameraCoords.z);	
+												 gGameViewInfoPtr->currentCameraCoords.z);
 
 
 	myX = gMyCoord.x;
 	myY = gMyCoord.y + gPlayerObj->BottomOff;
 	myZ = gMyCoord.z;
-	
+
 			/**********************/
 			/* CALC LOOK AT POINT */
 			/**********************/
@@ -456,7 +456,7 @@ float		fps = gFramesPerSecondFrac;
 	distY = target.y - gGameViewInfoPtr->currentCameraLookAt.y;
 	distZ = target.z - gGameViewInfoPtr->currentCameraLookAt.z;
 
-	if (distX > 350.0f)		
+	if (distX > 350.0f)
 		distX = 350.0f;
 	else
 	if (distX < -350.0f)
@@ -475,20 +475,20 @@ float		fps = gFramesPerSecondFrac;
 			/*******************/
 			/* CALC FROM POINT */
 			/*******************/
-				
+
 	pToC.x = gGameViewInfoPtr->currentCameraCoords.x - myX;				// calc player->camera vector
 	pToC.y = gGameViewInfoPtr->currentCameraCoords.z - myZ;
 	Q3Vector2D_Normalize(&pToC,&pToC);									// normalize it
-	
+
 	target.x = myX + (pToC.x * gCameraDistFromMe);						// target is appropriate dist based on cam's current coord
 	target.z = myZ + (pToC.y * gCameraDistFromMe);
 
 
 			/* MOVE CAMERA TOWARDS POINT */
-					
+
 	distX = target.x - gGameViewInfoPtr->currentCameraCoords.x;
 	distZ = target.z - gGameViewInfoPtr->currentCameraCoords.z;
-	
+
 	if (distX > 500.0f)													// pin max accel factor
 		distX = 500.0f;
 	else
@@ -499,7 +499,7 @@ float		fps = gFramesPerSecondFrac;
 	else
 	if (distZ < -500.0f)
 		distZ = -500.0f;
-	
+
 	distX = distX * (fps * gCameraFromAccel);
 	distZ = distZ * (fps * gCameraFromAccel);
 
@@ -515,13 +515,13 @@ float		fps = gFramesPerSecondFrac;
 		distZ = TERRAIN_SUPERTILE_UNIT_SIZE;
 	else
 	if (distZ < -TERRAIN_SUPERTILE_UNIT_SIZE)
-		distZ = -TERRAIN_SUPERTILE_UNIT_SIZE;	
-	
+		distZ = -TERRAIN_SUPERTILE_UNIT_SIZE;
+
 	from.x = gGameViewInfoPtr->currentCameraCoords.x+distX;
 	from.y = gGameViewInfoPtr->currentCameraCoords.y;  // from.y mustn't be NaN for matrix transform in cam swivel below -- actual Y computed later
 	from.z = gGameViewInfoPtr->currentCameraCoords.z+distZ;
 
-			
+
 	/*****************************/
 	/* SEE IF USER ROTATE CAMERA */
 	/*****************************/
@@ -531,10 +531,8 @@ float		fps = gFramesPerSecondFrac;
 		TQ3Matrix4x4	m;
 		float			r = gCameraControlDelta.x * fps;
 		Q3Matrix4x4_SetRotateAboutPoint(&m, &to, 0, r, 0);
-		Q3Point3D_Transform(&from, &m, &from);	
+		Q3Point3D_Transform(&from, &m, &from);
 	}
-	
-
 
 
 		/***************/
@@ -544,8 +542,8 @@ float		fps = gFramesPerSecondFrac;
 	dist = CalcQuickDistance(from.x, from.z, to.x, to.z) - CAMERA_CLOSEST;
 	if (dist < 0.0f)
 		dist = 0.0f;
-	
-	target.y = to.y + (dist*gCameraHeightFactor) + CAM_MINY;						// calc desired y based on dist and height factor	
+
+	target.y = to.y + (dist*gCameraHeightFactor) + CAM_MINY;						// calc desired y based on dist and height factor
 
 		/*******************************/
 		/* MOVE ABOVE ANY SOLID OBJECT */
@@ -567,7 +565,7 @@ float		fps = gFramesPerSecondFrac;
 			{
 				dist = coll->top - target.y;
 				if (dist < 500.0f)									// see if its reasonable
-					target.y = coll->top + 100.0f;					// set target on top of object			
+					target.y = coll->top + 100.0f;					// set target on top of object
 				else
 				if (dist >= 500.0f)
 					target.y += 500.0f;
@@ -576,33 +574,32 @@ float		fps = gFramesPerSecondFrac;
 	}
 
 	gTargetFrom = target;
-	
+
 	dist = (target.y - gGameViewInfoPtr->currentCameraCoords.y)*gCameraFromAccelY;	// calc dist from current y to desired y
 	from.y = gGameViewInfoPtr->currentCameraCoords.y+(dist*fps);
 
 	if (from.y < (to.y+CAM_MINY))													// make sure camera never under the "to" point (insures against camera flipping over)
-		from.y = (to.y+CAM_MINY);	
-	
-	
-	
+		from.y = (to.y+CAM_MINY);
+
+
 	if (gDoCeiling)
 	{
 				/* MAKE SURE NOT ABOVE CEILING */
-		
+
 		dist = GetTerrainHeightAtCoord(from.x, from.z, CEILING) - 60.0f;
 		if (from.y > dist)
 			from.y = dist;
 	}
 
 			/* MAKE SURE NOT UNDERGROUND */
-			
+
 	dist = GetTerrainHeightAtCoord(from.x, from.z, FLOOR) + 60.0f;
 	if (from.y < dist)
 		from.y = dist;
 
 
 				/* SEE IF KEEP CAMERA POS STEADY */
-				
+
 	if (gLevelType == LEVEL_TYPE_FOREST)
 		if (gPlayerMode == PLAYER_MODE_BUG)
 			if (gPlayerObj->Skeleton->AnimNum == PLAYER_ANIM_BEINGEATEN)
@@ -610,7 +607,7 @@ float		fps = gFramesPerSecondFrac;
 
 
 				/**********************/
-				/* UPDATE CAMERA INFO */	
+				/* UPDATE CAMERA INFO */
 				/**********************/
 
 	QD3D_UpdateCameraFromTo(gGameViewInfoPtr,&from,&to);

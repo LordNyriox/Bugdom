@@ -33,10 +33,9 @@ static void MoveTick(ObjNode *theNode);
 
 #define	MAX_TICK_RANGE			(TICK_CHASE_RANGE+1000.0f)	// max distance this enemy can go from init coord
 
-#define	TICK_HEALTH			1.0f		
+#define	TICK_HEALTH			1.0f
 #define	TICK_DAMAGE			0.05f
 #define	TICK_SCALE			1.2f
-
 
 
 /*********************/
@@ -50,8 +49,8 @@ void MakeTickEnemy(TQ3Point3D *where)
 {
 ObjNode	*newObj;
 
-	gNewObjectDefinition.group 		= GLOBAL2_MGroupNum_Tick;	
-	gNewObjectDefinition.type 		= GLOBAL2_MObjType_Tick;	
+	gNewObjectDefinition.group 		= GLOBAL2_MGroupNum_Tick;
+	gNewObjectDefinition.type 		= GLOBAL2_MObjType_Tick;
 	gNewObjectDefinition.coord		= *where;
 	gNewObjectDefinition.flags 		= gAutoFadeStatusBits;
 	gNewObjectDefinition.slot 		= 373;
@@ -63,14 +62,14 @@ ObjNode	*newObj;
 		return;
 
 				/* SET BETTER INFO */
-			
+
 	newObj->Health 		= TICK_HEALTH;
 	newObj->Damage 		= TICK_DAMAGE;
 	newObj->Kind 		= ENEMY_KIND_TICK;
-	
-	
+
+
 				/* SET COLLISION INFO */
-				
+
 	newObj->CType		= CTYPE_ENEMY|CTYPE_BLOCKCAMERA|CTYPE_BOPPABLE|
 						CTYPE_SPIKED|CTYPE_KICKABLE|CTYPE_HURTNOKNOCK;
 	newObj->CBits		= CBITS_TOUCHABLE;
@@ -80,7 +79,6 @@ ObjNode	*newObj;
 	gNumEnemies++;
 	gNumEnemyOfKind[ENEMY_KIND_TICK]++;
 }
-
 
 
 /********************* MOVE TICK **************************/
@@ -100,30 +98,29 @@ float	r;
 		return;
 
 	GetObjectInfo(theNode);
-	
+
 
 			/* MOVE TOWARD PLAYER */
-			
-	TurnObjectTowardTarget(theNode, &gCoord, gMyCoord.x, gMyCoord.z, TICK_TURN_SPEED, false);			
+
+	TurnObjectTowardTarget(theNode, &gCoord, gMyCoord.x, gMyCoord.z, TICK_TURN_SPEED, false);
 
 	r = theNode->Rot.y;
 	gDelta.x = sin(r) * -TICK_CHASE_SPEED;
 	gDelta.z = cos(r) * -TICK_CHASE_SPEED;
-	
+
 	gCoord.x += gDelta.x * fps;
 	gCoord.z += gDelta.z * fps;
 	gCoord.y = GetTerrainHeightAtCoord(gCoord.x, gCoord.z, FLOOR);	// calc y coord
 
-			
 
 				/**********************/
 				/* DO ENEMY COLLISION */
 				/**********************/
-				
+
 	if (DoEnemyCollisionDetect(theNode,DEFAULT_ENEMY_COLLISION_CTYPES))
 		return;
 
-	UpdateEnemy(theNode);		
+	UpdateEnemy(theNode);
 }
 
 
@@ -135,12 +132,12 @@ float	r;
 //
 
 void TickGotBopped(ObjNode *enemy)
-{	
+{
 		/* FLATTEN */
-		
-	enemy->Scale.y *= .2f;	
-	UpdateObjectTransforms(enemy);	
-	
+
+	enemy->Scale.y *= .2f;
+	UpdateObjectTransforms(enemy);
+
 	enemy->CType = 0;
 }
 
@@ -153,11 +150,5 @@ Boolean KillTick(ObjNode *theNode)
 	DeleteEnemy(theNode);
 	return(true);
 }
-
-
-
-
-
-
 
 

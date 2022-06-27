@@ -55,7 +55,7 @@ typedef	struct
 
 
 		/* QD3DSetupInputType */
-		
+
 typedef struct
 {
 	QD3DViewDefType			view;

@@ -281,7 +281,7 @@ void Render_InitState(const TQ3ColorRGBA* clearColor)
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	gState.blendFuncIsAdditive = false;		// must match glBlendFunc call above!
-	
+
 	glDepthMask(true);
 	gState.hasFlag_glDepthMask = true;		// must match glDepthMask call above!
 
@@ -289,13 +289,13 @@ void Render_InitState(const TQ3ColorRGBA* clearColor)
 	gState.wantColorMask = true;			// must match glColorMask call above!
 
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-	
+
 	gState.boundTexture = 0;
 	gState.sceneHasFog = false;
 	gState.currentTransform = NULL;
 
 	glClearColor(clearColor->r, clearColor->g, clearColor->b, 1.0f);
-	
+
 	// Set misc GL defaults that apply throughout the entire game
 	glAlphaFunc(GL_GREATER, 0.4999f);
 	glFrontFace(GL_CCW);

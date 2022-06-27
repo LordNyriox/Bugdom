@@ -81,8 +81,6 @@ enum
 static ObjNode* floppies[3];
 
 
-
-
 /*********************/
 /*    VARIABLES      */
 /*********************/
@@ -447,8 +445,6 @@ static void DeleteFileInSlot(int fileNumber)
 
 	MakeFileObjects(fileNumber, false);
 }
-
-
 
 
 /******************* DRAW BONUS STUFF ********************/

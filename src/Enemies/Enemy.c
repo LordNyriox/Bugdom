@@ -24,7 +24,6 @@ static Boolean KillEnemy(ObjNode *theEnemy);
 /****************************/
 
 
-
 /*********************/
 /*    VARIABLES      */
 /*********************/
@@ -80,7 +79,7 @@ void DeleteEnemy(ObjNode *theEnemy)
 static Boolean KillEnemy(ObjNode *theEnemy)
 {
 			/* HANDLE DEATH */
-			
+
 	switch(theEnemy->Kind)
 	{
 		case	ENEMY_KIND_ANT:
@@ -91,7 +90,7 @@ static Boolean KillEnemy(ObjNode *theEnemy)
 
 		case	ENEMY_KIND_SPIDER:
 				return (KillSpider(theEnemy));
-				
+
 		case	ENEMY_KIND_MOSQUITO:
 				return (KillMosquito(theEnemy,0,0,0));
 
@@ -109,7 +108,7 @@ static Boolean KillEnemy(ObjNode *theEnemy)
 
 		case	ENEMY_KIND_ROACH:
 				return (KillRoach(theEnemy));
-				
+
 		case	ENEMY_KIND_SKIPPY:
 				return (KillSkippy(theEnemy));
 
@@ -118,20 +117,18 @@ static Boolean KillEnemy(ObjNode *theEnemy)
 
 		case	ENEMY_KIND_LARVA:
 				return (KillLarva(theEnemy));
-				
+
 		case	ENEMY_KIND_FIREFLY:
 				return (KillFireFly(theEnemy));
-				
+
 		case	ENEMY_KIND_KINGANT:
 				return (KillKingAnt(theEnemy));
-				
-				
-	}	
-	
+
+
+	}
+
 	return(false);
 }
-
-
 
 
 /****************** DO ENEMY COLLISION DETECT ***************************/
@@ -150,26 +147,26 @@ float	realSpeed;
 	theEnemy->StatusBits &= ~STATUS_BIT_ONGROUND;						// assume not on ground
 
 			/* AUTOMATICALLY HANDLE THE BORING STUFF */
-			
+
 	HandleCollisions(theEnemy, ctype);
 
 
 			/******************************/
 			/* SCAN FOR INTERESTING STUFF */
 			/******************************/
-			
+
 	theEnemy->StatusBits &= ~STATUS_BIT_UNDERWATER;				// assume not in water volume
 
-	for (i=0; i < gNumCollisions; i++)						
+	for (i=0; i < gNumCollisions; i++)
 	{
 			hitObj = gCollisionList[i].objectPtr;				// get ObjNode of this collision
 			ctype = hitObj->CType;
 
 			if (ctype == INVALID_NODE_FLAG)						// see if has since become invalid
 				continue;
-			
+
 					/* HURT */
-					
+
 			if (ctype & CTYPE_HURTENEMY)
 			{
 				if (EnemyGotHurt(theEnemy,hitObj->Damage))		// handle hit (returns true if was deleted)
@@ -178,13 +175,13 @@ float	realSpeed;
 
 
 				/* LIQUID */
-					
+
 			if (ctype & CTYPE_LIQUID)
 			{
 				theEnemy->StatusBits |= STATUS_BIT_UNDERWATER;
 			}
 	}
-	
+
 				/* CHECK PARTICLE COLLISION */
 
 	if (ParticleHitObject(theEnemy, PARTICLE_FLAGS_HURTENEMY))
@@ -192,28 +189,27 @@ float	realSpeed;
 		if (EnemyGotHurt(theEnemy,.3))						// handle hit (returns true if was deleted)
 			return(true);
 	}
-			
-	
+
+
 				/* CHECK FENCE COLLISION */
-				
+
 	DoFenceCollision(theEnemy,1);
 
 
-			/********************************/	
+			/********************************/
 			/* DO FLOOR & CEILING COLLISION */
-			/********************************/	
-			
+			/********************************/
+
 	realSpeed = FastVectorLength3D(gDelta.x, gDelta.y, gDelta.z);// calc real 3D speed for terrain collision
 	if (HandleFloorAndCeilingCollision(&gCoord, &theEnemy->OldCoord, &gDelta, &gDelta,
 										-theEnemy->BottomOff, theEnemy->TopOff,
 										realSpeed))
 	{
-		theEnemy->StatusBits |= STATUS_BIT_ONGROUND|STATUS_BIT_ONTERRAIN;	
+		theEnemy->StatusBits |= STATUS_BIT_ONGROUND|STATUS_BIT_ONTERRAIN;
 	}
 
 	return(false);
 }
-
 
 
 /******************* ENEMY GOT HURT *************************/
@@ -229,27 +225,26 @@ Boolean	wasDeleted;
 
 
 			/* LOSE HEALTH */
-			
+
 	theEnemy->Health -= damage;
-	
-	
+
+
 			/* HANDLE DEATH OF ENEMY */
-			
+
 	if (theEnemy->Health <= 0.0f)
 		wasDeleted = KillEnemy(theEnemy);
 	else
 		wasDeleted = false;
-	
+
 	return(wasDeleted);
 }
-
 
 
 /*********************** UPDATE ENEMY ******************************/
 
 void UpdateEnemy(ObjNode *theNode)
 {
-	theNode->Speed = Q3Vector3D_Length(&gDelta);	
+	theNode->Speed = Q3Vector3D_Length(&gDelta);
 
 	UpdateObject(theNode);
 }
@@ -265,14 +260,14 @@ ObjNode *FindClosestEnemy(TQ3Point3D *pt, float *dist)
 ObjNode		*thisNodePtr,*best = nil;
 float	d,minDist = 10000000;
 
-			
+
 	thisNodePtr = gFirstNodePtr;
-	
+
 	do
 	{
 		if (thisNodePtr->Slot >= SLOT_OF_DUMB)					// see if reach end of usable list
 			break;
-	
+
 		if (thisNodePtr->CType & CTYPE_ENEMY)
 		{
 			d = CalcQuickDistance(pt->x,pt->z,thisNodePtr->Coord.x, thisNodePtr->Coord.z);
@@ -281,7 +276,7 @@ float	d,minDist = 10000000;
 				minDist = d;
 				best = thisNodePtr;
 			}
-		}	
+		}
 		thisNodePtr = (ObjNode *)thisNodePtr->NextNode;		// next node
 	}
 	while (thisNodePtr != nil);
@@ -303,7 +298,7 @@ float	d,minDist = 10000000;
 ObjNode *MakeEnemySkeleton(Byte skeletonType, float x, float z, float scale)
 {
 ObjNode	*newObj;
-	
+
 			/****************************/
 			/* MAKE NEW SKELETON OBJECT */
 			/****************************/
@@ -323,10 +318,10 @@ ObjNode	*newObj;
 	GAME_ASSERT(newObj);
 
 				/* SET DEFAULT COLLISION INFO */
-				
+
 	newObj->CType = CTYPE_ENEMY|CTYPE_BLOCKCAMERA;
 	newObj->CBits = CBITS_ALLSOLID;
-	
+
 	return(newObj);
 }
 
@@ -366,32 +361,19 @@ Boolean DetachEnemyFromSpline(ObjNode *theNode, void (*moveCall)(ObjNode*))
 	AttachObject(theNode->ChainNode);
 
 	if (!RemoveFromSplineObjectList(theNode))			// remove from spline
-		return(false);	
-	
+		return(false);
+
 	if (theNode->Kind != ENEMY_KIND_FIREFLY)
 		gNumEnemies++;								// count as a normal enemy now (if not firefly)
-		
+
 	gNumEnemyOfKind[theNode->Kind]++;
-	
+
 	theNode->InitCoord  = theNode->Coord;			// remember where started
-	
+
 	theNode->MoveCall = moveCall;
 
 
 	return(true);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

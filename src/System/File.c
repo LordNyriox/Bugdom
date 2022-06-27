@@ -43,7 +43,7 @@ const char PREFS_HEADER_STRING[PREFS_HEADER_LENGTH+1] = "NewBugdomPrefs04";		// 
 
 		/* PLAYFIELD HEADER */
 		// (READ IN FROM FILE -- MUST BE BYTESWAPPED!)
-		
+
 typedef struct
 {
 	NumVersion	version;							// version of file
@@ -65,13 +65,13 @@ typedef struct
 		//		data structure.
 		//
 		// (READ IN FROM FILE -- MUST BE BYTESWAPPED!)
-		
+
 typedef struct
 {
 	uint16_t		type;				// type of fence
 	int16_t			numNubs;			// # nubs in fence
 	int32_t 		_junkptr1;
-	Rect			bBox;				// bounding box of fence area	
+	Rect			bBox;				// bounding box of fence area
 } File_FenceDefType;
 
 
@@ -135,13 +135,11 @@ char		pathBuf[128];
 	}
 
 
-
 	snprintf(pathBuf, sizeof(pathBuf), ":Skeletons:%s.skeleton", modelName);
 	FSMakeFSSpec(gDataSpec.vRefNum, gDataSpec.parID, pathBuf, &fsSpecSkeleton);
 
 	snprintf(pathBuf, sizeof(pathBuf), ":Skeletons:%s.3dmf", modelName);
 	FSMakeFSSpec(gDataSpec.vRefNum, gDataSpec.parID, pathBuf, &fsSpec3DMF);
-
 
 
 			/* OPEN THE FILE'S REZ FORK */
@@ -152,20 +150,20 @@ char		pathBuf[128];
 	UseResFile(fRefNum);
 	GAME_ASSERT(noErr == ResError());
 
-			
+
 			/* ALLOC MEMORY FOR SKELETON INFO STRUCTURE */
-			
+
 	skeleton = (SkeletonDefType *)AllocPtr(sizeof(SkeletonDefType));
 	GAME_ASSERT(skeleton);
 
 
 			/* READ SKELETON RESOURCES */
-			
+
 	ReadDataFromSkeletonFile(skeleton, &fsSpec3DMF);
 	PrimeBoneData(skeleton);
-	
+
 			/* CLOSE REZ FILE */
-			
+
 	CloseResFile(fRefNum);
 	UseResFile(gMainAppRezFile);
 
@@ -204,7 +202,7 @@ SkeletonFile_AnimHeader_Type	*animHeaderPtr;
 	BYTESWAP_STRUCTS(SkeletonFile_Header_Type, 1, headerPtr);
 	version = headerPtr->version;
 	GAME_ASSERT_MESSAGE(version == SKELETON_FILE_VERS_NUM, "Skeleton file has wrong version #");
-	
+
 	numAnims = skeleton->NumAnims = headerPtr->numAnims;			// get # anims in skeleton
 	numJoints = skeleton->NumBones = headerPtr->numJoints;			// get # joints in skeleton
 	ReleaseResource(hand);
@@ -217,7 +215,6 @@ SkeletonFile_AnimHeader_Type	*animHeaderPtr;
 				/*************************************/
 
 	AllocSkeletonDefinitionMemory(skeleton);
-
 
 
 		/********************************/
@@ -242,7 +239,6 @@ SkeletonFile_AnimHeader_Type	*animHeaderPtr;
 #endif
 
 
-
 		/***********************************/
 		/*  READ BONE DEFINITION RESOURCES */
 		/***********************************/
@@ -253,7 +249,7 @@ SkeletonFile_AnimHeader_Type	*animHeaderPtr;
 		u_short					*indexPtr;
 
 			/* READ BONE DATA */
-			
+
 		hand = GetResource('Bone',1000+i);
 		GAME_ASSERT(hand);
 		HLock(hand);
@@ -261,15 +257,15 @@ SkeletonFile_AnimHeader_Type	*animHeaderPtr;
 		BYTESWAP_STRUCTS(File_BoneDefinitionType, 1, bonePtr);
 
 			/* COPY BONE DATA INTO ARRAY */
-		
+
 		skeleton->Bones[i].parentBone = bonePtr->parentBone;								// index to previous bone
 		skeleton->Bones[i].coord = bonePtr->coord;											// absolute coord (not relative to parent!)
 		skeleton->Bones[i].numPointsAttachedToBone = bonePtr->numPointsAttachedToBone;		// # vertices/points that this bone has
-		skeleton->Bones[i].numNormalsAttachedToBone = bonePtr->numNormalsAttachedToBone;	// # vertex normals this bone has		
+		skeleton->Bones[i].numNormalsAttachedToBone = bonePtr->numNormalsAttachedToBone;	// # vertex normals this bone has
 		ReleaseResource(hand);
 
 			/* ALLOC THE POINT & NORMALS SUB-ARRAYS */
-				
+
 		skeleton->Bones[i].pointList = (u_short *)AllocPtr(sizeof(u_short) * (int)skeleton->Bones[i].numPointsAttachedToBone);
 		GAME_ASSERT(skeleton->Bones[i].pointList);
 
@@ -277,13 +273,13 @@ SkeletonFile_AnimHeader_Type	*animHeaderPtr;
 		GAME_ASSERT(skeleton->Bones[i].normalList);
 
 			/* READ POINT INDEX ARRAY */
-			
+
 		hand = GetResource('BonP',1000+i);
 		GAME_ASSERT(hand);
 		HLock(hand);
 		indexPtr = (u_short *)(*hand);
 		ByteswapInts(sizeof(u_short), skeleton->Bones[i].numPointsAttachedToBone, indexPtr);
-			
+
 			/* COPY POINT INDEX ARRAY INTO BONE STRUCT */
 
 		for (j=0; j < skeleton->Bones[i].numPointsAttachedToBone; j++)
@@ -292,22 +288,22 @@ SkeletonFile_AnimHeader_Type	*animHeaderPtr;
 
 
 			/* READ NORMAL INDEX ARRAY */
-			
+
 		hand = GetResource('BonN',1000+i);
 		GAME_ASSERT(hand);
 		HLock(hand);
 		indexPtr = (u_short *)(*hand);
 		ByteswapInts(sizeof(u_short), skeleton->Bones[i].numNormalsAttachedToBone, indexPtr);
-			
+
 			/* COPY NORMAL INDEX ARRAY INTO BONE STRUCT */
 
 		for (j=0; j < skeleton->Bones[i].numNormalsAttachedToBone; j++)
 			skeleton->Bones[i].normalList[j] = indexPtr[j];
 		ReleaseResource(hand);
-						
+
 	}
-	
-	
+
+
 		/*******************************/
 		/* READ POINT RELATIVE OFFSETS */
 		/*******************************/
@@ -315,12 +311,12 @@ SkeletonFile_AnimHeader_Type	*animHeaderPtr;
 		// The "relative point offsets" are the only things
 		// which do not get rebuilt in the ModelDecompose function.
 		// We need to restore these manually.
-	
+
 	hand = GetResource('RelP', 1000);
 	GAME_ASSERT(hand);
 	HLock(hand);
 	pointPtr = (TQ3Point3D *)*hand;
-	
+
 	if ((long)(GetHandleSize(hand) / sizeof(TQ3Point3D)) != skeleton->numDecomposedPoints)
 		DoFatalAlert("# of points in Reference Model has changed!");
 	else
@@ -331,12 +327,12 @@ SkeletonFile_AnimHeader_Type	*animHeaderPtr;
 	}
 
 	ReleaseResource(hand);
-	
-	
+
+
 			/*********************/
 			/* READ ANIM INFO   */
 			/*********************/
-			
+
 	for (i=0; i < numAnims; i++)
 	{
 				/* READ ANIM HEADER */
@@ -347,22 +343,22 @@ SkeletonFile_AnimHeader_Type	*animHeaderPtr;
 		animHeaderPtr = (SkeletonFile_AnimHeader_Type *)*hand;
 		BYTESWAP_STRUCTS(SkeletonFile_AnimHeader_Type, 1, animHeaderPtr);
 
-		skeleton->NumAnimEvents[i] = animHeaderPtr->numAnimEvents;			// copy # anim events in anim	
+		skeleton->NumAnimEvents[i] = animHeaderPtr->numAnimEvents;			// copy # anim events in anim
 		ReleaseResource(hand);
 
 			/* READ ANIM-EVENT DATA */
-			
+
 		hand = GetResource('Evnt',1000+i);
 		GAME_ASSERT(hand);
 		animEventPtr = (AnimEventType *)*hand;
 		BYTESWAP_STRUCTS(AnimEventType, skeleton->NumAnimEvents[i], animEventPtr);
 		for (j=0;  j < skeleton->NumAnimEvents[i]; j++)
 			skeleton->AnimEventsList[i][j] = *animEventPtr++;
-		ReleaseResource(hand);		
+		ReleaseResource(hand);
 
 
 			/* READ # KEYFRAMES PER JOINT IN EACH ANIM */
-					
+
 		hand = GetResource('NumK',1000+i);									// read array of #'s for this anim
 		GAME_ASSERT(hand);
 		// (no need to byteswap, it's an array of chars)
@@ -375,30 +371,30 @@ SkeletonFile_AnimHeader_Type	*animHeaderPtr;
 	for (j=0; j < numJoints; j++)
 	{
 				/* ALLOC 2D ARRAY FOR KEYFRAMES */
-				
+
 		Alloc_2d_array(JointKeyframeType,skeleton->JointKeyframes[j].keyFrames,	numAnims,MAX_KEYFRAMES);
-		
+
 		GAME_ASSERT((skeleton->JointKeyframes[j].keyFrames) && (skeleton->JointKeyframes[j].keyFrames[0]));
 
 					/* READ THIS JOINT'S KF'S FOR EACH ANIM */
-					
-		for (i=0; i < numAnims; i++)								
+
+		for (i=0; i < numAnims; i++)
 		{
 			numKeyframes = skeleton->JointKeyframes[j].numKeyFrames[i];					// get actual # of keyframes for this joint
 			GAME_ASSERT(numKeyframes <= MAX_KEYFRAMES);
 
 					/* READ A JOINT KEYFRAME */
-					
+
 			hand = GetResource('KeyF',1000+(i*100)+j);
 			GAME_ASSERT(hand);
 			keyFramePtr = (JointKeyframeType *)*hand;
 			BYTESWAP_STRUCTS(JointKeyframeType, numKeyframes, keyFramePtr);
 			for (k = 0; k < numKeyframes; k++)												// copy this joint's keyframes for this anim
 				skeleton->JointKeyframes[j].keyFrames[i][k] = *keyFramePtr++;
-			ReleaseResource(hand);		
+			ReleaseResource(hand);
 		}
 	}
-	
+
 }
 
 #pragma mark -
@@ -459,7 +455,7 @@ void InitPrefsFolder(bool createIt)
 OSErr MakePrefsFSSpec(const char* filename, bool createFolder, FSSpec* spec)
 {
 	InitPrefsFolder(createFolder);
-	
+
 	char path[256];
 	snprintf(path, sizeof(path), ":%s:%s", PREFS_FOLDER_NAME, filename);
 
@@ -483,9 +479,9 @@ PrefsType	prefBuffer;
 				/*************/
 				/* READ FILE */
 				/*************/
-					
+
 	MakePrefsFSSpec(PREFS_FILE_NAME, false, &file);
-	iErr = FSpOpenDF(&file, fsRdPerm, &refNum);	
+	iErr = FSpOpenDF(&file, fsRdPerm, &refNum);
 	if (iErr)
 		return(iErr);
 
@@ -516,7 +512,7 @@ PrefsType	prefBuffer;
 	if (iErr || count != sizeof(PrefsType))
 		goto fileIsCorrupt;
 
-	FSClose(refNum);			
+	FSClose(refNum);
 
 
 				/* SAFETY CHECKS */
@@ -548,7 +544,7 @@ short				refNum;
 long				count;
 
 				/* CREATE BLANK FILE */
-				
+
 	MakePrefsFSSpec(PREFS_FILE_NAME, true, &file);
 	FSpDelete(&file);															// delete any existing file
 	iErr = FSpCreate(&file, 'BalZ', 'Pref', smSystemScript);					// create blank file
@@ -556,7 +552,7 @@ long				count;
 		return;
 
 				/* OPEN FILE */
-					
+
 	iErr = FSpOpenDF(&file, fsRdWrPerm, &refNum);
 	if (iErr)
 	{
@@ -613,7 +609,7 @@ OSErr			err;
 
 			/*************************/
 			/* CREATE SAVE GAME DATA */
-			/*************************/	
+			/*************************/
 
 	memset(&saveData, 0, sizeof(saveData));
 	saveData.version		= SAVE_GAME_VERSION;				// save file version #
@@ -718,7 +714,7 @@ SaveGameType saveData;
 
 			/**********************/
 			/* USE SAVE GAME DATA */
-			/**********************/	
+			/**********************/
 
 	gScore 			= saveData.score;
 	gRealLevel 		= saveData.realLevel;
@@ -740,7 +736,6 @@ OSErr DeleteSavedGame(int slot)
 }
 
 
-
 #pragma mark -
 
 /******************* LOAD PLAYFIELD *******************/
@@ -749,50 +744,49 @@ void LoadPlayfield(FSSpec *specPtr)
 {
 short	fRefNum;
 
-			
+
 				/* OPEN THE REZ-FORK */
-			
+
 	fRefNum = FSpOpenResFile(specPtr,fsRdPerm);
 	GAME_ASSERT(fRefNum != -1);
 	UseResFile(fRefNum);
-	
-	
+
+
 			/* READ PLAYFIELD RESOURCES */
 
 	ReadDataFromPlayfieldFile();
 
-	
+
 			/* CLOSE REZ FILE */
-			
+
 	CloseResFile(fRefNum);
 	UseResFile(gMainAppRezFile);
-
 
 
 				/***********************/
 				/* DO ADDITIONAL SETUP */
 				/***********************/
-	
+
 	gTerrainTileWidth = (gTerrainTileWidth/SUPERTILE_SIZE)*SUPERTILE_SIZE;		// round size down to nearest supertile multiple
-	gTerrainTileDepth = (gTerrainTileDepth/SUPERTILE_SIZE)*SUPERTILE_SIZE;	
-	
+	gTerrainTileDepth = (gTerrainTileDepth/SUPERTILE_SIZE)*SUPERTILE_SIZE;
+
 	gTerrainUnitWidth = gTerrainTileWidth*TERRAIN_POLYGON_SIZE;					// calc world unit dimensions of terrain
 	gTerrainUnitDepth = gTerrainTileDepth*TERRAIN_POLYGON_SIZE;
 	gNumSuperTilesDeep = gTerrainTileDepth/SUPERTILE_SIZE;						// calc size in supertiles
-	gNumSuperTilesWide = gTerrainTileWidth/SUPERTILE_SIZE;	
+	gNumSuperTilesWide = gTerrainTileWidth/SUPERTILE_SIZE;
 
 #if _DEBUG
 	printf("Terrain dimensions: %ld x %ld\n", gNumSuperTilesWide, gNumSuperTilesDeep);
 #endif
 
 			/* PRECALC THE TILE SPLIT MODE MATRIX */
-			
+
 	CalculateSplitModeMatrix();
 
-		
-	BuildTerrainItemList();	
 
-	
+	BuildTerrainItemList();
+
+
 				/* INITIALIZE CURRENT SCROLL SETTINGS */
 
 	InitCurrentScrollSettings();
@@ -825,8 +819,8 @@ short					**xlateTableHand,*xlateTbl;
 	header = (PlayfieldHeaderType **)hand;
 	gNumTerrainItems		= (**header).numItems;
 	gTerrainTileWidth		= (**header).mapWidth;
-	gTerrainTileDepth		= (**header).mapHeight;	
-	gNumTerrainTextureTiles	= (**header).numTilesInList;	
+	gTerrainTileDepth		= (**header).mapHeight;
+	gNumTerrainTextureTiles	= (**header).numTilesInList;
 	g3DTileSize				= (**header).tileSize;
 	g3DMinY					= (**header).minY;
 	g3DMaxY					= (**header).maxY;
@@ -870,10 +864,10 @@ short					**xlateTableHand,*xlateTbl;
 			/*******************************/
 
 			/* READ FLOOR MAP */
-				
+
 	Alloc_2d_array(u_short, gFloorMap, gTerrainTileDepth, gTerrainTileWidth);		// alloc 2D array for floor map
-	
-	
+
+
 	hand = GetResource('Layr',1000);												// load map from rez
 	GAME_ASSERT(hand);
 																					// copy rez into 2D array
@@ -884,21 +878,21 @@ short					**xlateTableHand,*xlateTbl;
 			for (col = 0; col < gTerrainTileWidth; col++)
 			{
 				u_short	tile, imageNum;
-				
+
 				tile = *src++;														// get original tile with all bits
 				imageNum = xlateTbl[tile & TILENUM_MASK];							// get image # from xlate table
 				gFloorMap[row][col] = (tile&(~TILENUM_MASK)) | imageNum;			// insert image # into bitfield
 			}
 		ReleaseResource(hand);
-	}		
+	}
 
 
 	if (gDoCeiling)
 	{
 				/* READ CEILING MAP */
-					
+
 		Alloc_2d_array(u_short, gCeilingMap, gTerrainTileDepth, gTerrainTileWidth);		// alloc 2D array for map
-		
+
 		hand = GetResource('Layr',1001);												// load map from rez
 		GAME_ASSERT(hand);
 																						// copy rez into 2D array
@@ -917,18 +911,18 @@ short					**xlateTableHand,*xlateTbl;
 			ReleaseResource(hand);
 		}
 	}
-	
+
 	ReleaseResource((Handle)xlateTableHand);								// we dont need the xlate table anymore
 
 
 			/* READ HEIGHT DATA MATRIX */
-	
+
 	yScale = TERRAIN_POLYGON_SIZE / g3DTileSize;						// need to scale original geometry units to game units
-	
+
 	Alloc_2d_array(TerrainYCoordType, gMapYCoords, gTerrainTileDepth+1, gTerrainTileWidth+1);	// alloc 2D array for map
-	
+
 	for (i = 0; i < numLayers; i++)
-	{		
+	{
 		hand = GetResource('YCrd',1000+i);
 		GAME_ASSERT(hand);
 		{
@@ -939,14 +933,14 @@ short					**xlateTableHand,*xlateTbl;
 					gMapYCoords[row][col].layerY[i] = *src++ * yScale;
 			ReleaseResource(hand);
 		}
-	}			
+	}
 
 
 			/* READ VERTEX COLOR MATRIX */
-			
-	
+
+
 	for (i = 0; i < numLayers; i++)
-	{		
+	{
 		Alloc_2d_array(u_short, gVertexColors[i], gTerrainTileDepth+1, gTerrainTileWidth+1);	// alloc 2D array for map
 		GAME_ASSERT(gVertexColors[i]);
 
@@ -960,51 +954,51 @@ short					**xlateTableHand,*xlateTbl;
 					gVertexColors[i][row][col] = *src++;
 			ReleaseResource(hand);
 		}
-	}			
+	}
 
 			/* READ SPLIT MODE MATRIX */
-	
+
 	Alloc_2d_array(TerrainInfoMatrixType, gMapInfoMatrix, gTerrainTileDepth, gTerrainTileWidth);	// alloc 2D array for map
-	
+
 	for (i = 0; i < numLayers; i++)												// floor & ceiling
-	{		
+	{
 		hand = GetResource('Splt',1000+i);
 		GAME_ASSERT(hand);
 		{
 			Byte* src = (Byte*)*hand;  // no need to byteswap - it's just bytes
-			for (row = 0; row < gTerrainTileDepth; row++)						
+			for (row = 0; row < gTerrainTileDepth; row++)
 				for (col = 0; col < gTerrainTileWidth; col++)
 					gMapInfoMatrix[row][col].splitMode[i] = *src++;
 			ReleaseResource(hand);
 		}
 	}
 
-	
+
 				/**************************/
 				/* ITEM RELATED RESOURCES */
 				/**************************/
-	
+
 				/* READ ITEM LIST */
-				
+
 	hand = GetResource('Itms',1000);
 	GAME_ASSERT(hand);
 	{
-		DetachResource(hand);							// lets keep this data around		
+		DetachResource(hand);							// lets keep this data around
 		HLockHi(hand);									// LOCK this one because we have the lookup table into this
 		gMasterItemList = (TerrainItemEntryType **)hand;
 		BYTESWAP_STRUCT_ARRAY_HANDLE_2(TerrainItemEntryType, gNumTerrainItems, gMasterItemList);
 	}
-		
-	
+
+
 			/****************************/
 			/* SPLINE RELATED RESOURCES */
 			/****************************/
-	
+
 			/* READ SPLINE LIST */
-			
+
 	hand = GetResource('Spln',1000);
 	if (hand)
-	{	
+	{
 		DetachResource(hand);
 		HLockHi(hand);
 
@@ -1033,9 +1027,9 @@ short					**xlateTableHand,*xlateTbl;
 		gSplineList = nil;
 	}
 
-	
+
 			/* READ SPLINE POINT LIST */
-			
+
 	for (i = 0; i < gNumSplines; i++)
 	{
 		// Level 2's spline #16 has 0 points. Skip the byteswapping, but do alloc an empty handle, which the game expects.
@@ -1060,7 +1054,7 @@ short					**xlateTableHand,*xlateTbl;
 
 
 			/* READ SPLINE ITEM LIST */
-			
+
 	for (i = 0; i < gNumSplines; i++)
 	{
 		// Level 2's spline #16 has 0 items. Skip the byteswapping, but do alloc an empty handle, which the game expects.
@@ -1080,17 +1074,17 @@ short					**xlateTableHand,*xlateTbl;
 			(*gSplineList)[i].itemList = (SplineItemType **)hand;
 		}
 	}
-	
-	
+
+
 			/****************************/
 			/* FENCE RELATED RESOURCES */
 			/****************************/
-	
+
 			/* READ FENCE LIST */
-			
+
 	hand = GetResource('Fenc',1000);
 	if (hand)
-	{	
+	{
 		File_FenceDefType *inData;
 
 		gFenceList = (FenceDefType *)AllocPtr(sizeof(FenceDefType) * gNumFences);	// alloc new ptr for fence data
@@ -1098,7 +1092,7 @@ short					**xlateTableHand,*xlateTbl;
 
 		BYTESWAP_STRUCT_ARRAY_HANDLE_2(File_FenceDefType, gNumFences, hand);
 		inData = (File_FenceDefType *)*hand;							// get ptr to input fence list
-		
+
 		for (i = 0; i < gNumFences; i++)								// copy data from rez to new list
 		{
 			gFenceList[i].type 		= inData[i].type;
@@ -1108,7 +1102,7 @@ short					**xlateTableHand,*xlateTbl;
 			gFenceList[i].bBox.bottom	= inData[i].bBox.bottom;
 			gFenceList[i].bBox.left		= inData[i].bBox.left;
 			gFenceList[i].bBox.right	= inData[i].bBox.right;
-		}		
+		}
 		ReleaseResource(hand);
 	}
 	else
@@ -1117,9 +1111,9 @@ short					**xlateTableHand,*xlateTbl;
 		gFenceList = nil;
 	}
 
-	
+
 			/* READ FENCE NUB LIST */
-			
+
 	for (i = 0; i < gNumFences; i++)
 	{
 		hand = GetResource('FnNb',1000+i);
@@ -1144,47 +1138,47 @@ FSSpec	spec;
 			/* LOAD GLOBAL STUFF */
 
 	FSMakeFSSpec(gDataSpec.vRefNum, gDataSpec.parID, ":models:Global_Models1.3dmf", &spec);
-	LoadGrouped3DMF(&spec,MODEL_GROUP_GLOBAL1);	
+	LoadGrouped3DMF(&spec,MODEL_GROUP_GLOBAL1);
 	FSMakeFSSpec(gDataSpec.vRefNum, gDataSpec.parID, ":models:Global_Models2.3dmf", &spec);
-	LoadGrouped3DMF(&spec,MODEL_GROUP_GLOBAL2);	
+	LoadGrouped3DMF(&spec,MODEL_GROUP_GLOBAL2);
 
 	LoadSoundBank(SOUNDBANK_MAIN);
 
-	LoadASkeleton(SKELETON_TYPE_ME);			
-	LoadASkeleton(SKELETON_TYPE_LADYBUG);			
-	LoadASkeleton(SKELETON_TYPE_BUDDY);			
-	
+	LoadASkeleton(SKELETON_TYPE_ME);
+	LoadASkeleton(SKELETON_TYPE_LADYBUG);
+	LoadASkeleton(SKELETON_TYPE_BUDDY);
+
 			/*****************************/
 			/* LOAD LEVEL SPECIFIC STUFF */
 			/*****************************/
-			
+
 	switch(gLevelType)
 	{
 				/***********************/
 				/* LEVEL 1: THE GARDEN */
 				/***********************/
-				
+
 		case	LEVEL_TYPE_LAWN:
 				if (gAreaNum == 0)
 					FSMakeFSSpec(gDataSpec.vRefNum, gDataSpec.parID, ":terrain:Training.ter", &spec);
 				else
 					FSMakeFSSpec(gDataSpec.vRefNum, gDataSpec.parID, ":terrain:Lawn.ter", &spec);
-				
+
 				LoadPlayfield(&spec);
 
 				/* LOAD MODELS */
-						
+
 				FSMakeFSSpec(gDataSpec.vRefNum, gDataSpec.parID, ":models:Lawn_Models1.3dmf", &spec);
-				LoadGrouped3DMF(&spec,MODEL_GROUP_LEVELSPECIFIC);	
+				LoadGrouped3DMF(&spec,MODEL_GROUP_LEVELSPECIFIC);
 				FSMakeFSSpec(gDataSpec.vRefNum, gDataSpec.parID, ":models:Lawn_Models2.3dmf", &spec);
-				LoadGrouped3DMF(&spec,MODEL_GROUP_LEVELSPECIFIC2);	
-				
-				
+				LoadGrouped3DMF(&spec,MODEL_GROUP_LEVELSPECIFIC2);
+
+
 				/* LOAD SKELETON FILES */
-				
-				LoadASkeleton(SKELETON_TYPE_BOXERFLY);			
-				LoadASkeleton(SKELETON_TYPE_SLUG);			
-				LoadASkeleton(SKELETON_TYPE_ANT);			
+
+				LoadASkeleton(SKELETON_TYPE_BOXERFLY);
+				LoadASkeleton(SKELETON_TYPE_SLUG);
+				LoadASkeleton(SKELETON_TYPE_ANT);
 
 				/* LOAD SOUNDS */
 
@@ -1195,24 +1189,24 @@ FSSpec	spec;
 				/*****************/
 				/* LEVEL 2: POND */
 				/*****************/
-				
+
 		case	LEVEL_TYPE_POND:
 				FSMakeFSSpec(gDataSpec.vRefNum, gDataSpec.parID, ":terrain:Pond.ter", &spec);
 				LoadPlayfield(&spec);
 
 				/* LOAD MODELS */
-						
+
 				FSMakeFSSpec(gDataSpec.vRefNum, gDataSpec.parID, ":models:Pond_Models.3dmf", &spec);
-				LoadGrouped3DMF(&spec,MODEL_GROUP_LEVELSPECIFIC);	
-				
-				
+				LoadGrouped3DMF(&spec,MODEL_GROUP_LEVELSPECIFIC);
+
+
 				/* LOAD SKELETON FILES */
-				
-				LoadASkeleton(SKELETON_TYPE_MOSQUITO);			
-				LoadASkeleton(SKELETON_TYPE_WATERBUG);			
-				LoadASkeleton(SKELETON_TYPE_PONDFISH);			
-				LoadASkeleton(SKELETON_TYPE_SKIPPY);			
-				LoadASkeleton(SKELETON_TYPE_SLUG);			
+
+				LoadASkeleton(SKELETON_TYPE_MOSQUITO);
+				LoadASkeleton(SKELETON_TYPE_WATERBUG);
+				LoadASkeleton(SKELETON_TYPE_PONDFISH);
+				LoadASkeleton(SKELETON_TYPE_SKIPPY);
+				LoadASkeleton(SKELETON_TYPE_SLUG);
 
 
 				/* LOAD SOUNDS */
@@ -1224,7 +1218,7 @@ FSSpec	spec;
 				/*******************/
 				/* LEVEL 3: FOREST */
 				/*******************/
-				
+
 		case	LEVEL_TYPE_FOREST:
 				if (gAreaNum == 0)
 					FSMakeFSSpec(gDataSpec.vRefNum, gDataSpec.parID, ":terrain:Beach.ter", &spec);
@@ -1233,21 +1227,21 @@ FSSpec	spec;
 				LoadPlayfield(&spec);
 
 				/* LOAD MODELS */
-						
+
 				FSMakeFSSpec(gDataSpec.vRefNum, gDataSpec.parID, ":models:Forest_Models.3dmf", &spec);
-				LoadGrouped3DMF(&spec,MODEL_GROUP_LEVELSPECIFIC);	
-				
-				
+				LoadGrouped3DMF(&spec,MODEL_GROUP_LEVELSPECIFIC);
+
+
 				/* LOAD SKELETON FILES */
-				
-				LoadASkeleton(SKELETON_TYPE_DRAGONFLY);			
-				LoadASkeleton(SKELETON_TYPE_FOOT);	
-				LoadASkeleton(SKELETON_TYPE_SPIDER);	
-				LoadASkeleton(SKELETON_TYPE_CATERPILLER);	
-				LoadASkeleton(SKELETON_TYPE_BAT);	
-				LoadASkeleton(SKELETON_TYPE_FLYINGBEE);			
-				LoadASkeleton(SKELETON_TYPE_ANT);			
-				
+
+				LoadASkeleton(SKELETON_TYPE_DRAGONFLY);
+				LoadASkeleton(SKELETON_TYPE_FOOT);
+				LoadASkeleton(SKELETON_TYPE_SPIDER);
+				LoadASkeleton(SKELETON_TYPE_CATERPILLER);
+				LoadASkeleton(SKELETON_TYPE_BAT);
+				LoadASkeleton(SKELETON_TYPE_FLYINGBEE);
+				LoadASkeleton(SKELETON_TYPE_ANT);
+
 				/* LOAD SOUNDS */
 
 				LoadSoundBank(SOUNDBANK_FOREST);
@@ -1258,9 +1252,9 @@ FSSpec	spec;
 				/*************************/
 				/* LEVEL 4:  BEE HIVE    */
 				/*************************/
-				
+
 		case	LEVEL_TYPE_HIVE:
-			
+
 				if (gAreaNum == 0)
 					FSMakeFSSpec(gDataSpec.vRefNum, gDataSpec.parID, ":terrain:BeeHive.ter", &spec);
 				else
@@ -1268,19 +1262,19 @@ FSSpec	spec;
 				LoadPlayfield(&spec);
 
 				/* LOAD MODELS */
-						
-				FSMakeFSSpec(gDataSpec.vRefNum, gDataSpec.parID, ":models:BeeHive_Models.3dmf", &spec);
-				LoadGrouped3DMF(&spec,MODEL_GROUP_LEVELSPECIFIC);	
-				
-				
-				/* LOAD SKELETON FILES */
-				
-				LoadASkeleton(SKELETON_TYPE_LARVA);			
-				LoadASkeleton(SKELETON_TYPE_FLYINGBEE);			
-				LoadASkeleton(SKELETON_TYPE_WORKERBEE);			
-				LoadASkeleton(SKELETON_TYPE_QUEENBEE);			
 
-				
+				FSMakeFSSpec(gDataSpec.vRefNum, gDataSpec.parID, ":models:BeeHive_Models.3dmf", &spec);
+				LoadGrouped3DMF(&spec,MODEL_GROUP_LEVELSPECIFIC);
+
+
+				/* LOAD SKELETON FILES */
+
+				LoadASkeleton(SKELETON_TYPE_LARVA);
+				LoadASkeleton(SKELETON_TYPE_FLYINGBEE);
+				LoadASkeleton(SKELETON_TYPE_WORKERBEE);
+				LoadASkeleton(SKELETON_TYPE_QUEENBEE);
+
+
 				/* LOAD SOUNDS */
 
 				LoadSoundBank(SOUNDBANK_HIVE);
@@ -1291,37 +1285,37 @@ FSSpec	spec;
 				/*******************/
 				/* LEVEL 5:  NIGHT */
 				/*******************/
-				
+
 		case	LEVEL_TYPE_NIGHT:
 				FSMakeFSSpec(gDataSpec.vRefNum, gDataSpec.parID, ":terrain:Night.ter", &spec);
 				LoadPlayfield(&spec);
 
 				/* LOAD MODELS */
-						
-				FSMakeFSSpec(gDataSpec.vRefNum, gDataSpec.parID, ":models:Night_Models.3dmf", &spec);
-				LoadGrouped3DMF(&spec,MODEL_GROUP_LEVELSPECIFIC);	
-				
-				
-				/* LOAD SKELETON FILES */
-				
-				LoadASkeleton(SKELETON_TYPE_FIREANT);			
-				LoadASkeleton(SKELETON_TYPE_FIREFLY);			
-				LoadASkeleton(SKELETON_TYPE_CATERPILLER);	
-				LoadASkeleton(SKELETON_TYPE_SLUG);	
-				LoadASkeleton(SKELETON_TYPE_ROACH);	
-				LoadASkeleton(SKELETON_TYPE_ANT);	
 
-				
+				FSMakeFSSpec(gDataSpec.vRefNum, gDataSpec.parID, ":models:Night_Models.3dmf", &spec);
+				LoadGrouped3DMF(&spec,MODEL_GROUP_LEVELSPECIFIC);
+
+
+				/* LOAD SKELETON FILES */
+
+				LoadASkeleton(SKELETON_TYPE_FIREANT);
+				LoadASkeleton(SKELETON_TYPE_FIREFLY);
+				LoadASkeleton(SKELETON_TYPE_CATERPILLER);
+				LoadASkeleton(SKELETON_TYPE_SLUG);
+				LoadASkeleton(SKELETON_TYPE_ROACH);
+				LoadASkeleton(SKELETON_TYPE_ANT);
+
+
 				/* LOAD SOUNDS */
 
 				LoadSoundBank(SOUNDBANK_NIGHT);
 				break;
 
-	
+
 				/*************************/
 				/* LEVEL 6:  ANT HILL    */
 				/*************************/
-				
+
 		case	LEVEL_TYPE_ANTHILL:
 				if (gAreaNum == 0)
 					FSMakeFSSpec(gDataSpec.vRefNum, gDataSpec.parID, ":terrain:AntHill.ter", &spec);
@@ -1330,21 +1324,21 @@ FSSpec	spec;
 				LoadPlayfield(&spec);
 
 				/* LOAD MODELS */
-						
+
 				FSMakeFSSpec(gDataSpec.vRefNum, gDataSpec.parID, ":models:AntHill_Models.3dmf", &spec);
-				LoadGrouped3DMF(&spec,MODEL_GROUP_LEVELSPECIFIC);	
-				
-				
+				LoadGrouped3DMF(&spec,MODEL_GROUP_LEVELSPECIFIC);
+
+
 				/* LOAD SKELETON FILES */
-				
+
 				if (gRealLevel == LEVEL_NUM_ANTKING)
-					LoadASkeleton(SKELETON_TYPE_KINGANT);			
-					
-				LoadASkeleton(SKELETON_TYPE_SLUG);			
-				LoadASkeleton(SKELETON_TYPE_ANT);			
-				LoadASkeleton(SKELETON_TYPE_FIREANT);			
-				LoadASkeleton(SKELETON_TYPE_ROOTSWING);			
-				LoadASkeleton(SKELETON_TYPE_ROACH);	
+					LoadASkeleton(SKELETON_TYPE_KINGANT);
+
+				LoadASkeleton(SKELETON_TYPE_SLUG);
+				LoadASkeleton(SKELETON_TYPE_ANT);
+				LoadASkeleton(SKELETON_TYPE_FIREANT);
+				LoadASkeleton(SKELETON_TYPE_ROOTSWING);
+				LoadASkeleton(SKELETON_TYPE_ROACH);
 
 				/* LOAD SOUNDS */
 
@@ -1354,9 +1348,9 @@ FSSpec	spec;
 		default:
 				DoFatalAlert("LoadLevelArt: unsupported level #");
 	}
-	
-	
+
+
 			/* CAST SHADOWS */
-			
+
 	DoItemShadowCasting();
 }

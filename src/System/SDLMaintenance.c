@@ -79,7 +79,7 @@ void DoSDLMaintenance(void)
 						// On Mac, always restore system mouse accel if cmd-tabbing away from the game
 						RestoreMacMouseAcceleration();
 						break;
-						
+
 					case SDL_WINDOWEVENT_FOCUS_GAINED:
 						// On Mac, kill mouse accel when focus is regained only if the game has captured the mouse
 						if (SDL_GetRelativeMouseMode())

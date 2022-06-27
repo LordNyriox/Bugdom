@@ -211,8 +211,6 @@ void UpdateLiquidAnimation(void)
 }
 
 
-
-
 /***************** FIND LIQUID Y **********************/
 
 float FindLiquidY(float x, float z)
@@ -240,8 +238,8 @@ float		y;
 				y += gLiquidCollisionTopOffset[thisNodePtr->Kind];
 				return(y);
 			}
-		}		
-next:					
+		}
+next:
 		thisNodePtr = (ObjNode *)thisNodePtr->NextNode;		// next node
 	}
 	while (thisNodePtr != nil);
@@ -274,13 +272,13 @@ static const float	yTable[] = {900,950,0,0,0,0};
 static const float	yTable2[] = {-540,-540,-540,-540,-370,-540,-540,-540};
 
 	GAME_ASSERT_MESSAGE(gLiquidShaders[LIQUID_WATER], "water not activated on this level");
-		
+
 	x -= (int)x % (int)TERRAIN_POLYGON_SIZE;				// round down to nearest tile & center
 	x += TERRAIN_POLYGON_SIZE/2;
 	z -= (int)z % (int)TERRAIN_POLYGON_SIZE;
 	z += TERRAIN_POLYGON_SIZE/2;
-		
-		
+
+
 	tesselateFlag = itemPtr->parm[3] & 1;					// get tesselate flag
 	putUnderGround = itemPtr->parm[3] & (1<<1);				// get underground flag
 
@@ -290,15 +288,15 @@ static const float	yTable2[] = {-540,-540,-540,-540,-370,-540,-540,-540};
 			/***********************/
 			/* DETERMINE WATER'S Y */
 			/***********************/
-			
+
 				/* POND Y */
-			
+
 	if (gLevelType == LEVEL_TYPE_POND)						// pond water is at fixed y
 	{
 		y = WATER_Y;
 		tesselateFlag = true;								// always tesselate on pond level
 	}
-	
+
 			/* ANTHILL UNDERGROUND Y */
 	else
 	if (putUnderGround)										// anthill has water below surface for flooding
@@ -311,30 +309,30 @@ static const float	yTable2[] = {-540,-540,-540,-540,-370,-540,-540,-540};
 			hasRisen = false;
 
 	}
-	
+
 			/* USER Y */
-			
+
 	else													// other levels put water on terrain curve
 	{
 		if (itemPtr->parm[3]  & (1<<2))						// see if used table index y coord
 		{
-			y = yTable[itemPtr->parm[2]];					// get y from table		
+			y = yTable[itemPtr->parm[2]];					// get y from table
 		}
-		
+
 			/* USE PARM Y OFFSET */
-			
+
 		else
 		{
 			yOff = itemPtr->parm[2];							// get y offset
 			yOff *= 4.0f;										// multiply by n since parm is only a Byte 0..255
 			if (yOff == 0.0f)
 				yOff = 3.0f;
-	
+
 			y = GetTerrainHeightAtCoord(x,z,FLOOR)+yOff;		// get y coord of patch
 		}
 	}
 
-		/* CALC WIDTH & DEPTH OF PATCH */		
+		/* CALC WIDTH & DEPTH OF PATCH */
 
 	width = itemPtr->parm[0];
 	depth = itemPtr->parm[1];
@@ -342,7 +340,7 @@ static const float	yTable2[] = {-540,-540,-540,-540,-370,-540,-540,-540};
 		width = 4;
 	if (depth == 0)
 		depth = 4;
-		
+
 	GAME_ASSERT(width <= MAX_LIQUID_SIZE);
 	GAME_ASSERT(depth <= MAX_LIQUID_SIZE);
 
@@ -354,11 +352,11 @@ static const float	yTable2[] = {-540,-540,-540,-540,-370,-540,-540,-540};
 	bSphere.origin.z = z;
 	bSphere.radius = (width + depth) / 2 * TERRAIN_POLYGON_SIZE;
 
-			
+
 			/***************/
 			/* MAKE OBJECT */
 			/***************/
-			
+
 	gNewObjectDefinition.coord.x = x;
 	gNewObjectDefinition.coord.y = y;
 	gNewObjectDefinition.coord.z = z;
@@ -368,15 +366,15 @@ static const float	yTable2[] = {-540,-540,-540,-540,-370,-540,-540,-540};
 	gNewObjectDefinition.rot 	= 0;
 	gNewObjectDefinition.scale = 1.0;
 	if (tesselateFlag)
-		newObj = MakeNewCustomDrawObject(&gNewObjectDefinition, &bSphere, DrawWaterPatchTesselated);	
+		newObj = MakeNewCustomDrawObject(&gNewObjectDefinition, &bSphere, DrawWaterPatchTesselated);
 	else
 		newObj = MakeNewCustomDrawObject(&gNewObjectDefinition, &bSphere, DrawWaterPatch);
-		
+
 	if (newObj == nil)
 		return(false);
 
 			/* SET OBJECT INFO */
-			
+
 	newObj->TerrainItemPtr = itemPtr;								// keep ptr to item list
 
 	newObj->Kind = LIQUID_WATER;
@@ -395,7 +393,7 @@ static const float	yTable2[] = {-540,-540,-540,-540,-370,-540,-540,-540};
 			// no collision is detected in shallow water, but if player sinks deep
 			// then a collision will be detected.
 			//
-				
+
 	newObj->CType = CTYPE_LIQUID|CTYPE_BLOCKCAMERA;
 	newObj->CBits = CBITS_TOUCHABLE;
 	SetObjectCollisionBounds(newObj,
@@ -445,17 +443,17 @@ static void MoveLiquidPatch(ObjNode *theNode)
 
 		if (gValveIsOpen[id])						// see if valve is open
 		{
-			float	targetY = theNode->InitCoord.y + RISING_WATER_YOFF;	
-			
+			float	targetY = theNode->InitCoord.y + RISING_WATER_YOFF;
+
 			GetObjectInfo(theNode);
-			
+
 			gCoord.y += 30.0f * gFramesPerSecondFrac;
 			if (gCoord.y >= targetY)				// see if full
 			{
 				gCoord.y = targetY;
 				theNode->PatchHasRisen = true;
 			}
-			
+
 			UpdateObject(theNode);
 		}
 	}
@@ -627,17 +625,17 @@ TQ3TriMeshTriangleData	*t;
 			/************************/
 			/* CALC BOUNDS OF WATER */
 			/************************/
-			
+
 	x = theNode->Coord.x;
 	y = theNode->Coord.y;
 	z = theNode->Coord.z;
-	
+
 	if ((theNode->PatchWidth & 1) || (theNode->PatchDepth & 1))		// widths cannot be odd!
 		DoFatalAlert("DrawWaterPatchTesselated: water patches cannot be odd sizes! Must be even numbers.");
-	
+
 	width2 = theNode->PatchWidth/2;
 	depth2 = theNode->PatchDepth/2;
-	
+
 	left = x - (float)(width2) * TERRAIN_POLYGON_SIZE;
 	right = left + (float)theNode->PatchWidth * TERRAIN_POLYGON_SIZE;
 	back = z - (float)(depth2) * TERRAIN_POLYGON_SIZE;
@@ -645,7 +643,7 @@ TQ3TriMeshTriangleData	*t;
 
 //	width = right - left;
 //	depth = front - back;
-	
+
 
 			/******************/
 			/* BUILD GEOMETRY */
@@ -684,7 +682,7 @@ TQ3TriMeshTriangleData	*t;
 			tmd->vertexUVs[i].v = uvScroll.v + v;
 
 			i++;
-			x += TERRAIN_POLYGON_SIZE*2.0f;	
+			x += TERRAIN_POLYGON_SIZE*2.0f;
 			u += .4f;
 		}
 
@@ -742,7 +740,6 @@ TQ3TriMeshTriangleData	*t;
 }
 
 
-
 #pragma mark -
 
 
@@ -794,7 +791,6 @@ static void UpdateLavaTextureAnimation(void)
 	gLiquidUVOffsets[LIQUID_LAVA].u += gFramesPerSecondFrac * .09f;
 	gLiquidUVOffsets[LIQUID_LAVA].v += gFramesPerSecondFrac * .1f;
 }
-
 
 
 #pragma mark - Generic liquid routines
@@ -1017,9 +1013,9 @@ TQ3TriMeshTriangleData	*t;
 		for (w = 0; w < width2; w++)
 		{
 			int rw = width2+1;
-			
+
 				/* TRIANGLE A */
-				
+
 			t[i].pointIndices[0] = (h * rw) + w;			// far left
 			t[i].pointIndices[1] = ((h+1) * rw) + w;		// near left
 			t[i].pointIndices[2] = ((h+1) * rw) + w + 1;	// near right
@@ -1030,7 +1026,7 @@ TQ3TriMeshTriangleData	*t;
 			t[i].pointIndices[0] = (h * rw) + w;			// far left
 			t[i].pointIndices[1] = ((h+1) * rw) + w + 1; 	// near right
 			t[i].pointIndices[2] = (h * rw) + w + 1;		// far right
-			i++;		
+			i++;
 		}
 	}
 	tmd->numTriangles = i;						// set # triangles in geometry

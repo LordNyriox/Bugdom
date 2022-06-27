@@ -18,15 +18,12 @@
 /****************************/
 
 
-
-
 /**********************/
 /*     VARIABLES      */
 /**********************/
 
 short	gPrefsFolderVRefNum;
 long	gPrefsFolderDirID;
-
 
 
 unsigned long seed0 = 0, seed1 = 0, seed2 = 0;
@@ -149,7 +146,7 @@ Boolean beenHere = false;
 void Wait(u_long ticks)
 {
 u_long	start;
-	
+
 	start = TickCount();
 
 	while (TickCount()-start < ticks); 
@@ -189,10 +186,9 @@ u_long		range, t;
 	qdRdm = MyRandomLong();
 	range = max+1 - min;
 	t = (qdRdm * range)>>16;	 							// now 0 <= t <= range
-	
+
 	return( t+min );
 }
-
 
 
 /************** RANDOM FLOAT ********************/
@@ -205,7 +201,7 @@ float RandomFloat(void)
 unsigned long	r;
 float	f;
 
-	r = MyRandomLong() & 0xfff;		
+	r = MyRandomLong() & 0xfff;
 	if (r == 0)
 		return(0);
 
@@ -222,8 +218,8 @@ void SetMyRandomSeed(unsigned long seed)
 {
 	seed0 = seed;
 	seed1 = 0;
-	seed2 = 0;	
-	
+	seed2 = 0;
+
 }
 
 /**************** INIT MY RANDOM SEED *******************/
@@ -232,7 +228,7 @@ void InitMyRandomSeed(void)
 {
 	seed0 = 0x2a80ce30;
 	seed1 = 0;
-	seed2 = 0;	
+	seed2 = 0;
 }
 
 
@@ -282,8 +278,6 @@ void Free2DArray(void** array)
 }
 
 
-
-
 #pragma mark -
 
 
@@ -304,9 +298,8 @@ OSErr	iErr;
 	}
 
 
-
 			/* CHECK PREFERENCES FOLDER */
-			
+
 	InitPrefsFolder(false);
 }
 
@@ -317,7 +310,7 @@ void RegulateSpeed(short fps)
 {
 UInt32		n;
 static UInt32 oldTick = 0;
-	
+
 	n = 60 / fps;
 	while ((TickCount() - oldTick) < n);			// wait for n ticks
 	oldTick = TickCount();							// remember current time

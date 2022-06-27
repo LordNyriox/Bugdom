@@ -31,7 +31,6 @@ static void StartNitroTrail(void);
 #define	PLAYER_BALL_SCALE			1.0 
 
 
-
 #define	PLAYER_BALL_ACCEL			66.0f
 #define	PLAYER_BALL_FRICTION_ACCEL	400.0f
 #define	PLAYER_MAX_SPEED_BALL		2800.0f
@@ -53,7 +52,6 @@ Boolean			gPlayerKnockOnButt = false;
 TQ3Vector3D		gPlayerKnockOnButtDelta;
 
 
-
 /*************************** INIT PLAYER: BALL ****************************/
 //
 // Creates an ObjNode for the player in the Ball form.
@@ -72,29 +70,28 @@ float	rotY;
 	GAME_ASSERT(oldObj);
 
 	gPlayerKnockOnButt = false;
-					
+
 	Q3Matrix4x4_SetIdentity(&gBallRotationMatrix);
-					
+
 	rotY = oldObj->Rot.y;
 
 			/* REBUILD SKELETON IN ZERO-ROTATION POSITION */
 
-	oldObj->Rot.y = 0;	
-	UpdateObjectTransforms(oldObj);		
+	oldObj->Rot.y = 0;
+	UpdateObjectTransforms(oldObj);
 	GetModelCurrentPosition(oldObj->Skeleton);
 	UpdateSkinnedGeometry(oldObj);													// update skeleton geometry
-	
 
-					
+
 					/********************/
 					/* CREATE MY OBJECT */
-					/********************/	
-	
+					/********************/
+
 	gMyCoord.x = where->x;
 	gMyCoord.y = where->y + PLAYER_BALL_FOOTOFFSET;
 	gMyCoord.z = where->z;
-	
-	
+
+
 	gNewObjectDefinition.genre 		= DISPLAY_GROUP_GENRE;
 	gNewObjectDefinition.group 		= 0;
 	gNewObjectDefinition.type		= 0;
@@ -105,18 +102,18 @@ float	rotY;
 	gNewObjectDefinition.moveCall 	= MovePlayer_Ball;
 	gNewObjectDefinition.rot 		= rotY;
 	newObj							= MakeNewObject(&gNewObjectDefinition);
-	
+
 			/* MAKE BASE GROUP */
-	
+
 	CreateBaseGroup(newObj);											// create group object
 
-	
+
 				/***********************************/
 				/* ADD SKELETON TRIMESHES TO GROUP */
 				/***********************************/
 
 	UpdateSkinnedGeometry(oldObj);
-	
+
 	for (int i = 0; i < oldObj->NumMeshes; i++)
 	{
 					/* OFFSET THE GEOMETRY */
@@ -127,14 +124,14 @@ float	rotY;
 		float xoff = -oldObj->Coord.x;
 		float yoff = -oldObj->Coord.y - PLAYER_BALL_FOOTOFFSET;
 		float zoff = -oldObj->Coord.z;
-		
+
 		TQ3TriMeshData* data = oldObj->MeshList[i];
 		for (int p = 0; p < data->numPoints; p++)
 		{
 			data->points[p].x += xoff;
 			data->points[p].y += yoff;
 			data->points[p].z += zoff;
-		}		
+		}
 		Q3BoundingBox_SetFromPoints3D(&data->bBox, data->points, data->numPoints, sizeof(TQ3Point3D));	// recalc bbox
 	}
 
@@ -152,16 +149,16 @@ float	rotY;
 	memset(oldObj->OwnsMeshMemory, 0, sizeof(oldObj->OwnsMeshMemory));		// prevent mesh memory from being freed when we delete oldObj
 	memset(oldObj->OwnsMeshTexture, 0, sizeof(oldObj->OwnsMeshTexture));
 
-	
+
 				/**********************/
 				/* SET COLLISION INFO */
 				/**********************/
-	
-	newObj->BoundingSphere.radius	=	PLAYER_RADIUS;			
-	
+
+	newObj->BoundingSphere.radius	=	PLAYER_RADIUS;
+
 	newObj->CType = CTYPE_PLAYER;
 	newObj->CBits = CBITS_TOUCHABLE;
-	
+
 		/* note: box must be same for both bug & ball to avoid collison fallthru against solids */
 
 	SetObjectCollisionBounds(newObj,PLAYER_BALL_HEADOFFSET, -PLAYER_BALL_FOOTOFFSET,
@@ -169,7 +166,7 @@ float	rotY;
 
 
 				/* TRANSPLANT THE SHADOW */
-				
+
 	newObj->ShadowNode = oldObj->ShadowNode;				// use existing shadow
 	oldObj->ShadowNode = nil;								// detach from existing
 	UpdateShadow(newObj);
@@ -197,11 +194,10 @@ float	rotY;
 	DeleteObject(oldObj);
 	oldObj = nil;
 
-	
-	
+
 				/* SET GLOBALS */
-		
-	gPlayerObj 		= newObj;		
+
+	gPlayerObj 		= newObj;
 	gPlayerMode 	= PLAYER_MODE_BALL;
 	gPlayerMaxSpeed = PLAYER_MAX_SPEED_BALL; 
 	gNitroTimer		= 0;
@@ -211,26 +207,24 @@ float	rotY;
 }
 
 
-
-
 /******************** MOVE ME: BALL ***********************/
 
 static void MovePlayer_Ball(ObjNode *theNode)
 {
 	gPlayerCanMove = true;
-	
+
 	GetObjectInfo(theNode);
 
-		
+
 			/* UPDATE INVINCIBILITY */
-			
+
 	if (theNode->InvincibleTimer > 0.0f)
 	{
 		theNode->InvincibleTimer -= gFramesPerSecondFrac;
 		if (theNode->InvincibleTimer < 0.0f)
 			theNode->InvincibleTimer = 0;
 	}
-		
+
 
 			/* DO CONTROL */
 
@@ -245,7 +239,7 @@ static void MovePlayer_Ball(ObjNode *theNode)
 
 
 		/* SEE IF LEAVE NITRO TRAIL */
-		
+
 	if (gNitroTimer > 0.0f)
 	{
 		LeaveNitroTrail();
@@ -253,10 +247,10 @@ static void MovePlayer_Ball(ObjNode *theNode)
 		if (gNitroTimer <= 0.0f)
 			gNitroParticleGroup = -1;
 	}
-		
+
 			/* UPDATE IT */
-			
-update:			
+
+update:
 	UpdatePlayer_Ball(gPlayerObj);
 }
 
@@ -268,20 +262,20 @@ static void UpdatePlayer_Ball(ObjNode *theNode)
 	SpinBall(theNode);
 
 	gMyCoord = gCoord;
-	UpdateObject(theNode);	
-	
-	ProcessBallTimer();	
-	
+	UpdateObject(theNode);
+
+	ProcessBallTimer();
+
 		/* FINAL CHECK: SEE IF NEED TO KNOCK ON BUTT */
-		
+
 	if (gPlayerKnockOnButt)
 	{
 		gPlayerKnockOnButt = false;
 		KnockPlayerBugOnButt(&gPlayerKnockOnButtDelta, true, true);
-	}	
-	
+	}
+
 		/* UPDATE SHIELD */
-		
+
 	UpdatePlayerShield();
 }
 
@@ -308,34 +302,34 @@ float	dx, dy;
 			// NOTE: can only call this once per frame since
 			//		this resets the mouse coord.
 			//
-			
+
 	GetMouseDelta(&dx, &dy);
 
-			
+
 	if (gPlayerUsingKeyControl && gGamePrefs.playerRelativeKeys)
 	{
 		gPlayerObj->AccelVector.y = 
-		gPlayerObj->AccelVector.x = 0;	
+		gPlayerObj->AccelVector.x = 0;
 	}
 	else
 	{
 		mouseDX = dx * .05f;
 		mouseDY = dy * .05f;
 		theNode->AccelVector.y = mouseDY * PLAYER_BALL_ACCEL * slugFactor;
-		theNode->AccelVector.x = mouseDX * PLAYER_BALL_ACCEL * slugFactor;	
+		theNode->AccelVector.x = mouseDX * PLAYER_BALL_ACCEL * slugFactor;
 	}
-	
+
 		/* SEE IF DO NITRO */
-		
+
 	if (gNitroTimer <= 0.0f)
 	{
 		if (GetNewKeyState(kKey_Kick) || GetNewKeyState(kKey_Jump))
 		{
-			theNode->Speed = gPlayerMaxSpeed;		// boost to full speed	
+			theNode->Speed = gPlayerMaxSpeed;		// boost to full speed
 			gDelta.z *= 100.0f;						// boost this up really high (will get tweaked later)
 			gDelta.x *= 100.0f;
 			PlayEffect3D(EFFECT_SPEEDBOOST, &gCoord);
-			StartNitroTrail();			
+			StartNitroTrail();
 			gBallTimer -= .05f;						// lose a bit more ball time
 		}
 	}
@@ -362,13 +356,13 @@ static void SpinBall(ObjNode *theNode)
 float	d,fps = gFramesPerSecondFrac;
 
 			/* REGULATE SPIN IF ON GROUND */
-			
+
 //	if (gMyDistToFloor < 4.0f)
 	if (theNode->StatusBits & STATUS_BIT_ONGROUND)
 	{
 		d = theNode->RotDeltaX = -theNode->Speed * .01f;
 	}
-	
+
 			/* OTHERWISE DECAY SPIN IN AIR */
 	else
 	{
@@ -378,16 +372,16 @@ float	d,fps = gFramesPerSecondFrac;
 			if (theNode->RotDeltaX > 0.0f)
 				theNode->RotDeltaX = 0;
 		}
-		
+
 		d = theNode->RotDeltaX;
 	}
-	
+
 	theNode->Rot.x += d * fps;					// rotate on x
 
 			/* AIM IN DIRECTION OF MOTION */
-				
+
 	if ((!gPlayerUsingKeyControl) || (!gGamePrefs.playerRelativeKeys))
-		TurnObjectTowardTarget(theNode, &gCoord, gCoord.x + gDelta.x, gCoord.z + gDelta.z, 8.0, false);			
+		TurnObjectTowardTarget(theNode, &gCoord, gCoord.x + gDelta.x, gCoord.z + gDelta.z, 8.0, false);
 
 }
 
@@ -423,9 +417,8 @@ bool BallHasHeadroomToMorphToBug(void)
 static void StartNitroTrail(void)
 {
 	gNitroTimer = .6;
-	gNitroTrailTick = 0;	
+	gNitroTrailTick = 0;
 }
-
 
 
 /***************** LEAVE NITRO TRAIL *********************/
@@ -439,19 +432,19 @@ static const TQ3Vector3D up = {0,1,0};
 	gNitroTrailTick += gFramesPerSecondFrac;
 	if (gNitroTrailTick < .05f)
 		return;
-	
+
 	gNitroTrailTick = 0;
 
 			/* CALC MATRIX TO AIM & PLACE A NITRO RING */
-			
+
 	SetLookAtMatrixAndTranslate(&m, &up, &gPlayerObj->OldCoord, &gCoord);
 
 
 				/* MAKE PARTICLE GROUP */
-				
+
 	if (gNitroParticleGroup == -1)
 	{
-new_pgroup:	
+new_pgroup:
 		gNitroParticleGroup = NewParticleGroup(0,							// magic num
 												PARTICLE_TYPE_FALLINGSPARKS,	// type
 												0,		// flags
@@ -474,28 +467,22 @@ new_pgroup:
 		TQ3Vector3D	delta;
 		TQ3Point3D	pt;
 		float		a;
-		
-		
-		a = PI2 * ((float)i * (1.0f/(float)NITRO_RING_SIZE));		
+
+
+		a = PI2 * ((float)i * (1.0f/(float)NITRO_RING_SIZE));
 		pt.x = sin(a) * 50.0f;
 		pt.y = cos(a) * 50.0f;
 		pt.z = 0;
-	
+
 		Q3Point3D_Transform(&pt, &m, &pt);
-	
+
 		delta.x = (RandomFloat()-.5f) * 200.0f;
 		delta.y = 200.0f + (RandomFloat()-.5f) * 200.0f;
 		delta.z = (RandomFloat()-.5f) * 200.0f;
-	
+
 		if (AddParticleToGroup(gNitroParticleGroup, &pt, &delta, 1.0 + RandomFloat(), FULL_ALPHA))
 			goto new_pgroup;
 	}
 }
-
-
-
-
-
-
 
 

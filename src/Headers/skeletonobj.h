@@ -31,11 +31,9 @@ enum
 	SKELETON_TYPE_ROACH,
 	SKELETON_TYPE_BUDDY,
 	SKELETON_TYPE_SKIPPY
-	
+
 				// NOTE: Check MAX_SKELETON_TYPES above
 };
-
-
 
 
 //===============================

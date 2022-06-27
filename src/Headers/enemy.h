@@ -14,7 +14,7 @@
 
 
 		/* ENEMY KIND */
-		
+
 #define	NUM_ENEMY_KINDS	20			// always keep at or more than actual types
 enum
 {
@@ -87,7 +87,7 @@ enum
 
 
 			/* ENEMY */
-			
+
 ObjNode *MakeEnemySkeleton(Byte skeletonType, float x, float z, float scale);
 extern	void DeleteEnemy(ObjNode *theEnemy);
 extern	Boolean DoEnemyCollisionDetect(ObjNode *theEnemy, unsigned long ctype);
@@ -101,28 +101,28 @@ Boolean DetachEnemyFromSpline(ObjNode *theNode, void (*moveCall)(ObjNode*));
 
 
 			/* BOXERFLY */
-			
+
 extern	Boolean AddEnemy_BoxerFly(TerrainItemEntryType *itemPtr, long x, long z);
 Boolean PrimeEnemy_BoxerFly(long splineNum, SplineItemType *itemPtr);
 Boolean BallHitBoxerFly(ObjNode *me, ObjNode *enemy);
 Boolean KillBoxerFly(ObjNode *theNode, float dx, float dy, float dz);
 
 			/* PONDFISH */
-			
+
 extern	Boolean AddEnemy_PondFish(TerrainItemEntryType *itemPtr, long x, long z);
 
 
 			/* SLUG */
-			
+
 Boolean PrimeEnemy_Slug(long splineNum, SplineItemType *itemPtr);
 
 		/* CATERPILLER */
-		
+
 Boolean PrimeEnemy_Caterpiller(long splineNum, SplineItemType *itemPtr);
 
 
 			/* ANT */
-			
+
 extern	Boolean AddEnemy_Ant(TerrainItemEntryType *itemPtr, long x, long z);
 Boolean PrimeEnemy_Ant(long splineNum, SplineItemType *itemPtr);
 Boolean BallHitAnt(ObjNode *me, ObjNode *enemy);
@@ -130,7 +130,7 @@ Boolean KillAnt(ObjNode *theNode);
 Boolean KnockAntOnButt(ObjNode *enemy, float dx, float dy, float dz, float damage);
 
 			/* FIREANT */
-			
+
 extern	Boolean AddEnemy_FireAnt(TerrainItemEntryType *itemPtr, long x, long z);
 Boolean PrimeEnemy_FireAnt(long splineNum, SplineItemType *itemPtr);
 Boolean BallHitFireAnt(ObjNode *me, ObjNode *enemy);
@@ -139,7 +139,7 @@ Boolean KnockFireAntOnButt(ObjNode *enemy, float dx, float dy, float dz);
 void FireAntBreathFire(ObjNode *theNode);
 
 			/* MOSQUITO */
-			
+
 extern	Boolean AddEnemy_Mosquito(TerrainItemEntryType *itemPtr, long x, long z);
 Boolean PrimeEnemy_Mosquito(long splineNum, SplineItemType *itemPtr);
 Boolean BallHitMosquito(ObjNode *me, ObjNode *enemy);
@@ -163,7 +163,7 @@ Boolean KillLarva(ObjNode *theNode);
 
 
 			/* FLYING BEE */
-			
+
 Boolean AddEnemy_FlyingBee(TerrainItemEntryType *itemPtr, long x, long z);
 Boolean KillFlyingBee(ObjNode *theNode, float dx, float dy, float dz);
 Boolean MakeFlyingBee(TQ3Point3D *where);
@@ -201,7 +201,6 @@ Boolean PrimeEnemy_Skippy(long splineNum, SplineItemType *itemPtr);
 Boolean KillSkippy(ObjNode *theNode);
 
 
-
 		/* KING ANT */
 
 Boolean AddEnemy_KingAnt(TerrainItemEntryType *itemPtr, long x, long z);
@@ -211,17 +210,15 @@ Boolean KnockKingAntOnButt(ObjNode *enemy, float dx, float dz, float damage);
 
 
 		/* TICK */
-		
+
 void MakeTickEnemy(TQ3Point3D *where);
 void TickGotBopped(ObjNode *enemy);
 Boolean KillTick(ObjNode *theNode);
 
-		
+
 			/* FIREFLY */
-			
+
 Boolean AddFireFly(TerrainItemEntryType *itemPtr, long x, long z);
 Boolean KillFireFly(ObjNode *theNode);
-
-
 
 

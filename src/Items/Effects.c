@@ -20,7 +20,6 @@
 static void MoveRipple(ObjNode *theNode);
 
 
-
 /****************************/
 /*    CONSTANTS             */
 /****************************/
@@ -44,14 +43,13 @@ typedef struct
 	float			baseScale;
 	float			decayRate;			// shrink speed
 	float			fadeRate;
-	
+
 	float			alpha[MAX_PARTICLES];
 	float			scale[MAX_PARTICLES];
 	TQ3Point3D		coord[MAX_PARTICLES];
 	TQ3Vector3D		delta[MAX_PARTICLES];
 	TQ3TriMeshData	*mesh;
 }ParticleGroupType;
-
 
 
 /*********************/
@@ -78,8 +76,8 @@ ObjNode *MakeRipple(float x, float y, float z, float startScale)
 {
 ObjNode	*newObj;
 
-	gNewObjectDefinition.group = GLOBAL1_MGroupNum_Ripple;	
-	gNewObjectDefinition.type = GLOBAL1_MObjType_Ripple;	
+	gNewObjectDefinition.group = GLOBAL1_MGroupNum_Ripple;
+	gNewObjectDefinition.type = GLOBAL1_MObjType_Ripple;
 	gNewObjectDefinition.coord.x = x;
 	gNewObjectDefinition.coord.y = y;
 	gNewObjectDefinition.coord.z = z;
@@ -95,12 +93,11 @@ ObjNode	*newObj;
 	newObj->RenderModifiers.drawOrder = kDrawOrder_Ripples;				// draw ripples after water
 
 	newObj->Health = .8;										// transparency value
-	
+
 	MakeObjectTransparent(newObj, newObj->Health);
-	
+
 	return(newObj);
 }
-
 
 
 /******************** MOVE RIPPLE ************************/
@@ -115,7 +112,7 @@ float	fps = gFramesPerSecondFrac;
 		DeleteObject(theNode);
 		return;
 	}
-	
+
 	MakeObjectTransparent(theNode, theNode->Health);
 
 	theNode->Scale.x += fps*6.0f;
@@ -397,7 +394,6 @@ TQ3Vector3D	*delta;
 			delta->y -= gravity * fps;									// add gravity
 
 
-
 			switch (pg->type)
 			{
 							/* FALLING SPARKS */
@@ -596,7 +592,7 @@ static const TQ3Vector3D up = {0,1,0};
 				/* SETUP ENVIRONTMENT */
 
 
-	camCoords = &gGameViewInfoPtr->currentCameraCoords;	
+	camCoords = &gGameViewInfoPtr->currentCameraCoords;
 
 	for (int g = 0; g < MAX_PARTICLE_GROUPS; g++)
 	{
@@ -705,7 +701,7 @@ TQ3Point3D	*coord;
 	{
 		if (!gParticleGroups[i].isGroupActive)							// see if group active
 			continue;
-			
+
 		if (inFlags &&												// see if check flags
 			!(inFlags & gParticleGroups[i].flags))
 		{
@@ -748,7 +744,7 @@ TQ3Point3D	pt;
 	pt.y = y;
 
 			/* white sparks */
-				
+
 	pg = NewParticleGroup(	0,							// magic num
 							PARTICLE_TYPE_FALLINGSPARKS,// type
 							0,							// flags
@@ -758,7 +754,7 @@ TQ3Point3D	pt;
 							-.6,						// decay rate
 							.8,							// fade rate
 							PARTICLE_TEXTURE_PATCHY);	// texture
-	
+
 	for (i = 0; i < n; i++)
 	{
 		pt.x = x + (RandomFloat()-.5f) * 130.0f * force;
@@ -774,16 +770,8 @@ TQ3Point3D	pt;
 			/* PLAY SPLASH SOUND */
 
 	pt.x = x;
-	pt.z = z;			
+	pt.z = z;
 	PlayEffect_Parms3D(EFFECT_SPLASH, &pt, kMiddleC, volume);
 }
-
-
-
-
-
-
-
-
 
 

@@ -113,50 +113,50 @@ ObjNode	*newObj;
 
 	if (itemPtr->parm[0] != 0)			// queen is at base #0
 		return(true);
-	
+
 			/* SCAN ITEM LIST FOR QUEEN BASE OBJECTS */
 
-	FindQueenBases();	
+	FindQueenBases();
 
 				/*******************************/
 				/* MAKE DEFAULT SKELETON ENEMY */
 				/*******************************/
-	
+
 	gCurrentQueenBase = 0;
 	x = gQueenBase[0].x;										// start at 1st base
 	z = gQueenBase[0].y;
-	
+
 	gTheQueen = newObj = MakeEnemySkeleton(SKELETON_TYPE_QUEENBEE,x,z, QUEENBEE_SCALE);
 	if (newObj == nil)
 		return(false);
 	newObj->TerrainItemPtr = itemPtr;
 
 	SetSkeletonAnim(newObj->Skeleton, QUEENBEE_ANIM_WAIT);
-	
+
 
 				/*******************/
 				/* SET BETTER INFO */
 				/*******************/
-			
-	newObj->Coord.y 	-= QUEENBEE_FOOT_OFFSET;			
+
+	newObj->Coord.y 	-= QUEENBEE_FOOT_OFFSET;
 	newObj->MoveCall 	= MoveQueenBee;							// set move call
 	newObj->Health 		= QUEENBEE_HEALTH;						// LOTS of health!
 	newObj->Damage 		= 0;
 	newObj->Kind 		= ENEMY_KIND_QUEENBEE;
-	
+
 	newObj->WaitTimer	= 3;
-	
-	
+
+
 				/* SET COLLISION INFO */
-				
+
 	SetObjectCollisionBounds(newObj, 100,QUEENBEE_FOOT_OFFSET,-130,130,130,-130);
 
 
 				/* MAKE SHADOW */
-				
+
 	AttachShadowToObject(newObj, 13, 13,false);
-	
-		
+
+
 	gNumEnemies++;
 	gNumEnemyOfKind[ENEMY_KIND_QUEENBEE]++;
 	return(true);
@@ -179,9 +179,8 @@ static	void(*myMoveTable[])(ObjNode *) =
 	/* note: we dont track the queen since she is always active and never goes away! */
 
 	GetObjectInfo(theNode);
-	myMoveTable[theNode->Skeleton->AnimNum](theNode);	
+	myMoveTable[theNode->Skeleton->AnimNum](theNode);
 }
-
 
 
 /********************** MOVE QUEENBEE: WAITING ******************************/
@@ -189,26 +188,26 @@ static	void(*myMoveTable[])(ObjNode *) =
 static void  MoveQueenBee_Waiting(ObjNode *theNode)
 {
 float	fps = gFramesPerSecondFrac;
-	
+
 			/* AIM AT PLAYER */
-			
-	TurnObjectTowardTarget(theNode, &gCoord, gMyCoord.x, gMyCoord.z, QUEENBEE_TURN_SPEED, false);			
+
+	TurnObjectTowardTarget(theNode, &gCoord, gMyCoord.x, gMyCoord.z, QUEENBEE_TURN_SPEED, false);
 
 
 				/* MOVE */
-				
+
 	gDelta.y -= ENEMY_GRAVITY*fps;
 	MoveEnemy(theNode);
-				
+
 
 			/* DO ENEMY COLLISION */
-				
+
 	if (DoEnemyCollisionDetect(theNode,DEFAULT_ENEMY_COLLISION_CTYPES))
 		return;
 
 
 			/* SEE IF TIME TO SPIT HONEY */
-			
+
 	theNode->WaitTimer -= fps;
 	if (theNode->WaitTimer <= 0.0f)
 	{
@@ -219,9 +218,8 @@ float	fps = gFramesPerSecondFrac;
 	}
 
 
-	UpdateQueenBee(theNode);		
+	UpdateQueenBee(theNode);
 }
-
 
 
 /********************** MOVE QUEENBEE: SPITTING ******************************/
@@ -238,7 +236,7 @@ u_short		b;
 
 
 				/* DO ENEMY COLLISION */
-				
+
 	if (DoEnemyCollisionDetect(theNode,DEFAULT_ENEMY_COLLISION_CTYPES))
 		return;
 
@@ -246,15 +244,15 @@ u_short		b;
 			/*************************/
 			/* SEE IF SHOOT SPIT NOW */
 			/*************************/
-			
+
 	if (theNode->CanSpit)
 	{
 		if (theNode->SpitNowFlag)
 		{
-			theNode->SpitNowFlag = false;		
+			theNode->SpitNowFlag = false;
 			theNode->CanSpit = false;
-			ShootSpit(theNode);	
-		}		
+			ShootSpit(theNode);
+		}
 	}
 
 			/*******************************************/
@@ -265,32 +263,32 @@ u_short		b;
 	if (theNode->SpitTimer <= 0.0f)
 	{
 				/* PICK NEXT BASE TO FLY TO */
-				
+
 		if (++gCurrentQueenBase >= gNumQueenBases)				// inc base # and see if wrap
 			gCurrentQueenBase = 0;
-			
+
 		for (b = 0; b < gNumQueenBases; b++)					// find base # in list
 		{
 			if (gQueenBaseID[b] == gCurrentQueenBase)
-				break;		
+				break;
 		}
-			
+
 				/* CALC MIDPOINT TO FLY TO */
-				
+
 		gEndPoint.x = gQueenBase[b].x;
 		gEndPoint.z = gQueenBase[b].y;
-		gMidPoint.x = (gCoord.x + gQueenBase[b].x) * .5f;	
-		gMidPoint.z = (gCoord.z + gQueenBase[b].y) * .5f;	
+		gMidPoint.x = (gCoord.x + gQueenBase[b].x) * .5f;
+		gMidPoint.z = (gCoord.z + gQueenBase[b].y) * .5f;
 		gMidPoint.y = GetTerrainHeightAtCoord(gMidPoint.x, gMidPoint.z, FLOOR) + QUEENBEE_HOVER_HEIGHT;
-		
-		
+
+
 				/* DO FLY ANIM */
-				
+
 		MorphToSkeletonAnim(theNode->Skeleton, QUEENBEE_ANIM_FLY, 6);
 		theNode->Mode = QUEENBEE_MODE_FLYTOMID;
 	}
 
-	UpdateQueenBee(theNode);	
+	UpdateQueenBee(theNode);
 }
 
 
@@ -301,27 +299,27 @@ static void  MoveQueenBee_Fly(ObjNode *theNode)
 float	fps = gFramesPerSecondFrac;
 TQ3Vector2D	aim;
 Boolean	checkSolid = false;
-	
+
 			/* AIM AT PLAYER */
-			
-	TurnObjectTowardTarget(theNode, &gCoord, gMyCoord.x, gMyCoord.z, QUEENBEE_TURN_SPEED, false);			
-	
-	
+
+	TurnObjectTowardTarget(theNode, &gCoord, gMyCoord.x, gMyCoord.z, QUEENBEE_TURN_SPEED, false);
+
+
 	switch(theNode->Mode)
 	{
 					/********************/
 					/* FLY TO MID POINT */
 					/********************/
-					
+
 		case	QUEENBEE_MODE_FLYTOMID:
-				
+
 						/* CALC VECTOR TO TARGET */
-							
+
 				FastNormalizeVector2D(gMidPoint.x - gCoord.x, gMidPoint.z - gCoord.z, &aim);
-					
+
 				gDelta.x = aim.x * 400.0f;
 				gDelta.z = aim.y * 400.0f;
-				
+
 				if (gCoord.y < gMidPoint.y)
 					gDelta.y = 400.0f;
 				else
@@ -329,25 +327,25 @@ Boolean	checkSolid = false;
 					gDelta.y = 0;
 					checkSolid = true;
 				}
-					
+
 				MoveEnemy(theNode);
-				
+
 						/* SEE IF REACHED TARGET */
-						
+
 				if (CalcQuickDistance(gCoord.x, gCoord.z, gMidPoint.x, gMidPoint.z) < 150.0f)
 				{
 					theNode->Mode = QUEENBEE_MODE_HOVER;
 					theNode->WaitTimer = 3;
-				}		
+				}
 				break;
-				
-				
+
+
 					/**************************************/
 					/* HOVER WHILE ENEMIES DO THEIR THING */
 					/**************************************/
-					
+
 		case	QUEENBEE_MODE_HOVER:
-		
+
 				ApplyFrictionToDeltas(5, &gDelta);
 				MoveEnemy(theNode);
 				checkSolid = true;
@@ -355,59 +353,58 @@ Boolean	checkSolid = false;
 				theNode->WaitTimer -= fps;
 				if (theNode->WaitTimer <= 0.0f)
 				{
-					theNode->Mode = QUEENBEE_MODE_LAND;				
+					theNode->Mode = QUEENBEE_MODE_LAND;
 				}
 				break;
-				
-				
+
+
 					/******************/
 					/* LAND AT TARGET */
 					/******************/
-					
+
 		case	QUEENBEE_MODE_LAND:
-				
+
 						/* CALC VECTOR TO TARGET */
-							
+
 				FastNormalizeVector2D(gEndPoint.x - gCoord.x, gEndPoint.z - gCoord.z, &aim);
-					
+
 				gDelta.x = aim.x * 400.0f;
 				gDelta.z = aim.y * 400.0f;
-								
+
 				MoveEnemy(theNode);
-				
+
 						/* SEE IF REACHED TARGET */
-						
+
 				if (CalcQuickDistance(gCoord.x, gCoord.z, gEndPoint.x, gEndPoint.z) < 100.0f)
 				{
 					gDelta.x = gDelta.y = gDelta.z = 0;
 					MorphToSkeletonAnim(theNode->Skeleton, QUEENBEE_ANIM_WAIT, 5);
 					theNode->WaitTimer = 1.5;
-				}		
+				}
 
-				break;				
-	}				
-					
+				break;
+	}
+
 
 			/**********************/
 			/* DO ENEMY COLLISION */
 			/**********************/
-				
+
 	if (DoEnemyCollisionDetect(theNode,DEFAULT_ENEMY_COLLISION_CTYPES))
 		return;
 
 		/* IF HIT SOMETHING SOLID WHILE FLYING, THEN LAND */
-		
+
 	if (checkSolid && gTotalSides)
 	{
-		theNode->Mode = QUEENBEE_MODE_LAND;				
+		theNode->Mode = QUEENBEE_MODE_LAND;
 		theNode->WaitTimer = 0;
 		gEndPoint.x = gCoord.x;
 		gEndPoint.z = gCoord.z;
-	}	
+	}
 
-	UpdateQueenBee(theNode);		
+	UpdateQueenBee(theNode);
 }
-
 
 
 /********************** MOVE QUEENBEE: ON BUTT ******************************/
@@ -417,7 +414,7 @@ static void  MoveQueenBee_OnButt(ObjNode *theNode)
 float	fps = gFramesPerSecondFrac;
 
 				/* MOVE IT */
-				
+
 	if (theNode->StatusBits & STATUS_BIT_ONGROUND)		// if on ground, add friction
 		ApplyFrictionToDeltas(60.0,&gDelta);
 	gDelta.y -= ENEMY_GRAVITY*fps;						// add gravity
@@ -425,7 +422,7 @@ float	fps = gFramesPerSecondFrac;
 
 
 				/* DO ENEMY COLLISION */
-				
+
 	if (DoEnemyCollisionDetect(theNode,DEFAULT_ENEMY_COLLISION_CTYPES))
 		return;
 
@@ -437,8 +434,8 @@ float	fps = gFramesPerSecondFrac;
 	}
 
 				/* UPDATE */
-			
-	UpdateQueenBee(theNode);		
+
+	UpdateQueenBee(theNode);
 }
 
 
@@ -454,7 +451,7 @@ float	fps = gFramesPerSecondFrac;
 
 
 				/* MOVE IT */
-				
+
 	if (theNode->StatusBits & STATUS_BIT_ONGROUND)		// if on ground, add friction
 		ApplyFrictionToDeltas(60.0,&gDelta);
 	gDelta.y -= ENEMY_GRAVITY*fps;		// add gravity
@@ -462,26 +459,21 @@ float	fps = gFramesPerSecondFrac;
 
 
 				/* DO ENEMY COLLISION */
-				
+
 	if (DoEnemyCollisionDetect(theNode,DEATH_ENEMY_COLLISION_CTYPES))
 		return;
 
 
 				/* UPDATE */
-			
-	UpdateQueenBee(theNode);		
+
+	UpdateQueenBee(theNode);
 
 }
 
 
-
 //===============================================================================================================
 //===============================================================================================================
 //===============================================================================================================
-
-
-
-
 
 
 #pragma mark -
@@ -497,20 +489,20 @@ Boolean BallHitQueenBee(ObjNode *me, ObjNode *enemy)
 {
 Boolean	killed = false;
 
-				
+
 	if (me->Speed > QUEENBEE_KNOCKDOWN_SPEED)
-	{	
-		
+	{
+
 				/*****************/
 				/* KNOCK ON BUTT */
 				/*****************/
-					
+
 		killed = KnockQueenBeeOnButt(enemy, me->Delta.x * .3f, me->Delta.z * .3f, .7);
 
 		PlayEffect_Parms3D(EFFECT_POUND, &gCoord, kMiddleC+2, 2.0);
 	}
 
-	return(killed);		
+	return(killed);
 }
 
 
@@ -528,19 +520,19 @@ TQ3Vector3D		delta;
 		return(false);
 
 		/* DO BUTT ANIM */
-		
+
 	MorphToSkeletonAnim(enemy->Skeleton, QUEENBEE_ANIM_ONBUTT, 7.0);
 	enemy->ButtTimer = 2.0;
 
 			/* GET IT MOVING */
-		
+
 	enemy->Delta.x = dx;
 	enemy->Delta.z = dz;
 	enemy->Delta.y = 600;
-	
+
 
 		/* SLOW DOWN PLAYER */
-		
+
 	gDelta.x *= .2f;
 	gDelta.y *= .2f;
 	gDelta.z *= .2f;
@@ -551,7 +543,7 @@ TQ3Vector3D		delta;
 			/*******************/
 
 			/* white sparks */
-				
+
 	pg = NewParticleGroup(	0,							// magic num
 							PARTICLE_TYPE_FALLINGSPARKS,	// type
 							PARTICLE_FLAGS_BOUNCE,		// flags
@@ -561,7 +553,7 @@ TQ3Vector3D		delta;
 							.9,							// decay rate
 							0,							// fade rate
 							PARTICLE_TEXTURE_YELLOWBALL);	// texture
-	
+
 	for (i = 0; i < 35; i++)
 	{
 		delta.x = (RandomFloat()-.5f) * 1000.0f;
@@ -569,20 +561,17 @@ TQ3Vector3D		delta;
 		delta.z = (RandomFloat()-.5f) * 1000.0f;
 		AddParticleToGroup(pg, &enemy->Coord, &delta, RandomFloat() + 1.0f, FULL_ALPHA);
 	}
-		
 
 
 		/* HURT & SEE IF KILLED */
-			
+
 	if (EnemyGotHurt(enemy, damage))
 		return(true);
-		
+
 	gInfobarUpdateBits |= UPDATE_BOSS;
-		
+
 	return(false);
 }
-
-
 
 
 /****************** KILL FIRE QUEENBEE *********************/
@@ -591,29 +580,29 @@ TQ3Vector3D		delta;
 //
 
 Boolean KillQueenBee(ObjNode *theNode)
-{	
+{
 long			pg,i;
 TQ3Vector3D		delta;
 
 		/* STOP BUZZ */
-		
+
 	if (theNode->EffectChannel != -1)
 		StopAChannel(&theNode->EffectChannel);
 
 			/* DEACTIVATE */
-			
+
 	theNode->TerrainItemPtr = nil;				// dont ever come back
 	theNode->CType = CTYPE_MISC;
-	
+
 	MorphToSkeletonAnim(theNode->Skeleton, QUEENBEE_ANIM_DEATH, 8);
-	
-	
+
+
 			/*******************/
 			/* SPARK EXPLOSION */
 			/*******************/
 
 			/* white sparks */
-				
+
 	pg = NewParticleGroup(	0,							// magic num
 							PARTICLE_TYPE_FALLINGSPARKS,	// type
 							PARTICLE_FLAGS_BOUNCE,		// flags
@@ -623,7 +612,7 @@ TQ3Vector3D		delta;
 							.8,							// decay rate
 							0,							// fade rate
 							PARTICLE_TEXTURE_YELLOWBALL);	// texture
-	
+
 	for (i = 0; i < 60; i++)
 	{
 		delta.x = (RandomFloat()-.5f) * 1400.0f;
@@ -631,14 +620,11 @@ TQ3Vector3D		delta;
 		delta.z = (RandomFloat()-.5f) * 1400.0f;
 		AddParticleToGroup(pg, &theNode->Coord, &delta, RandomFloat() + 1.0f, FULL_ALPHA);
 	}
-		
+
 	theNode->DeathTimer = 4;
-	
+
 	return(false);
 }
-
-
-
 
 
 /***************** UPDATE QUEENBEE ************************/
@@ -646,7 +632,7 @@ TQ3Vector3D		delta;
 static void UpdateQueenBee(ObjNode *theNode)
 {
 		/* SEE IF DO BUZZ */
-		
+
 	if (theNode->Skeleton->AnimNum == QUEENBEE_ANIM_FLY)
 	{
 		if (theNode->EffectChannel == -1)
@@ -654,9 +640,9 @@ static void UpdateQueenBee(ObjNode *theNode)
 		else
 			Update3DSoundChannel(EFFECT_BUZZ, &theNode->EffectChannel, &theNode->Coord);
 	}
-	
+
 		/* SEE IF TURN OFF BUZZ */
-		
+
 	else
 	{
 		if (theNode->EffectChannel != -1)
@@ -683,23 +669,23 @@ TerrainItemEntryType	*itemPtr;
 
 	gNumQueenBases = 0;
 
-	itemPtr = *gMasterItemList; 										
+	itemPtr = *gMasterItemList; 
 
 	for (i= 0; i < gNumTerrainItems; i++)
 	{
-		if (itemPtr[i].type == MAP_ITEM_QUEENBEEBASE)					
+		if (itemPtr[i].type == MAP_ITEM_QUEENBEEBASE)
 		{
 			gQueenBase[gNumQueenBases].x = itemPtr[i].x * MAP2UNIT_VALUE;	// convert to world coords
 			gQueenBase[gNumQueenBases].y = itemPtr[i].y * MAP2UNIT_VALUE;
 			gQueenBaseID[gNumQueenBases] = itemPtr[i].parm[0];				// remember ID#
-			
+
 			gNumQueenBases++;
-			
+
 			if (gNumQueenBases >= MAX_QUEEN_BASES)							// see if @ max
 				break;
 		}
 	}
-	
+
 	GAME_ASSERT_MESSAGE(gNumQueenBases > 0, "No bases found");
 }
 
@@ -713,41 +699,41 @@ float	r;
 ObjNode	*spit;
 static const TQ3Point3D off = {0,-25,-55};
 
-		/*******************/	
+		/*******************/
 		/* CREATE SPIT WAD */
-		/*******************/	
+		/*******************/
 
 	FindCoordOnJoint(bee, QUEENBEE_JOINT_HEAD, &off, &gNewObjectDefinition.coord);
-		
-	gNewObjectDefinition.group 		= MODEL_GROUP_LEVELSPECIFIC;	
+
+	gNewObjectDefinition.group 		= MODEL_GROUP_LEVELSPECIFIC;
 	gNewObjectDefinition.type 		= HIVE_MObjType_HoneyBlob;
 	gNewObjectDefinition.flags 		= 0;
 	gNewObjectDefinition.slot 		= 550;
 	gNewObjectDefinition.moveCall 	= MoveQueenSpit;
 	gNewObjectDefinition.rot 		= 0;
-	gNewObjectDefinition.scale 		= .15;		
+	gNewObjectDefinition.scale 		= .15;
 	spit = MakeNewDisplayGroupObject(&gNewObjectDefinition);
 	if (spit == nil)
 		return;
-			
+
 	spit->WobbleBase = spit->Scale.x;
-				
+
 		/* SET COLLISION INFO */
 
 	spit->CType = CTYPE_VISCOUS;
-	spit->CBits = CBITS_TOUCHABLE;	
+	spit->CBits = CBITS_TOUCHABLE;
 	SetObjectCollisionBounds(spit,300,0,-200,200,200,-200);
 
 	spit->BoundingSphere.radius = 250;		// Source port fix: Give it a generous culling sphere
 
 			/* SET DELTAS */
-			
+
 	r = bee->Rot.y;
 
 	spit->Delta.x = -sin(r) * SPIT_SPEED;
 	spit->Delta.z = -cos(r) * SPIT_SPEED;
 	spit->Delta.y = 250;
-	
+
 	spit->HasSpawned = false;
 	spit->SpitTimer	= 80;
 }
@@ -764,11 +750,11 @@ float	base;
 	GetObjectInfo(theNode);
 
 	theNode->SpitTimer -= fps;
-	
+
 			/****************/
 			/* MAKE GO AWAY */
 			/****************/
-			
+
 	if (theNode->SpitTimer < 0.0f)
 	{
 		gCoord.y -= 40.0 * fps;
@@ -776,9 +762,9 @@ float	base;
 		{
 			DeleteObject(theNode);
 			return;
-		}	
+		}
 	}
-	
+
 			/*******************/
 			/* ACTIVE SPIT WAD */
 			/*******************/
@@ -786,13 +772,13 @@ float	base;
 	{
 
 			/* MOVE */
-				
+
 		ApplyFrictionToDeltas(5, &gDelta);
 		gDelta.y -= 800.0f * fps;					// gravity
 		gCoord.x += gDelta.x * fps;
 		gCoord.y += gDelta.y * fps;
 		gCoord.z += gDelta.z * fps;
-		
+
 		y = GetTerrainHeightAtCoord(gCoord.x, gCoord.z, FLOOR) + 20.0f;
 		if (gCoord.y < y)
 		{
@@ -801,43 +787,43 @@ float	base;
 		}
 
 			/* FADE */
-			
+
 //		if (theNode->Health < .95f)
 //		{
 //			theNode->Health += fps * .05f;
 //			if (theNode->Health > .95f)
 //				theNode->Health = .95f;
-//		
+//
 //			MakeObjectTransparent(theNode, theNode->Health);
 //		}
 
 			/* SCALE */
-					
+
 		base = theNode->WobbleBase;
-		
+
 		theNode->WobbleX += fps * 4.5f;
 		theNode->WobbleY -= fps * 5.0f;
 		theNode->WobbleZ += fps * 4.0f;
-		
+
 		theNode->Scale.x = base + sin(theNode->WobbleX) * .2f * base;
 		theNode->Scale.y = base + sin(theNode->WobbleY) * .2f * base;
 		theNode->Scale.z = base + cos(theNode->WobbleZ) * .2f * base;
-		
+
 		if (theNode->WobbleBase < 2.2f)
 			theNode->WobbleBase += fps * .5f;
-		
+
 			/***************/
 			/* SPAWN ENEMY */
 			/***************/
-			
+
 		else
-		{	
+		{
 			if (!theNode->HasSpawned)
-			{			
+			{
 				theNode->HasSpawned = true;
 
 					/* SEE WHICH ENEMY TO SPAWN */
-								
+
 				if (gTheQueen->Health < (QUEENBEE_HEALTH/2))
 				{
 					MakeFlyingBee(&gCoord);
@@ -847,19 +833,10 @@ float	base;
 			}
 		}
 	}
-	
+
 			/* UPDATE */
 
-	UpdateObject(theNode);	
+	UpdateObject(theNode);
 }
-
-
-
-
-
-
-
-
-
 
 

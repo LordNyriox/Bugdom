@@ -109,17 +109,17 @@ void ShowLevelIntroScreen(void)
 {
 
 			/* START AUDIO */
- 		 				
+ 		 
  	switch(gLevelType)
  	{
  		case	LEVEL_TYPE_NIGHT:
 				PlaySong(SONG_NIGHT,true);
 				break;
-				
+
 		case	LEVEL_TYPE_FOREST:
 				PlaySong(SONG_FOREST,true);
 				break;
-		
+
 
 		case	LEVEL_TYPE_POND:
 				PlaySong(SONG_POND,true);
@@ -132,7 +132,7 @@ void ShowLevelIntroScreen(void)
 		case	LEVEL_TYPE_HIVE:
 				PlaySong(SONG_HIVE,true);
 				break;
-		
+
  		default:
 				PlaySong(SONG_GARDEN,true);
 	}
@@ -141,7 +141,7 @@ void ShowLevelIntroScreen(void)
 			/*********/
 			/* SETUP */
 			/*********/
-			
+
 	SetupLevelIntroScreen();
 	QD3D_CalcFramesPerSecond();
 	QD3D_CalcFramesPerSecond();
@@ -149,17 +149,17 @@ void ShowLevelIntroScreen(void)
 		/**************/
 		/* PROCESS IT */
 		/**************/
-				
-		
+
+
 		/* DO LEVEL CUSTOM */
-				
+
 	switch(gRealLevel)
 	{
-		case	LEVEL_NUM_TRAINING:					
+		case	LEVEL_NUM_TRAINING:
 				DoLawn1Intro();
 				break;
-				
-		case	LEVEL_NUM_LAWN:					
+
+		case	LEVEL_NUM_LAWN:
 				DoLawn2Intro();
 				break;
 
@@ -170,7 +170,7 @@ void ShowLevelIntroScreen(void)
 		case	LEVEL_NUM_BEACH:
 				DoForest1Intro();
 				break;
-				
+
 		case	LEVEL_NUM_FLIGHT:
 				DoForest2Intro();
 				break;
@@ -187,22 +187,22 @@ void ShowLevelIntroScreen(void)
 				DoAntHill1Intro();
 				break;
 
-		default:		
+		default:
 				DropLevelLetters();
 	}
-	
+
 			/* CLEANUP */
 
 	GammaFadeOut(false);
 	GameScreenToBlack();
-	
+
 	DeleteAllObjects();
 	DeleteAllParticleGroups();
 	FreeAllSkeletonFiles(-1);
 	DeleteAll3DMFGroups();
 	QD3D_DisposeParticles();
 	DisposeSoundBank(SOUNDBANK_MAIN);
-	QD3D_DisposeWindowSetup(&gGameViewInfoPtr);		
+	QD3D_DisposeWindowSetup(&gGameViewInfoPtr);
 	Pomme_FlushPtrTracking(true);
 }
 
@@ -219,7 +219,7 @@ TQ3Vector3D				fillDirection1 = { .6, -.9, -1 };			// key
 TQ3Vector3D				fillDirection2 = { -.7, -.2, -.9 };			// fill
 
 		/* INIT OTHER SYSTEMS */
-		
+
 	QD3D_InitParticles();
 
 			/* LOAD SOUNDS */
@@ -232,7 +232,7 @@ TQ3Vector3D				fillDirection2 = { -.7, -.2, -.9 };			// fill
 			/*************/
 
 	QD3D_NewViewDef(&viewDef);
-	
+
 	viewDef.camera.hither 			= 70;
 	viewDef.camera.yon 				= 4000;
 	viewDef.camera.fov 				= 1.0;
@@ -241,7 +241,7 @@ TQ3Vector3D				fillDirection2 = { -.7, -.2, -.9 };			// fill
 	viewDef.camera.from.y 			= gCameraFrom.y;
 	viewDef.camera.from.z 			= gCameraFrom.z;
 	viewDef.camera.to	 			= cameraTo;
-	
+
 	viewDef.lights.numFillLights 	= 1;
 	viewDef.lights.ambientBrightness = 0.2;
 	viewDef.lights.fillDirection[0] = fillDirection1;
@@ -264,26 +264,26 @@ TQ3Vector3D				fillDirection2 = { -.7, -.2, -.9 };			// fill
 	InitParticleSystem();		// Must be once we have a valid GL context
 
 	FSMakeFSSpec(gDataSpec.vRefNum, gDataSpec.parID, ":models:LevelIntro.3dmf", &spec);
-	LoadGrouped3DMF(&spec,MODEL_GROUP_LEVELINTRO);	
+	LoadGrouped3DMF(&spec,MODEL_GROUP_LEVELINTRO);
 
 	switch(gRealLevel)
 	{
 		case	LEVEL_NUM_TRAINING:
 				LoadASkeleton(SKELETON_TYPE_ANT);
 				break;
-				
+
 		case	LEVEL_NUM_LAWN:
 				LoadASkeleton(SKELETON_TYPE_BOXERFLY);
 				break;
-			
+
 		case	LEVEL_NUM_POND:
 				LoadASkeleton(SKELETON_TYPE_PONDFISH);
 				break;
-				
+
 		case	LEVEL_NUM_BEACH:
 				LoadASkeleton(SKELETON_TYPE_FOOT);
 				break;
-				
+
 		case	LEVEL_NUM_FLIGHT:
 				LoadASkeleton(SKELETON_TYPE_DRAGONFLY);
 				break;
@@ -291,23 +291,23 @@ TQ3Vector3D				fillDirection2 = { -.7, -.2, -.9 };			// fill
 		case	LEVEL_NUM_HIVE:
 				LoadASkeleton(SKELETON_TYPE_FLYINGBEE);
 				break;
-			
+
 		case	LEVEL_NUM_NIGHT:
 				LoadASkeleton(SKELETON_TYPE_FIREANT);
 				break;
-			
+
 	}
 
 			/*******************/
 			/* MAKE BACKGROUND */
 			/*******************/
-			
+
 	if (gRealLevel != LEVEL_NUM_FLIGHT)
 	{
 				/* LOG */
 
-		gNewObjectDefinition.group 		= MODEL_GROUP_LEVELINTRO;	
-		gNewObjectDefinition.type 		= LINTRO_MObjType_Log;	
+		gNewObjectDefinition.group 		= MODEL_GROUP_LEVELINTRO;
+		gNewObjectDefinition.type 		= LINTRO_MObjType_Log;
 		gNewObjectDefinition.coord.x	= 0;
 		gNewObjectDefinition.coord.y	= -300;
 		gNewObjectDefinition.coord.z	= 0;
@@ -331,21 +331,21 @@ TQ3Vector3D				fillDirection2 = { -.7, -.2, -.9 };			// fill
 	}
 
 		/* BACKGROUND CYC */
-				
+
 	switch(gLevelType)
 	{
 		case	LEVEL_TYPE_FOREST:
-				gNewObjectDefinition.type 		= LINTRO_MObjType_ForestBackground;	
+				gNewObjectDefinition.type 		= LINTRO_MObjType_ForestBackground;
 				break;
 
 		case	LEVEL_TYPE_NIGHT:
-				gNewObjectDefinition.type 		= LINTRO_MObjType_NightBackground;	
+				gNewObjectDefinition.type 		= LINTRO_MObjType_NightBackground;
 				break;
 
 		default:
-				gNewObjectDefinition.type 		= LINTRO_MObjType_LawnBackground;	
+				gNewObjectDefinition.type 		= LINTRO_MObjType_LawnBackground;
 	}
-	gNewObjectDefinition.group 		= MODEL_GROUP_LEVELINTRO;	
+	gNewObjectDefinition.group 		= MODEL_GROUP_LEVELINTRO;
 	gNewObjectDefinition.coord.x	= 0;
 	gNewObjectDefinition.coord.y	= 0;
 	gNewObjectDefinition.coord.z	= 400;
@@ -359,7 +359,7 @@ TQ3Vector3D				fillDirection2 = { -.7, -.2, -.9 };			// fill
 
 
 		/* FADE EVENT */
-		
+
 	GameScreenToBlack();
 	MakeFadeEvent(true);
 }
@@ -382,14 +382,14 @@ float	x;
 			/*******************/
 			/* DROP IN "LEVEL" */
 			/*******************/
-			
+
 	x = -300;
-	for (i = 0; i < 5; i++)	
-	{	
+	for (i = 0; i < 5; i++)
+	{
 			/* CREATE LETTER */
-			
-		gNewObjectDefinition.group 		= MODEL_GROUP_LEVELINTRO;	
-		gNewObjectDefinition.type 		= LINTRO_MObjType_L + level[i];	
+
+		gNewObjectDefinition.group 		= MODEL_GROUP_LEVELINTRO;
+		gNewObjectDefinition.type 		= LINTRO_MObjType_L + level[i];
 		gNewObjectDefinition.coord.x	= x;
 		gNewObjectDefinition.coord.y	= 800;
 		gNewObjectDefinition.coord.z	= 0;
@@ -403,7 +403,7 @@ float	x;
 
 		if (WaitAndDraw(.5))
 			return;
-		
+
 		x += 100.0f;
 	}
 
@@ -412,19 +412,19 @@ float	x;
 		/*******************/
 
 	x += 100;
-			
+
 		/* DETERMINE DIGITS */
-			
+
 	n = gRealLevel + 1;
 	d1 = n/10;
 	d2 = n%10;
-			
+
 		/* 1ST DIGIT */
-		
+
 	if (d1 != 0)
 	{
 		gNewObjectDefinition.group 		= MODEL_GROUP_LEVELINTRO;
-		gNewObjectDefinition.type 		= LINTRO_MObjType_0 + d1;	
+		gNewObjectDefinition.type 		= LINTRO_MObjType_0 + d1;
 		gNewObjectDefinition.coord.x	= x;
 		obj = MakeNewDisplayGroupObject(&gNewObjectDefinition);
 		obj->Delta.y = -400;
@@ -432,11 +432,11 @@ float	x;
 			return;
 		x += 100;
 	}
-	
+
 		/* 2ND DIGIT */
 
 	gNewObjectDefinition.group 		= MODEL_GROUP_LEVELINTRO;
-	gNewObjectDefinition.type 		= LINTRO_MObjType_0 + d2;	
+	gNewObjectDefinition.type 		= LINTRO_MObjType_0 + d2;
 	gNewObjectDefinition.coord.x	= x;
 	obj = MakeNewDisplayGroupObject(&gNewObjectDefinition);
 	obj->Delta.y = -400;
@@ -460,7 +460,7 @@ float	fps = gFramesPerSecondFrac;
 		gCoord.y = 55.0f;
 		gDelta.y *= -.3f;
 	}
-		
+
 	UpdateObject(theNode);
 
 }
@@ -483,13 +483,13 @@ static Byte	letters[] = {LINTRO_MObjType_L, LINTRO_MObjType_E, LINTRO_MObjType_V
 		/* CREATE THE ANTS */
 		/*******************/
 
-	x = -1700;		
+	x = -1700;
 	for (i = 0; i < 6; i++)
-	{		
+	{
 			/* MAKE AN ANT */
-			
+
 		gNewObjectDefinition.type 		= SKELETON_TYPE_ANT;
-		gNewObjectDefinition.animNum 	= ANT_ANIM_WALKCARRY;							
+		gNewObjectDefinition.animNum 	= ANT_ANIM_WALKCARRY;
 		gNewObjectDefinition.coord.x 	= x;
 		gNewObjectDefinition.coord.y 	= 68;
 		gNewObjectDefinition.coord.z 	= 0;
@@ -498,14 +498,14 @@ static Byte	letters[] = {LINTRO_MObjType_L, LINTRO_MObjType_E, LINTRO_MObjType_V
 		gNewObjectDefinition.moveCall 	= MoveIntroAnt;
 		gNewObjectDefinition.rot 		= -PI/2;
 		gNewObjectDefinition.scale 		= 1.2;
-		ant = MakeNewSkeletonObject(&gNewObjectDefinition);			
+		ant = MakeNewSkeletonObject(&gNewObjectDefinition);
 		ant->Delta.x = 250;
 		ant->Skeleton->CurrentAnimTime = i / 6.0 * ant->Skeleton->MaxAnimTime;
-	
+
 			/* MAKE THE LETTER */
-			
-		gNewObjectDefinition.group 		= MODEL_GROUP_LEVELINTRO;	
-		gNewObjectDefinition.type 		= letters[i];	
+
+		gNewObjectDefinition.group 		= MODEL_GROUP_LEVELINTRO;
+		gNewObjectDefinition.type 		= letters[i];
 		gNewObjectDefinition.slot 		= 100;
 		gNewObjectDefinition.flags 		= 0;
 		gNewObjectDefinition.moveCall 	= nil;
@@ -513,14 +513,14 @@ static Byte	letters[] = {LINTRO_MObjType_L, LINTRO_MObjType_E, LINTRO_MObjType_V
 		gNewObjectDefinition.scale 		= 1.0;
 		letter = MakeNewDisplayGroupObject(&gNewObjectDefinition);
 
-		ant->ChainNode = letter;		
-		
+		ant->ChainNode = letter;
+
 		if (i == 4)					// spacing before number
 			x += 300;
 		else
-			x += 150;	
+			x += 150;
 	}
-		
+
 	if (WaitAndDraw(12))
 		return;
 }
@@ -535,16 +535,16 @@ ObjNode	*letter;
 static TQ3Point3D off = {0,110, -20};
 
 		/* MOVE THE ANT */
-		
+
 	GetObjectInfo(theNode);
 	gCoord.x += gDelta.x * fps;
 	UpdateObject(theNode);
-	
+
 	theNode->Skeleton->AnimSpeed = gDelta.x * 0.004f;
-	
+
 		/* UPDATE LETTER */
-		
-	letter = theNode->ChainNode;	
+
+	letter = theNode->ChainNode;
 	FindCoordOnJoint(theNode, 1, &off, &letter->Coord);		// find coord of head
 	UpdateObjectTransforms(letter);
 }
@@ -568,16 +568,16 @@ static Byte	letters[] = {LINTRO_MObjType_E, LINTRO_MObjType_E, LINTRO_MObjType_V
 	from.x -= 300;
 	to = gGameViewInfoPtr->currentCameraLookAt;
 	to.x -= 300;
-	QD3D_UpdateCameraFromTo(gGameViewInfoPtr, &from, &to);	
+	QD3D_UpdateCameraFromTo(gGameViewInfoPtr, &from, &to);
 
 
 		/* MAKE LETTERS */
-		
-	x = -500;		
+
+	x = -500;
 	for (i = 0; i < 6; i++)
-	{		
-		gNewObjectDefinition.group 		= MODEL_GROUP_LEVELINTRO;	
-		gNewObjectDefinition.type 		= letters[i];	
+	{
+		gNewObjectDefinition.group 		= MODEL_GROUP_LEVELINTRO;
+		gNewObjectDefinition.type 		= letters[i];
 		gNewObjectDefinition.coord.x 	= x;
 		gNewObjectDefinition.coord.y 	= 75;
 		gNewObjectDefinition.coord.z 	= 0;
@@ -591,7 +591,7 @@ static Byte	letters[] = {LINTRO_MObjType_E, LINTRO_MObjType_E, LINTRO_MObjType_V
 		if (i == 4)					// spacing before number
 			x += 300;
 		else
-			x += 160;	
+			x += 160;
 	}
 
 	// Source port note: The game used to wait 1 second here before creating the boxerfly at x=-1500, dx=200.
@@ -599,9 +599,9 @@ static Byte	letters[] = {LINTRO_MObjType_E, LINTRO_MObjType_E, LINTRO_MObjType_V
 	// further to the left and make it fly faster.
 
 		/* MAKE THE BOXERFLY */
-		
+
 	gNewObjectDefinition.type 		= SKELETON_TYPE_BOXERFLY;
-	gNewObjectDefinition.animNum 	= 0;							
+	gNewObjectDefinition.animNum 	= 0;
 	gNewObjectDefinition.coord.x 	= -2200;		// Source port change: up from -1500 (see above)
 	gNewObjectDefinition.coord.y 	= 40;
 	gNewObjectDefinition.coord.z 	= 0;
@@ -610,14 +610,14 @@ static Byte	letters[] = {LINTRO_MObjType_E, LINTRO_MObjType_E, LINTRO_MObjType_V
 	gNewObjectDefinition.moveCall 	= MoveIntroBoxerfly;
 	gNewObjectDefinition.rot 		= -PI/2;
 	gNewObjectDefinition.scale 		= 1.0;
-	fly = MakeNewSkeletonObject(&gNewObjectDefinition);			
-		
+	fly = MakeNewSkeletonObject(&gNewObjectDefinition);
+
 	fly->Delta.x = 325;								// Source port change: up from 200 (see above)
-	
+
 	fly->Mode = 0;
-		
+
 	if (WaitAndDraw(10))
-		return;		
+		return;
 }
 
 
@@ -631,7 +631,7 @@ long	pg, i;
 TQ3Vector3D delta;
 
 	GetObjectInfo(theNode);
-	
+
 	switch(theNode->Mode)
 	{
 		case	0:
@@ -639,25 +639,25 @@ TQ3Vector3D delta;
 				{
 					gCoord.x = -690.0f;
 					gDelta.x = 0;
-					
+
 					if (theNode->Skeleton->AnimNum == 0)
 						MorphToSkeletonAnim(theNode->Skeleton, 1, 4);
 				}
 				else
 					gCoord.x += gDelta.x * fps;
-					
-					
-						/* SEE IF PUNCH NOW */	
-						
-				if (theNode->Flag[0])		
+
+
+						/* SEE IF PUNCH NOW */
+
+				if (theNode->Flag[0])
 				{
 					theNode->Flag[0] = false;
 					theNode->Mode = 1;
-					
+
 						/* MAKE CORRECT LETTER */
-						
-					gNewObjectDefinition.group 		= MODEL_GROUP_LEVELINTRO;	
-					gNewObjectDefinition.type 		= LINTRO_MObjType_L;	
+
+					gNewObjectDefinition.group 		= MODEL_GROUP_LEVELINTRO;
+					gNewObjectDefinition.type 		= LINTRO_MObjType_L;
 					gNewObjectDefinition.coord		= gLetterObj[0]->Coord;
 					gNewObjectDefinition.slot 		= 200;
 					gNewObjectDefinition.flags 		= 0;
@@ -665,12 +665,12 @@ TQ3Vector3D delta;
 					gNewObjectDefinition.rot 		= 0;
 					gNewObjectDefinition.scale 		= 1.3;
 					newObj = MakeNewDisplayGroupObject(&gNewObjectDefinition);
-						
-					DeleteObject(gLetterObj[0]);	
+
+					DeleteObject(gLetterObj[0]);
 					gLetterObj[0] = newObj;
-					
+
 						/* MAKE EXPLOSION */
-						
+
 					pg = NewParticleGroup(	0,							// magic num
 											PARTICLE_TYPE_FALLINGSPARKS,	// type
 											0,							// flags
@@ -680,7 +680,7 @@ TQ3Vector3D delta;
 											.2,							// decay rate
 											.8,							// fade rate
 											PARTICLE_TEXTURE_GREENRING);// texture
-					
+
 					if (pg != -1)
 					{
 						for (i = 0; i < 70; i++)
@@ -693,31 +693,29 @@ TQ3Vector3D delta;
 					}
 				}
 				break;
-	
-	
-				
+
+
 		case	1:
 				if (theNode->Skeleton->AnimHasStopped)
 					MorphToSkeletonAnim(theNode->Skeleton, 0, 4);
 				break;
 	}
-			
+
 	UpdateObject(theNode);
-	
-	
+
+
 			/* WOBBLE THE LETTER */
-			
+
 	if (gLetterObj[0]->Type == LINTRO_MObjType_L)
 	{
 		theNode = gLetterObj[0];
-	
+
 		theNode->Scale.x = theNode->Scale.z + sin(theNode->SpecialF[0] += fps * 5.0f) * .25f;
 		theNode->Scale.y = theNode->Scale.z + cos(theNode->SpecialF[1] += fps * 8.0f) * .25f;
-	
+
 		UpdateObjectTransforms(theNode);
 	} 
 }
-
 
 
 #pragma mark -
@@ -734,7 +732,7 @@ static Byte	letters[] = {LINTRO_MObjType_L, LINTRO_MObjType_E, LINTRO_MObjType_V
 						LINTRO_MObjType_L, LINTRO_MObjType_3};
 
 			/* SETUP CAMERA */
-			
+
 	gIntroCamMode = INTRO_CAM_MODE_PULLBACK;
 
 	from = gGameViewInfoPtr->currentCameraCoords;
@@ -742,18 +740,18 @@ static Byte	letters[] = {LINTRO_MObjType_L, LINTRO_MObjType_E, LINTRO_MObjType_V
 	from.y += 100;
 	to = gGameViewInfoPtr->currentCameraLookAt;
 	to.y += 0;
-	QD3D_UpdateCameraFromTo(gGameViewInfoPtr, &from, &to);	
+	QD3D_UpdateCameraFromTo(gGameViewInfoPtr, &from, &to);
 
 
 		/**********************/
 		/* CREATE THE LETTERS */
 		/**********************/
 
-	x = -500;		
+	x = -500;
 	for (i = 0; i < 6; i++)
-	{		
-		gNewObjectDefinition.group 		= MODEL_GROUP_LEVELINTRO;	
-		gNewObjectDefinition.type 		= letters[i];	
+	{
+		gNewObjectDefinition.group 		= MODEL_GROUP_LEVELINTRO;
+		gNewObjectDefinition.type 		= letters[i];
 		gNewObjectDefinition.coord.x 	= x;
 		gNewObjectDefinition.coord.y 	= 75;
 		gNewObjectDefinition.coord.z 	= 0;
@@ -767,9 +765,9 @@ static Byte	letters[] = {LINTRO_MObjType_L, LINTRO_MObjType_E, LINTRO_MObjType_V
 		if (i == 4)					// spacing before number
 			x += 300;
 		else
-			x += 160;	
+			x += 160;
 	}
-	
+
 		/*********************/
 		/* FISH EATS LETTERS */
 		/*********************/
@@ -777,14 +775,14 @@ static Byte	letters[] = {LINTRO_MObjType_L, LINTRO_MObjType_E, LINTRO_MObjType_V
 	for (i = 0; i < 6; i++)
 	{
 			/* ANIMATE */
-			
+
 		if (WaitAndDraw(1.0))
 			return;
 
 			/* CREATE THE FISH */
-			
+
 		gNewObjectDefinition.type 		= SKELETON_TYPE_PONDFISH;
-		gNewObjectDefinition.animNum 	= PONDFISH_ANIM_JUMPATTACK;							
+		gNewObjectDefinition.animNum 	= PONDFISH_ANIM_JUMPATTACK;
 		gNewObjectDefinition.coord.x 	= gLetterObj[i]->Coord.x - 900;
 		gNewObjectDefinition.coord.y 	= -1800;
 		gNewObjectDefinition.coord.z 	= -800;
@@ -793,13 +791,13 @@ static Byte	letters[] = {LINTRO_MObjType_L, LINTRO_MObjType_E, LINTRO_MObjType_V
 		gNewObjectDefinition.moveCall 	= MoveIntroFish;
 		gNewObjectDefinition.rot 		= PI+.8;
 		gNewObjectDefinition.scale 		= 2.5;
-		fish = MakeNewSkeletonObject(&gNewObjectDefinition);			
+		fish = MakeNewSkeletonObject(&gNewObjectDefinition);
 		fish->Delta.x = 900;
 		fish->Delta.y = 3800;
-		fish->Delta.z = 800;			
+		fish->Delta.z = 800;
 		fish->Skeleton->AnimSpeed = .8;
 		fish->SpecialL[0] = i;
-			
+
 	}
 
 	WaitAndDraw(2.5);
@@ -819,18 +817,18 @@ ObjNode	*l;
 	gCoord.x += gDelta.x * fps;
 	gCoord.y += gDelta.y * fps;
 	gCoord.z += gDelta.z * fps;
-	
+
 	if (gCoord.y < theNode->InitCoord.y)	// see if fallen out of range
 	{
 		DeleteObject(theNode);
 		return;
 	}
-	
-	UpdateObject(theNode);	
+
+	UpdateObject(theNode);
 
 
 			/* SEE IF EAT LETTER */
-			
+
 	if (!theNode->Flag[2])
 	{
 		if (gCoord.z > -80.0f)
@@ -840,26 +838,24 @@ ObjNode	*l;
 			theNode->ChainNode = gLetterObj[i];		// chain letter to fish
 		}
 	}
-	
+
 			/* UPDATE LETTER */
 	else
 	{
 		float	s;
 		TQ3Matrix4x4	m,m2,m3;
-				
+
 		l = theNode->ChainNode;
-		
+
 		s = l->Scale.x / theNode->Scale.x;						// compensate for fish's scale
 		Q3Matrix4x4_SetScale(&m, s,s,s);
 		FindJointFullMatrix(theNode,5,&m2);						// get matrix
-		MatrixMultiplyFast(&m,&m2,&m3);		
+		MatrixMultiplyFast(&m,&m2,&m3);
 
-		Q3Matrix4x4_SetTranslate(&m, 0, 100, 0); 				// get mouth offset	
-		MatrixMultiplyFast(&m,&m3,&l->BaseTransformMatrix);		
+		Q3Matrix4x4_SetTranslate(&m, 0, 100, 0); 				// get mouth offset
+		MatrixMultiplyFast(&m,&m3,&l->BaseTransformMatrix);
 	}
 }
-
-
 
 
 #pragma mark -
@@ -875,7 +871,7 @@ static Byte	letters[] = {LINTRO_MObjType_L, LINTRO_MObjType_E, LINTRO_MObjType_V
 						LINTRO_MObjType_L, LINTRO_MObjType_4};
 
 			/* SETUP CAMERA */
-			
+
 	gIntroCamMode = INTRO_CAM_MODE_PULLBACK;
 
 	from = gGameViewInfoPtr->currentCameraCoords;
@@ -883,18 +879,18 @@ static Byte	letters[] = {LINTRO_MObjType_L, LINTRO_MObjType_E, LINTRO_MObjType_V
 	from.y += 100;
 	to = gGameViewInfoPtr->currentCameraLookAt;
 	to.y += 0;
-	QD3D_UpdateCameraFromTo(gGameViewInfoPtr, &from, &to);	
+	QD3D_UpdateCameraFromTo(gGameViewInfoPtr, &from, &to);
 
 
 		/**********************/
 		/* CREATE THE LETTERS */
 		/**********************/
 
-	x = -500;		
+	x = -500;
 	for (i = 0; i < 6; i++)
-	{		
-		gNewObjectDefinition.group 		= MODEL_GROUP_LEVELINTRO;	
-		gNewObjectDefinition.type 		= letters[i];	
+	{
+		gNewObjectDefinition.group 		= MODEL_GROUP_LEVELINTRO;
+		gNewObjectDefinition.type 		= letters[i];
 		gNewObjectDefinition.coord.x 	= x;
 		gNewObjectDefinition.coord.y 	= 75;
 		gNewObjectDefinition.coord.z 	= 0;
@@ -908,9 +904,9 @@ static Byte	letters[] = {LINTRO_MObjType_L, LINTRO_MObjType_E, LINTRO_MObjType_V
 		if (i == 4)					// spacing before number
 			x += 300;
 		else
-			x += 160;	
+			x += 160;
 	}
-	
+
 		/***********************/
 		/* FOOT STOMPS LETTERS */
 		/***********************/
@@ -919,7 +915,7 @@ static Byte	letters[] = {LINTRO_MObjType_L, LINTRO_MObjType_E, LINTRO_MObjType_V
 		return;
 
 		/* CREATE THE FOOT */
-		
+
 	gNewObjectDefinition.type 		= SKELETON_TYPE_FOOT;
 	gNewObjectDefinition.animNum 	= 0;
 	gNewObjectDefinition.coord.x 	= 0;
@@ -930,8 +926,8 @@ static Byte	letters[] = {LINTRO_MObjType_L, LINTRO_MObjType_E, LINTRO_MObjType_V
 	gNewObjectDefinition.moveCall 	= MoveIntroFoot;
 	gNewObjectDefinition.rot 		= -PI/2;
 	gNewObjectDefinition.scale 		= 11.0;
-	MakeNewSkeletonObject(&gNewObjectDefinition);			
-			
+	MakeNewSkeletonObject(&gNewObjectDefinition);
+
 	WaitAndDraw(4);
 }
 
@@ -944,34 +940,34 @@ float	fps = gFramesPerSecondFrac;
 int		i;
 
 	GetObjectInfo(theNode);
-	
+
 	switch(theNode->SpecialL[0])
 	{
 			/* MOVE FOOT DOWN */
-			
+
 		case	0:
 				gDelta.y -= 3500.0f * fps;				// gravity
 				gCoord.y += gDelta.y * fps;
-				
+
 						/* SEE IF LANDED */
-						
+
 				if (gCoord.y <= -30)
 				{
 					gDelta.y = 0;
 					gCoord.y = -30;
 					theNode->SpecialL[0] = 1;
-					
+
 					for (i = 0; i < 6; i++)						// squash letters
 					{
-						gLetterObj[i]->Scale.y *= .25f;		
+						gLetterObj[i]->Scale.y *= .25f;
 						gLetterObj[i]->Coord.y -= 95.0f;
-						UpdateObjectTransforms(gLetterObj[i]);		
+						UpdateObjectTransforms(gLetterObj[i]);
 					}
 				}
 				break;
-	
+
 			/* LANDED */
-			
+
 		case	1:
 				theNode->SpecialF[0] += fps;
 				if (theNode->SpecialF[0] > 1.0f)
@@ -980,15 +976,15 @@ int		i;
 					SetSkeletonAnim(theNode->Skeleton, 1);
 				}
 				break;
-				
+
 			/* GO UP */
-			
+
 		case	2:
 				gDelta.y += 3000 * fps;
 				gCoord.y += gDelta.y * fps;
 				break;
 	}
-	UpdateObject(theNode);	
+	UpdateObject(theNode);
 }
 
 
@@ -1001,7 +997,7 @@ static void DoForest2Intro(void)
 TQ3Point3D from,to;
 
 			/* SETUP CAMERA */
-			
+
 	gIntroCamMode = INTRO_CAM_MODE_PULLBACK;
 
 	from = gGameViewInfoPtr->currentCameraCoords;
@@ -1009,11 +1005,11 @@ TQ3Point3D from,to;
 	from.y += 200;
 	to = gGameViewInfoPtr->currentCameraLookAt;
 	to.y += 200;
-	QD3D_UpdateCameraFromTo(gGameViewInfoPtr, &from, &to);	
+	QD3D_UpdateCameraFromTo(gGameViewInfoPtr, &from, &to);
 
-	
+
 		/* CREATE THE DRAGONFLY */
-		
+
 	gNewObjectDefinition.type 		= SKELETON_TYPE_DRAGONFLY;
 	gNewObjectDefinition.animNum 	= 0;
 	gNewObjectDefinition.coord.x 	= -900;
@@ -1024,7 +1020,7 @@ TQ3Point3D from,to;
 	gNewObjectDefinition.moveCall 	= MoveIntroDragonFly;
 	gNewObjectDefinition.rot 		= -PI/2;
 	gNewObjectDefinition.scale 		= 1.5;
-	MakeNewSkeletonObject(&gNewObjectDefinition);			
+	MakeNewSkeletonObject(&gNewObjectDefinition);
 
 
 	WaitAndDraw(10);
@@ -1041,14 +1037,14 @@ float	fps = gFramesPerSecondFrac;
 ObjNode	*letter,*chute;
 
 	GetObjectInfo(theNode);
-	
+
 	gCoord.x += 400.0f * fps;
 
 
 		/******************************/
 		/* SEE IF DROP ANOTHER LETTER */
 		/******************************/
-		
+
 	if (theNode->SpecialL[0] < 6)
 	{
 		theNode->SpecialF[0] += fps;
@@ -1058,11 +1054,11 @@ ObjNode	*letter,*chute;
 				theNode->SpecialF[0] = -.4;
 			else
 				theNode->SpecialF[0] = 0;
-		
-		
+
+
 					/* CREATE LETTER */
-		
-			gNewObjectDefinition.group 		= MODEL_GROUP_LEVELINTRO;	
+
+			gNewObjectDefinition.group 		= MODEL_GROUP_LEVELINTRO;
 			gNewObjectDefinition.type 		= letters[theNode->SpecialL[0]++];
 			gNewObjectDefinition.coord		= gCoord;
 			gNewObjectDefinition.coord.y 	-= 100;
@@ -1072,15 +1068,15 @@ ObjNode	*letter,*chute;
 			gNewObjectDefinition.rot 		= 0;
 			gNewObjectDefinition.scale 		= .3;
 			letter = MakeNewDisplayGroupObject(&gNewObjectDefinition);
-			
+
 			letter->Delta.x = (RandomFloat()-.5f) * 60.0f;
 			letter->Delta.z = (RandomFloat()-.5f) * 30.0f;
 
 
 					/* CREATE PARACHUTE */
 
-			gNewObjectDefinition.group 		= MODEL_GROUP_LEVELINTRO;	
-			gNewObjectDefinition.type 		= LINTRO_MObjType_Parachute;	
+			gNewObjectDefinition.group 		= MODEL_GROUP_LEVELINTRO;
+			gNewObjectDefinition.type 		= LINTRO_MObjType_Parachute;
 			gNewObjectDefinition.coord.y	+= 100;
 			gNewObjectDefinition.slot++;
 			gNewObjectDefinition.flags 		= STATUS_BIT_KEEPBACKFACES;
@@ -1090,11 +1086,11 @@ ObjNode	*letter,*chute;
 			chute = MakeNewDisplayGroupObject(&gNewObjectDefinition);
 
 			letter->ChainNode = chute;
-			
+
 		}
 	}
 
-	UpdateObject(theNode);	
+	UpdateObject(theNode);
 }
 
 /***************** MOVE PARACHUTE LETTER ********************/
@@ -1105,10 +1101,10 @@ float	fps = gFramesPerSecondFrac;
 ObjNode	*chute;
 
 	GetObjectInfo(letter);
-	gCoord.y -= 100 * fps;		
+	gCoord.y -= 100 * fps;
 	gCoord.x += gDelta.x * fps;
 	gCoord.z += gDelta.z * fps;
-	
+
 	if (letter->Scale.x < 1.1f)
 	{
 		letter->Scale.x += fps * 1.5f;
@@ -1116,14 +1112,14 @@ ObjNode	*chute;
 			letter->Scale.x = 1.1f;
 		letter->Scale.y = letter->Scale.z = letter->Scale.x;
 	}
-	
+
 	UpdateObject(letter);
-	
-	
+
+
 			/* CHUTE */
-			
+
 	chute = letter->ChainNode;
-	
+
 	chute->Coord.y = gCoord.y + 50.0f;
 	chute->Coord.x = gCoord.x;
 	chute->Coord.z = gCoord.z;
@@ -1134,11 +1130,11 @@ ObjNode	*chute;
 			chute->Scale.x = 1.0f;
 		chute->Scale.y = chute->Scale.z = chute->Scale.x;
 	}
-	
+
 	chute->Rot.z = sin(chute->SpecialF[0] += fps * 6.0f) * .2f;
-	
+
 	UpdateObjectTransforms(chute);
-	
+
 }
 
 
@@ -1154,7 +1150,7 @@ int		i;
 float	x;
 
 			/* SETUP CAMERA */
-			
+
 	gIntroCamMode = INTRO_CAM_MODE_PULLBACK;
 
 	from = gGameViewInfoPtr->currentCameraCoords;
@@ -1162,18 +1158,18 @@ float	x;
 	from.y += 100;
 	to = gGameViewInfoPtr->currentCameraLookAt;
 	to.y += 0;
-	QD3D_UpdateCameraFromTo(gGameViewInfoPtr, &from, &to);	
+	QD3D_UpdateCameraFromTo(gGameViewInfoPtr, &from, &to);
 
 
 		/********************/
 		/* CREATE THE BOMBS */
 		/********************/
 
-	x = -500;		
+	x = -500;
 	for (i = 0; i < 6; i++)
-	{		
-		gNewObjectDefinition.group 		= MODEL_GROUP_LEVELINTRO;	
-		gNewObjectDefinition.type 		= LINTRO_MObjType_CherryBomb;	
+	{
+		gNewObjectDefinition.group 		= MODEL_GROUP_LEVELINTRO;
+		gNewObjectDefinition.type 		= LINTRO_MObjType_CherryBomb;
 		gNewObjectDefinition.coord.x 	= x;
 		gNewObjectDefinition.coord.y 	= -50;
 		gNewObjectDefinition.coord.z 	= 0;
@@ -1187,15 +1183,15 @@ float	x;
 		if (i == 4)					// spacing before number
 			x += 300;
 		else
-			x += 160;	
+			x += 160;
 	}
-	
+
 		/***************/
 		/* MAKE AN ANT */
 		/***************/
-		
+
 	gNewObjectDefinition.type 		= SKELETON_TYPE_FIREANT;
-	gNewObjectDefinition.animNum 	= FIREANT_ANIM_FLY;							
+	gNewObjectDefinition.animNum 	= FIREANT_ANIM_FLY;
 	gNewObjectDefinition.coord.x 	= -1300;
 	gNewObjectDefinition.coord.y 	= 450;
 	gNewObjectDefinition.coord.z 	= 0;
@@ -1204,10 +1200,10 @@ float	x;
 	gNewObjectDefinition.moveCall 	= MoveIntroFireAnt;
 	gNewObjectDefinition.rot 		= -PI/2;
 	gNewObjectDefinition.scale 		= 2.0;
-	ant = MakeNewSkeletonObject(&gNewObjectDefinition);			
+	ant = MakeNewSkeletonObject(&gNewObjectDefinition);
 	ant->Delta.x = 330;
 	ant->BreathParticleGroup = -1;
-			
+
 	WaitAndDraw(10);
 }
 
@@ -1222,25 +1218,25 @@ static Byte	letters[] = {LINTRO_MObjType_L, LINTRO_MObjType_E, LINTRO_MObjType_V
 						LINTRO_MObjType_L, LINTRO_MObjType_8};
 
 		/* MOVE THE ANT */
-		
+
 	GetObjectInfo(theNode);
 	gCoord.x += gDelta.x * fps;
 	UpdateObject(theNode);
-	FireAntBreathFire(theNode);	
+	FireAntBreathFire(theNode);
 
 
 	/* SEE IF BLOW SOMETHING UP */
-		
+
 	for (i = 0; i < 6; i++)
-	{		
+	{
 		if (gLetterObj[i])							// see if not already blown up
 		{
 			if (gCoord.x >= (gLetterObj[i]->Coord.x-140))
 			{
 					/* CREATE LETTER HERE */
-					
-				gNewObjectDefinition.group 		= MODEL_GROUP_LEVELINTRO;	
-				gNewObjectDefinition.type 		= letters[i];	
+
+				gNewObjectDefinition.group 		= MODEL_GROUP_LEVELINTRO;
+				gNewObjectDefinition.type 		= letters[i];
 				gNewObjectDefinition.coord		= gLetterObj[i]->Coord;
 				gNewObjectDefinition.coord.y 	+= 85;
 				gNewObjectDefinition.slot 		= 50;
@@ -1252,11 +1248,11 @@ static Byte	letters[] = {LINTRO_MObjType_L, LINTRO_MObjType_E, LINTRO_MObjType_V
 
 
 						/* EXPLODE BOMB */
-						
+
 				ExplodeFirecracker(gLetterObj[i], false);
 				gLetterObj[i] = nil;
-				
-				
+
+
 			}
 		}
 	}
@@ -1295,7 +1291,7 @@ static const TQ3Point2D beeCoords[] =
 };
 
 			/* SETUP CAMERA */
-			
+
 	gIntroCamMode = INTRO_CAM_MODE_PULLBACK;
 
 	from = gGameViewInfoPtr->currentCameraCoords;
@@ -1303,18 +1299,18 @@ static const TQ3Point2D beeCoords[] =
 	from.y += 100;
 	to = gGameViewInfoPtr->currentCameraLookAt;
 	to.y += 0;
-	QD3D_UpdateCameraFromTo(gGameViewInfoPtr, &from, &to);	
+	QD3D_UpdateCameraFromTo(gGameViewInfoPtr, &from, &to);
 
 
 		/**********************/
 		/* CREATE THE LETTERS */
 		/**********************/
 
-	x = -450;		
+	x = -450;
 	for (i = 0; i < 5; i++)
-	{		
-		gNewObjectDefinition.group 		= MODEL_GROUP_LEVELINTRO;	
-		gNewObjectDefinition.type 		= letters[i];	
+	{
+		gNewObjectDefinition.group 		= MODEL_GROUP_LEVELINTRO;
+		gNewObjectDefinition.type 		= letters[i];
 		gNewObjectDefinition.coord.x 	= x;
 		gNewObjectDefinition.coord.y 	= 75;
 		gNewObjectDefinition.coord.z 	= 0;
@@ -1324,19 +1320,19 @@ static const TQ3Point2D beeCoords[] =
 		gNewObjectDefinition.rot 		= 0;
 		gNewObjectDefinition.scale 		= 1.3;
 		gLetterObj[i] = MakeNewDisplayGroupObject(&gNewObjectDefinition);
-		x += 160;	
+		x += 160;
 	}
-	
+
 		/*************/
 		/* MAKE BEES */
 		/*************/
 
 	gNewObjectDefinition.coord.z 	= 430;
-		
+
 	for (i = 0; i < 13; i++)
 	{
 		gNewObjectDefinition.type 		= SKELETON_TYPE_FLYINGBEE;
-		gNewObjectDefinition.animNum 	= 0;							
+		gNewObjectDefinition.animNum 	= 0;
 		gNewObjectDefinition.coord.x 	= beeCoords[i].x - 200;
 		gNewObjectDefinition.coord.y 	= beeCoords[i].y + 500;
 		gNewObjectDefinition.flags 		= 0;
@@ -1344,12 +1340,12 @@ static const TQ3Point2D beeCoords[] =
 		gNewObjectDefinition.moveCall 	= MoveIntroBee;
 		gNewObjectDefinition.rot 		= RandomFloat()*PI2;
 		gNewObjectDefinition.scale 		= .7;
-		bee = MakeNewSkeletonObject(&gNewObjectDefinition);			
+		bee = MakeNewSkeletonObject(&gNewObjectDefinition);
 		bee->Delta.y = -120;
-		
+
 		bee->Skeleton->CurrentAnimTime = RandomFloat()*bee->Skeleton->MaxAnimTime;
 	}
-			
+
 	WaitAndDraw(15);
 }
 
@@ -1363,9 +1359,9 @@ float	fps = gFramesPerSecondFrac;
 	GetObjectInfo(theNode);
 
 	gCoord.y += gDelta.y * fps;
-	
+
 	theNode->Rot.y += fps;
-	
+
 	UpdateObject(theNode);
 }
 
@@ -1383,7 +1379,7 @@ static Byte	letters[] = {LINTRO_MObjType_L, LINTRO_MObjType_E, LINTRO_MObjType_V
 						LINTRO_MObjType_L, LINTRO_MObjType_9};
 
 			/* SETUP CAMERA */
-			
+
 	gIntroCamMode = INTRO_CAM_MODE_PULLBACK;
 
 	from = gGameViewInfoPtr->currentCameraCoords;
@@ -1391,18 +1387,18 @@ static Byte	letters[] = {LINTRO_MObjType_L, LINTRO_MObjType_E, LINTRO_MObjType_V
 	from.y += 100;
 	to = gGameViewInfoPtr->currentCameraLookAt;
 	to.y += 0;
-	QD3D_UpdateCameraFromTo(gGameViewInfoPtr, &from, &to);	
+	QD3D_UpdateCameraFromTo(gGameViewInfoPtr, &from, &to);
 
 
 		/**********************/
 		/* CREATE THE LETTERS */
 		/**********************/
 
-	x = -500;		
+	x = -500;
 	for (i = 0; i < 6; i++)
-	{		
-		gNewObjectDefinition.group 		= MODEL_GROUP_LEVELINTRO;	
-		gNewObjectDefinition.type 		= letters[i];	
+	{
+		gNewObjectDefinition.group 		= MODEL_GROUP_LEVELINTRO;
+		gNewObjectDefinition.type 		= letters[i];
 		gNewObjectDefinition.coord.x 	= x;
 		gNewObjectDefinition.coord.y 	= 75;
 		gNewObjectDefinition.coord.z 	= 0;
@@ -1419,9 +1415,9 @@ static Byte	letters[] = {LINTRO_MObjType_L, LINTRO_MObjType_E, LINTRO_MObjType_V
 		if (i == 4)					// spacing before number
 			x += 300;
 		else
-			x += 160;	
+			x += 160;
 	}
-	
+
 
 	WaitAndDraw(8);
 }
@@ -1434,7 +1430,7 @@ static void MoveAntHillLetter(ObjNode *theNode)
 float fps = gFramesPerSecondFrac;
 
 	theNode->Health += fps * .5f;
-	
+
 	if (theNode->Health > 0.0f)
 	{
 		MakeObjectTransparent(theNode, theNode->Health);
@@ -1445,10 +1441,6 @@ float fps = gFramesPerSecondFrac;
 		}
 	}
 }
-
-
-
-
 
 
 #pragma mark -
@@ -1466,13 +1458,13 @@ static Boolean WaitAndDraw(float duration)
 		MoveParticleGroups();
 		QD3D_MoveParticles();
 		QD3D_DrawScene(gGameViewInfoPtr,IntroDrawStuff);
-		QD3D_CalcFramesPerSecond();				
+		QD3D_CalcFramesPerSecond();
 		DoSDLMaintenance();
 		duration -= gFramesPerSecondFrac;
-		
+
 		if (GetSkipScreenInput())
-			return(true);		
-		
+			return(true);
+
 	}while(duration > 0.0f);
 
 	return(false);
@@ -1506,17 +1498,16 @@ float		fps = gFramesPerSecondFrac;
 				from.y += 10.0f * fps;
 				from.z += 5.0f * fps;
 				break;
-				
+
 		case	INTRO_CAM_MODE_PULLBACK:
 				from.z -= 10*fps;
 				from.x += 10*fps;
 				from.y += 5*fps;
 				break;
 	}
-	
-	
-	QD3D_UpdateCameraFromTo(gGameViewInfoPtr, &from, &to);	
-}
 
+
+	QD3D_UpdateCameraFromTo(gGameViewInfoPtr, &from, &to);
+}
 
 

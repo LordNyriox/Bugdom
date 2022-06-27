@@ -42,7 +42,6 @@ enum
 };
 
 
-
 #define	DRAGONFLY_JOINT_TAIL	3
 #define MAX_DRAGONFLY_FLIGHT_HEIGHT		5000.0f
 #define MAX_DRAGONFLY_FLIGHT_HEIGHT2	4000.0f
@@ -93,10 +92,5 @@ void KickKingWaterPipe(ObjNode *theNode);
 Boolean AddLadyBugBonus(TerrainItemEntryType *itemPtr, long  x, long z);
 Boolean KickLadyBugBox(ObjNode *cage);
 Boolean DoTrig_Cage(ObjNode *theNode, ObjNode *whoNode, Byte sideBits);
-
-
-
-
-
 
 

@@ -53,7 +53,6 @@ static void TallyBlueClovers(void);
 #define MAX_CLOVERS_SHOWN		(MAX_CLOVERS_PER_ROW*7)
 
 
-
 /*********************/
 /*    VARIABLES      */
 /*********************/
@@ -78,7 +77,7 @@ void DoBonusScreen(void)
 {
 Boolean wantToSave = false;
 
-	
+
 			/*********/
 			/* SETUP */
 			/*********/
@@ -93,20 +92,20 @@ Boolean wantToSave = false;
 		/**************/
 		/* PROCESS IT */
 		/**************/
-				
+
 	DrawBonusStuff(1);
-	
+
 	TallyLadyBugs();
 	TallyGreenClovers();
 	TallyBlueClovers();
 	TallyGoldClovers();
 	TallyTotalScore();
-	
+
 	if (gRealLevel < LEVEL_NUM_ANTKING)		// dont save game if I just won the last level
 		wantToSave = AskSaveGame();
 	else
 		DrawBonusStuff(4);				// otherwise, just wait a while for user to see their score
-	
+
 			/* CLEANUP */
 
 	CleanupUIStuff();
@@ -143,9 +142,9 @@ static void SetupBonusScreen(void)
 	LoadASkeleton(SKELETON_TYPE_LADYBUG);
 
 			/* TEXT */
-				
-	gNewObjectDefinition.group 		= MODEL_GROUP_BONUS;	
-	gNewObjectDefinition.type 		= BONUS_MObjType_Text;	
+
+	gNewObjectDefinition.group 		= MODEL_GROUP_BONUS;
+	gNewObjectDefinition.type 		= BONUS_MObjType_Text;
 	gNewObjectDefinition.coord.x 	= 0;
 	gNewObjectDefinition.coord.y 	= 110;
 	gNewObjectDefinition.coord.z 	= 0;
@@ -168,10 +167,10 @@ static void SetupBonusScreen(void)
 		gBD2[i] = RandomFloat()*PI2;
 	}
 	gBonusValue = 0;
-	
+
 	BuildBonusDigits();
-	
-	
+
+
 		/*****************************/
 		/* CREATE TOTAL SCORE DIGITS */
 		/*****************************/
@@ -182,8 +181,8 @@ static void SetupBonusScreen(void)
 		gSD1[i] = RandomFloat()*PI2;
 		gSD2[i] = RandomFloat()*PI2;
 	}
-	
-	
+
+
 	MakeFadeEvent(true);
 }
 
@@ -200,7 +199,7 @@ float	x;
 
 
 			/* CLEAR EXISTING DIGITS */
-			
+
 	for (i = 0; i < MAX_DIGITS_IN_BONUS; i++)
 	{
 		if (gBonusDigits[i])
@@ -211,7 +210,7 @@ float	x;
 	}
 
 			/* DETERMINE THE NUMBER OF DIGITS NEEDED */
-			
+
 	numDigits = 1;
 	if (num >= 10)
 		numDigits++;
@@ -223,22 +222,22 @@ float	x;
 		numDigits++;
 	if (num >= 100000)
 		numDigits++;
-	
-	
+
+
 			/****************************/
 			/* CREATE THE DIGIT OBJECTS */
 			/****************************/
-				
+
 	x = (float)(numDigits-1) * (DIGIT_WIDTH/2);				// start with right digit
 
-	
+
 	for (i = 0; i < numDigits; i++)
 	{
 		digit = num % 10;									// get digit value
 		num /= 10;
-	
-		gNewObjectDefinition.group 		= MODEL_GROUP_BONUS;	
-		gNewObjectDefinition.type 		= BONUS_MObjType_0+digit;	
+
+		gNewObjectDefinition.group 		= MODEL_GROUP_BONUS;
+		gNewObjectDefinition.type 		= BONUS_MObjType_0+digit;
 		gNewObjectDefinition.coord.x 	= x;
 		gNewObjectDefinition.coord.y 	= 60;
 		gNewObjectDefinition.coord.z 	= 0;
@@ -249,7 +248,7 @@ float	x;
 		gNewObjectDefinition.scale 		= .4;
 		gBonusDigits[i] = MakeNewDisplayGroupObject(&gNewObjectDefinition);
 		gBonusDigits[i]->Flag[0] = i;
-				
+
 		x -= DIGIT_WIDTH;
 	}
 }
@@ -266,7 +265,7 @@ float	x;
 
 
 			/* CLEAR EXISTING DIGITS */
-			
+
 	for (i = 0; i < MAX_DIGITS_IN_SCORE; i++)
 	{
 		if (gScoreDigits[i])
@@ -277,7 +276,7 @@ float	x;
 	}
 
 			/* DETERMINE THE NUMBER OF DIGITS NEEDED */
-			
+
 	numDigits = 1;
 	if (num >= 10)
 		numDigits++;
@@ -295,22 +294,22 @@ float	x;
 		numDigits++;
 	if (num >= 100000000)
 		numDigits++;
-	
-	
+
+
 			/****************************/
 			/* CREATE THE DIGIT OBJECTS */
 			/****************************/
-				
+
 	x = (float)(numDigits-1) * (DIGIT_WIDTH/2);				// start with right digit
 
-	
+
 	for (i = 0; i < numDigits; i++)
 	{
 		digit = num % 10;									// get digit value
 		num /= 10;
-	
-		gNewObjectDefinition.group 		= MODEL_GROUP_BONUS;	
-		gNewObjectDefinition.type 		= BONUS_MObjType_0+digit;	
+
+		gNewObjectDefinition.group 		= MODEL_GROUP_BONUS;
+		gNewObjectDefinition.type 		= BONUS_MObjType_0+digit;
 		gNewObjectDefinition.coord.x 	= x;
 		gNewObjectDefinition.coord.y 	= -80;
 		gNewObjectDefinition.coord.z 	= 0;
@@ -321,13 +320,11 @@ float	x;
 		gNewObjectDefinition.scale 		= .4;
 		gScoreDigits[i] = MakeNewDisplayGroupObject(&gNewObjectDefinition);
 		gScoreDigits[i]->Flag[0] = i;
-				
+
 		x -= DIGIT_WIDTH;
 	}
 
 }
-
-
 
 
 /**************** MOVE BONUS TEXT *********************/
@@ -395,7 +392,7 @@ ObjNode	*ladybugs[100];
 	for (i = 0; i < gNumLadyBugsThisArea; i++)
 	{
 			/* GIMME A BUG */
-					
+
 		gNewObjectDefinition.type 		= SKELETON_TYPE_LADYBUG;
 		gNewObjectDefinition.animNum 	= 0;
 		gNewObjectDefinition.coord.x 	= x;
@@ -406,20 +403,20 @@ ObjNode	*ladybugs[100];
 		gNewObjectDefinition.moveCall 	= MoveBonusLadyBug;
 		gNewObjectDefinition.rot 		= PI;
 		gNewObjectDefinition.scale 		= .12;
-		ladybugs[i] = MakeNewSkeletonObject(&gNewObjectDefinition);	
-	
+		ladybugs[i] = MakeNewSkeletonObject(&gNewObjectDefinition);
+
 		x += LADYBUG_WIDTH;
 		gBonusValue += LADYBUG_BONUS_POINTS;
 		BuildBonusDigits();
-	
+
 		PlayEffect(EFFECT_BONUSCLICK);
 		DrawBonusStuff(.2);
-	}	
-	
-	DrawBonusStuff(1);	
-	
+	}
+
+	DrawBonusStuff(1);
+
 			/* DELETE LADY BUGS */
-			
+
 	for (i = 0; i < gNumLadyBugsThisArea; i++)
 		DeleteObject(ladybugs[i]);
 
@@ -523,7 +520,6 @@ static void TallyBlueClovers(void)
 }
 
 
-
 /*************** TALLY GOLD CLOVERS *******************/
 
 static void TallyGoldClovers(void)
@@ -538,17 +534,16 @@ static void TallyGoldClovers(void)
 }
 
 
-
 /*************** TALLY TOTAL SCORE *******************/
 
 static void TallyTotalScore(void)
-{	
-	DrawBonusStuff(1);	
+{
+	DrawBonusStuff(1);
 
 		/* CREATE SCORE OBJECT */
-		
-	gNewObjectDefinition.group 		= MODEL_GROUP_BONUS;	
-	gNewObjectDefinition.type 		= BONUS_MObjType_Score;	
+
+	gNewObjectDefinition.group 		= MODEL_GROUP_BONUS;
+	gNewObjectDefinition.type 		= BONUS_MObjType_Score;
 	gNewObjectDefinition.coord.x 	= 0;
 	gNewObjectDefinition.coord.y 	= -30;
 	gNewObjectDefinition.coord.z 	= 0;
@@ -561,7 +556,7 @@ static void TallyTotalScore(void)
 
 	BuildScoreDigits();
 
-	DrawBonusStuff(1);	
+	DrawBonusStuff(1);
 
 
 		/****************/
@@ -570,8 +565,8 @@ static void TallyTotalScore(void)
 
 	while(gBonusValue > 0)
 	{
-		DrawBonusStuff(.05);	
-	
+		DrawBonusStuff(.05);
+
 		if (gBonusValue >= 500)
 		{
 			gBonusValue -= 500;
@@ -582,14 +577,14 @@ static void TallyTotalScore(void)
 			gScore += gBonusValue;
 			gBonusValue = 0;
 		}
-	
+
 		PlayEffect(EFFECT_BONUSCLICK);
 		BuildScoreDigits();
 		BuildBonusDigits();
-	}	
-	
-	DrawBonusStuff(1);	
-	
+	}
+
+	DrawBonusStuff(1);
+
 }
 
 
@@ -604,11 +599,11 @@ int mouseY = 0;
 		/*************************/
 		/* CREATE YES/NO OBJECTS */
 		/*************************/
-		
+
 				/* YES */
-				
-	gNewObjectDefinition.group 		= MODEL_GROUP_BONUS;	
-	gNewObjectDefinition.type 		= BONUS_MObjType_SaveIcon;	
+
+	gNewObjectDefinition.group 		= MODEL_GROUP_BONUS;
+	gNewObjectDefinition.type 		= BONUS_MObjType_SaveIcon;
 	gNewObjectDefinition.coord.x 	= -50;
 	gNewObjectDefinition.coord.y 	= -100-70;
 	gNewObjectDefinition.coord.z 	= 0;
@@ -622,9 +617,9 @@ int mouseY = 0;
 	gSaveYes->PickID = 0;
 
 				/* NO */
-				
-	gNewObjectDefinition.group 		= MODEL_GROUP_BONUS;	
-	gNewObjectDefinition.type 		= BONUS_MObjType_DontSaveIcon;	
+
+	gNewObjectDefinition.group 		= MODEL_GROUP_BONUS;
+	gNewObjectDefinition.type 		= BONUS_MObjType_DontSaveIcon;
 	gNewObjectDefinition.coord.x 	= 50;
 	gNewObjectDefinition.coord.y 	= -100-70;
 	gNewObjectDefinition.coord.z 	= 0;
@@ -679,7 +674,7 @@ int mouseY = 0;
 		MoveAnalogCursor(&mouseX, &mouseY);
 		MoveObjects();
 		QD3D_DrawScene(gGameViewInfoPtr,DrawObjects);
-		QD3D_CalcFramesPerSecond();				
+		QD3D_CalcFramesPerSecond();
 		DoSDLMaintenance();
 
 		if (IsAnalogCursorClicked() && PickObject(mouseX, mouseY, &id))
@@ -704,7 +699,7 @@ static void DrawBonusStuff(float duration)
 		UpdateInput();
 		MoveObjects();
 		QD3D_DrawScene(gGameViewInfoPtr,DrawObjects);
-		QD3D_CalcFramesPerSecond();				
+		QD3D_CalcFramesPerSecond();
 		DoSDLMaintenance();
 	}while((duration -= gFramesPerSecondFrac) > 0.0f);
 }

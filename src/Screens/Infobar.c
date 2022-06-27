@@ -199,10 +199,10 @@ TerrainItemEntryType	*itemPtr;
 	gMoney 		= 0;
 	gOldTimerN = -1;
 	gNumGreenClovers = gNumBlueClovers = 0;
-	
-	
+
+
 			/* COUNT # LADYBUGS ON THIS LEVEL */
-			
+
 	gNumLadyBugsOnThisLevel = 0;
 	itemPtr = *gMasterItemList; 						// get pointer to data inside the LOCKED handle
 	for (i= 0; i < gNumTerrainItems; i++)
@@ -214,7 +214,6 @@ TerrainItemEntryType	*itemPtr;
 
 	gBossHealthWasUpdated = false;
 }
-
 
 
 void DisposeInfobarTexture(void)
@@ -348,49 +347,48 @@ unsigned long	bits;
 	bits = gInfobarUpdateBits;
 
 		/* UPDATE HEALTH */
-		
+
 	if (bits & UPDATE_HEALTH)
 		ShowHealth();
 
 		/* UPDATE LIVES */
-		
+
 	if (bits & UPDATE_LIVES)
 		ShowLives();
 
 
 		/* UPDATE BALL TIMER */
-		
+
 	if (bits & UPDATE_TIMER)
 		ShowBallTimerAndInventory(true);
-	
-		
+
+
 		/* UPDATE LADY BUGS */
-		
+
 	if (bits & UPDATE_LADYBUGS)
 		ShowLadyBugs();
-	
-	
+
+
 		/* UPDATE HANDS */
-			
+
 	if (bits & UPDATE_HANDS)
 		ShowBallTimerAndInventory(false);
-	
-	
+
+
 		/* CLOVERS */
-		
+
 	if (bits & UPDATE_BLUECLOVER)
 		ShowBlueClover();
 	if (bits & UPDATE_GOLDCLOVER)
 		ShowGoldClover();
-	
+
 		/* BOSS HEALTH */
-		
+
 	if (bits & UPDATE_BOSS)
-		ShowBossHealth();	
-	
+		ShowBossHealth();
+
 	gInfobarUpdateBits = 0;
 }
-
 
 
 #pragma mark -
@@ -437,12 +435,12 @@ static void LoadNitroGaugeTemplate(void)
 	FSSpec spec;
 	TGAHeader tga;
 	OSErr err;
-	
+
 	FSMakeFSSpec(gDataSpec.vRefNum, gDataSpec.parID, ":Images:Infobar:NitroGauge.tga", &spec);
 	err = ReadTGA(&spec, &gNitroGaugeData, &tga, false);
 	GAME_ASSERT(err == noErr);
 	GAME_ASSERT(tga.imageType == TGA_IMAGETYPE_RAW_GRAYSCALE);
-	
+
 	gNitroGaugeRect.left		= TIMER_X - tga.width/2;
 	gNitroGaugeRect.right		= gNitroGaugeRect.left + tga.width;
 	gNitroGaugeRect.top			= TIMER_Y;
@@ -503,7 +501,7 @@ void FreeInfobarArt(void)
 		DisposePtr((Ptr) gNitroGaugeData);
 		gNitroGaugeData = nil;
 	}
-	
+
 	if (gNitroGaugeAlphaSkips != nil)
 	{
 		DisposePtr((Ptr) gNitroGaugeAlphaSkips);
@@ -651,7 +649,7 @@ static void DrawNitroGauge(int arcSpan)
 	uint8_t* templateRow = gNitroGaugeData;
 	int nitroGaugeWidth = gNitroGaugeRect.right - gNitroGaugeRect.left;
 	int nitroGaugeHeight = gNitroGaugeRect.bottom - gNitroGaugeRect.top;
-	
+
 	uint32_t* outRow = GetInfobarTextureOffset(gNitroGaugeRect.left, gNitroGaugeRect.top);
 
 	int* skipTable = gNitroGaugeAlphaSkips;
@@ -670,7 +668,7 @@ static void DrawNitroGauge(int arcSpan)
 			}
 
 			t--;	// move value from [1;181] to [0;180] (zero is reserved for mask)
-			
+
 			if (t <= arcSpan)						// green (original: 0x0000,0xBDEF,0x294A)
 			{
 				outRow[x] = 0x00bd29FF; 			// (BGRA)
@@ -709,11 +707,11 @@ Boolean	eraseBugStuff;
 
 
 		/* IF ONLY NEED TO UPDATE TIMER, THEN SEE IF NECESSARY */
-		
+
 	if (gBallTimer < 0.0f)
 		gBallTimer = 0.0;
 	n = 180.0f * gBallTimer;
-	
+
 	if (ballTimerOnly)
 	{
 		if (abs(n - gOldTimerN) < 2)			// if hasnt changed enough, then dont bother
@@ -723,12 +721,12 @@ Boolean	eraseBugStuff;
 
 
 			/* SEE IF ERASE BUG RELATED ICONS */
-			
+
 	if ((gPlayerMode == PLAYER_MODE_BALL) && (!gBallIconIsDisplayed))
 		eraseBugStuff = true;
 	else
 		eraseBugStuff = false;
-		
+
 
 			/***********************************/
 			/* SEE IF NEED TO ERASE ARMS FIRST */
@@ -745,7 +743,7 @@ Boolean	eraseBugStuff;
 
 
 			/* SEE IF ERASE BALL */
-			
+
 	if ((gPlayerMode == PLAYER_MODE_BUG) && (gBallIconIsDisplayed))
 	{
 		EraseSprite(SPRITE_BALL, BALL_X, BALL_Y);
@@ -794,8 +792,8 @@ float	amount;
 		amount = gFramesPerSecondFrac * .03f;
 	else
 		amount = gFramesPerSecondFrac * .04f;
-		
-	LoseBallTime(amount);		
+
+	LoseBallTime(amount);
 }
 
 
@@ -814,9 +812,8 @@ void LoseBallTime(float amount)
 			InitPlayer_Bug(gPlayerObj, &gMyCoord, gPlayerObj->Rot.y, PLAYER_ANIM_UNROLL);
 		}
 	}
-	gInfobarUpdateBits |= UPDATE_TIMER;	
+	gInfobarUpdateBits |= UPDATE_TIMER;
 }
-
 
 
 #pragma mark -
@@ -831,21 +828,21 @@ void GetKey(long keyID)
 	GAME_ASSERT_MESSAGE(keyID < MAX_KEY_TYPES, "illegal key ID#");	// make sure it's legal
 
 	gGotKey[keyID] = true;
-	
-	
+
+
 		/* SEE WHICH HAND TO PUT IT IN */
-		
+
 	keyID = SPRITE_GREENKEY_L + (keyID*2);
-		
+
 	if (gLeftArmType == SPRITE_EMPTYHAND_L)
 		gLeftArmType = keyID;
 	else
 	if (gRightArmType == SPRITE_EMPTYHAND_R)
 		gRightArmType = keyID+1;
-	
+
 	if (gPlayerMode == PLAYER_MODE_BUG)			// only update infobar if I'm the bug
-		gInfobarUpdateBits |= UPDATE_HANDS;	
-	
+		gInfobarUpdateBits |= UPDATE_HANDS;
+
 }
 
 
@@ -857,17 +854,17 @@ void GetKey(long keyID)
 void UseKey(long keyID)
 {
 	gGotKey[keyID] = false;
-	
+
 		/* REMOVE MONEY FROM HAND */
-			
+
 	keyID = SPRITE_GREENKEY_L + (keyID*2);
-			
+
 	if (gLeftArmType == keyID)
 		gLeftArmType = SPRITE_EMPTYHAND_L;
 	else
 	if (gRightArmType == (keyID+1))
 		gRightArmType = SPRITE_EMPTYHAND_R;
-	
+
 	if (gPlayerMode == PLAYER_MODE_BUG)			// only update infobar if I'm the bug
 		gInfobarUpdateBits |= UPDATE_HANDS;
 }
@@ -900,15 +897,15 @@ void GetMoney(void)
 	gMoney++;
 
 		/* SEE WHICH HAND TO PUT IT IN */
-		
+
 	if (gLeftArmType == SPRITE_EMPTYHAND_L)
 		gLeftArmType = SPRITE_MONEY_L;
 	else
 	if (gRightArmType == SPRITE_EMPTYHAND_R)
 		gRightArmType = SPRITE_MONEY_R;
-	
+
 	if (gPlayerMode == PLAYER_MODE_BUG)			// only update infobar if I'm the bug
-		gInfobarUpdateBits |= UPDATE_HANDS;	
+		gInfobarUpdateBits |= UPDATE_HANDS;
 }
 
 
@@ -920,18 +917,17 @@ void GetMoney(void)
 void UseMoney(void)
 {
 	gMoney--;
-	
+
 		/* REMOVE MONEY FROM HAND */
-			
+
 	if (gLeftArmType == SPRITE_MONEY_L)
 		gLeftArmType = SPRITE_EMPTYHAND_L;
 	else
 	if (gRightArmType == SPRITE_MONEY_R)
 		gRightArmType = SPRITE_EMPTYHAND_R;
-	
-	gInfobarUpdateBits |= UPDATE_HANDS;	
-}
 
+	gInfobarUpdateBits |= UPDATE_HANDS;
+}
 
 
 /******************* DO WE HAVE ENOUGH MONEY ************************/
@@ -969,12 +965,12 @@ static void ShowLadyBugs(void)
 int	i,x;
 
 			/* SHOW THE BIG ICON */
-			
+
 	if (gNumLadyBugsThisArea >= gNumLadyBugsOnThisLevel)
 		DrawSprite(SPRITE_LADYBUG_ALL, LADYBUG_X, LADYBUG_Y);
 	else
 		DrawSprite(SPRITE_LADYBUG, LADYBUG_X, LADYBUG_Y);
-	
+
 
 	x = LADYBUG_X + 80;
 	for (i = 0; i < gNumLadyBugsThisArea; i++)
@@ -999,7 +995,7 @@ void GetHealth(float amount)
 	gMyHealth += amount;
 	if (gMyHealth > 1.0f)
 		gMyHealth = 1.0;
-	gInfobarUpdateBits |= UPDATE_HEALTH;	
+	gInfobarUpdateBits |= UPDATE_HEALTH;
 }
 
 
@@ -1011,7 +1007,7 @@ void LoseHealth(float amount)
 		amount *= .5f;
 
 	gMyHealth -= amount;
-	if (gMyHealth <= 0.0f)	
+	if (gMyHealth <= 0.0f)
 	{
 		gMyHealth = 0;
 		KillPlayer(true);
@@ -1046,7 +1042,7 @@ Rect	r;
 	n = (float)HEALTH_WIDTH * gMyHealth;
 
 			/* RED FILLER */
-			
+
 	r.left = HEALTH_X - HEALTH_WIDTH/2;
 	r.right = r.left + n;
 	r.top = HEALTH_Y;
@@ -1069,7 +1065,7 @@ Rect	r;
 
 			/* MARGIN LINE */
 
-	n = r.right;		
+	n = r.right;
 	r.right = r.left + 2;
 
 	if (r.right < (n-2))
@@ -1094,7 +1090,7 @@ int	i,x;
 			EraseSprite(SPRITE_LIFE1+i, x, LIVES_Y);
 
 		x += LIVES_WIDTH;
-	}	
+	}
 }
 
 
@@ -1141,7 +1137,7 @@ int	n;
 			n = 3;
 		else
 			n = gNumBlueClovers-1;
-			
+
 		DrawSprite(SPRITE_BLUECLOVER1 + n, BLUE_CLOVER_X, BLUE_CLOVER_Y);
 	}
 	else
@@ -1161,7 +1157,7 @@ int	n;
 			n = 3;
 		else
 			n = gNumGoldClovers-1;
-			
+
 		DrawSprite(SPRITE_GOLDCLOVER1 + n, GOLD_CLOVER_X, GOLD_CLOVER_Y);
 	}
 	else
@@ -1181,7 +1177,7 @@ Rect	r;
 int		w,x;
 
 		/* DETERMINE HEALTH */
-		
+
 	switch(gRealLevel)
 	{
 		case	LEVEL_NUM_FLIGHT:
@@ -1190,55 +1186,55 @@ int		w,x;
 				else
 					health = gHiveObj->Health;
 				break;
-		
+
 		case	LEVEL_NUM_QUEENBEE:
 				if (gTheQueen == nil)
 					health = 1.0;
 				else
 					health = gTheQueen->Health / QUEENBEE_HEALTH;
 				break;
-		
+
 		case	LEVEL_NUM_ANTKING:
 				if (gAntKingObj == nil)
 					health = 1.0;
 				else
 					health = gAntKingObj->Health / ANTKING_HEALTH;
 				break;
-				
+
 		default:
 				return;
 	}
 
 	if (health < 0)				// Source port fix: hive health can go negative if you keep shooting at it
 		health = 0;
-	
-		/***********/	
+
+		/***********/
 		/* DRAW IT */
 		/***********/
-			
+
 	r.top = BOTTOM_BAR_Y_IN_TEXTURE + 20;
 	r.bottom = r.top + 20;
 	r.left = 320-(BOSS_WIDTH/2);
 	x = r.right = r.left + BOSS_WIDTH;
-			
+
 		/* FRAME */
 
 	FillInfobarRect(r, 0x000000FF);			// (BGRA)
 
 		/* METER */
-		
+
 	r.top += 2;
 	r.bottom -= 2;
 	r.left += 2;
 	w = health * (float)BOSS_WIDTH;
-	r.right = r.left + w - 4; 	
+	r.right = r.left + w - 4; 
 	if (w > 0)
 	{
 		FillInfobarRect(r, 0x0608ddff);		// (BGRA)
 	}
-		
+
 		/* EMPTY */
-	
+
 	if (w < BOSS_WIDTH)
 	{
 		r.left = r.right;

@@ -43,15 +43,13 @@ float	gFramesPerSecond = DEFAULT_FPS;				// this is used to maintain a constant 
 float	gFramesPerSecondFrac = 1/DEFAULT_FPS;
 
 
-
 		/* DEBUG STUFF */
-		
+
 static TQ3Point3D		gNormalWhere;
 static TQ3Vector3D		gNormal;
 
 static TQ3TriMeshData*	gDebugTextMesh = nil;
 static TQ3TriMeshData*	gPillarboxMesh = nil;
-
 
 
 //=======================================================================================================
@@ -105,7 +103,7 @@ TQ3Vector3D			fillDirection2 = { -.8, .8, -.2 };
 	viewDef->lights.fillColor[1] 	= ambientColor;
 	viewDef->lights.fillBrightness[0] = .9;
 	viewDef->lights.fillBrightness[1] = .2;
-	
+
 	viewDef->lights.useFog 		= true;
 	viewDef->lights.fogStart 	= .8;
 	viewDef->lights.fogEnd 		= 1.0;
@@ -144,11 +142,10 @@ QD3DSetupOutputType	*outputPtr;
 	outputPtr->currentCameraCoords		= setupDefPtr->camera.from;
 
 	outputPtr->isActive = true;								// it's now an active structure
-	
-	outputPtr->lightList = setupDefPtr->lights;				// copy light list
-	
-	QD3D_MoveCameraFromTo(outputPtr,&v,&v);					// call this to set outputPtr->currentCameraCoords & camera matrix
 
+	outputPtr->lightList = setupDefPtr->lights;				// copy light list
+
+	QD3D_MoveCameraFromTo(outputPtr,&v,&v);					// call this to set outputPtr->currentCameraCoords & camera matrix
 
 
 				/* SET UP OPENGL RENDERER PROPERTIES NOW THAT WE HAVE A CONTEXT */
@@ -202,9 +199,9 @@ QD3DSetupOutputType	*data;
 	data->isActive = false;									// now inactive
 
 	Render_EndScene();
-	
+
 		/* FREE MEMORY & NIL POINTER */
-		
+
 	DisposePtr((Ptr)data);
 	*dataHandle = nil;
 }
@@ -501,7 +498,7 @@ static	unsigned long then = 0;
 
 
 			/* DO REGULAR CALCULATION */
-			
+
 	Microseconds(&wide);
 	now = wide.lo;
 	if (then != 0)
@@ -512,16 +509,15 @@ static	unsigned long then = 0;
 
 		if (gFramesPerSecond < 9.0f)					// this is the minimum we let it go
 			gFramesPerSecond = 9.0f;
-		
+
 	}
 	else
 		gFramesPerSecond = DEFAULT_FPS;
-		
+
 	gFramesPerSecondFrac = 1.0f/gFramesPerSecond;	// calc fractional for multiplication
 
-	then = now;										// remember time	
+	then = now;										// remember time
 }
-
 
 
 #pragma mark -

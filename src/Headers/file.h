@@ -6,9 +6,9 @@
 		/***********************/
 		/* RESOURCE STURCTURES */
 		/***********************/
-		
+
 			/* Hedr */
-			
+
 typedef struct
 {
 	int16_t	version;			// 0xaa.bb
@@ -22,7 +22,7 @@ typedef struct
 			// matches BoneDefinitionType except missing 
 			// point and normals arrays which are stored in other resources.
 			// Also missing other stuff since arent saved anyway.
-			
+
 typedef struct
 {
 	int32_t 			parentBone;			 		// index to previous bone
@@ -34,9 +34,8 @@ typedef struct
 }File_BoneDefinitionType;
 
 
-
 			/* AnHd */
-			
+
 typedef struct
 {
 	uint8_t nameLength;
@@ -82,22 +81,5 @@ extern	OSErr DeleteSavedGame(int slot);
 void LoadPlayfield(FSSpec *specPtr);
 
 void LoadLevelArt(void);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

@@ -36,8 +36,6 @@ enum
 /*********************/
 
 
-
-
 /********************* MATRIX MULTIPLY FAST *******************/
 //
 // Multiply matrix Mat1 by matrix Mat2, return result in Result.
@@ -65,9 +63,6 @@ Byte	i,j;
 		}
 	}
 }
-
-
-
 
 
 /******************** FAST NORMALIZE VECTOR ***********************/
@@ -156,13 +151,13 @@ float	x,y,z;
 
 
 			/* CALC CROSS PRODUCT FOR THE FACE'S NORMAL */
-			
+
 	x = (pq_y * pr_z) - (pq_z * pr_y);				// cross product of edge vectors = face normal
 	y = ((pq_z * pr_x) - (pq_x * pr_z));
 	z = (pq_x * pr_y) - (pq_y * pr_x);
 
 	FastNormalizeVector(x, y, z, &plane->normal);
-	
+
 
 		/* CALC DOT PRODUCT FOR PLANE CONSTANT */
 
@@ -170,7 +165,6 @@ float	x,y,z;
 						(plane->normal.y * p1y) +
 						(plane->normal.z * p1z));
 }
-
 
 
 /************* CALC DISTANCE ****************/
@@ -187,7 +181,6 @@ float	diffX,diffY;
 
 	return sqrtf(diffX*diffX + diffY*diffY);
 }
-
 
 
 /***************** CALC FACE NORMAL *********************/
@@ -209,11 +202,11 @@ float		x,y,z;
 
 
 			/* DO CROSS PRODUCT */
-			
+
 	x =   dy1 * dz2 - dy2 * dz1;
 	y = -(dx1 * dz2 - dx2 * dz1);
 	z =   dx1 * dy2 - dx2 * dy1;
-			
+
 			/* NORMALIZE IT */
 
 	FastNormalizeVector(x,y, z, normal);
@@ -230,9 +223,9 @@ float	xangle,zdiff;
 	zdiff = fabs(zdiff);								// get abs value
 
 	xangle = atan2(-zdiff,toY-fromY) + (PI/2.0f);
-	
+
 			/* KEEP BETWEEN 0 & 2*PI */
-			
+
 	return(MaskAngle(xangle));
 }
 
@@ -254,7 +247,7 @@ float	dx, dz;
 		return(oldRot);
 
 	yangle = PI2 - MaskAngle(atan2(dz,dx) - (PI/2.0f));
-	
+
 	if (yangle >= (PI2-.0001f))
 		return(0);
 
@@ -314,8 +307,6 @@ float	dot,angle;
 }
 
 
-
-
 /******************** MASK ANGLE ****************************/
 //
 // Given an arbitrary angle, it limits it to between 0 and 2*PI
@@ -329,7 +320,7 @@ Boolean	neg;
 	neg = angle < 0.0f;
 	n = angle * (1.0f/PI2);						// see how many times it wraps fully
 	angle -= ((float)n * PI2);					// subtract # wrappings to get just the remainder
-	
+
 	if (neg)
 		angle += PI2;
 
@@ -475,8 +466,6 @@ float	adjustedTurnSpeed;
 }
 
 
-
-
 /******************** CALC POINT ON OBJECT *************************/
 //
 // Uses the input ObjNode's BaseTransformMatrix to transform the input point.
@@ -486,7 +475,6 @@ void CalcPointOnObject(ObjNode *theNode, TQ3Point3D *inPt, TQ3Point3D *outPt)
 {
 	Q3Point3D_Transform(inPt, &theNode->BaseTransformMatrix, outPt);
 }
-
 
 
 /******************* SET QUICK XYZ-ROTATION MATRIX ************************/
@@ -510,20 +498,15 @@ float	sx,cx,sy,sz,cy,cz,sxsy,cxsy;
 	cx = cos(rx);
 	cy = cos(ry);
 	cz = cos(rz);
-	
+
 	sxsy = sx*sy;
 	cxsy = cx*sy;
-	
+
 	m->value[0][0] = cy*cz;					m->value[0][1] = cy*sz; 				m->value[0][2] = -sy; 	m->value[0][3] = 0;
 	m->value[1][0] = (sxsy*cz)+(cx*-sz);	m->value[1][1] = (sxsy*sz)+(cx*cz);		m->value[1][2] = sx*cy;	m->value[1][3] = 0;
 	m->value[2][0] = (cxsy*cz)+(-sx*-sz);	m->value[2][1] = (cxsy*sz)+(-sx*cz);	m->value[2][2] = cx*cy;	m->value[2][3] = 0;
 	m->value[3][0] = 0;						m->value[3][1] = 0;						m->value[3][2] = 0;		m->value[3][3] = 1;
 }
-
-
-
-
-
 
 
 /************************** VECTORS ARE CLOSE ENOUGH ****************************/
@@ -551,8 +534,6 @@ Boolean PointsAreCloseEnough(TQ3Point3D *v1, TQ3Point3D *v2)
 }
 
 
-
-
 #pragma mark ....intersect line & plane....
 
 /******************** INTERSECT PLANE & LINE SEGMENT ***********************/
@@ -572,16 +553,16 @@ float	vBAx, vBAy, vBAz, dot, lam;
 	ny = plane->normal.y;
 	nz = plane->normal.z;
 	planeConst = plane->constant;
-	
-	
+
+
 		/* DETERMINE SIDENESS OF VERT1 */
-		
+
 	r = -planeConst;
 	r += (nx * v1x) + (ny * v1y) + (nz * v1z);
 	a = (r < 0.0f) ? 1 : 0;
 
 		/* DETERMINE SIDENESS OF VERT2 */
-		
+
 	r = -planeConst;
 	r += (nx * v2x) + (ny * v2y) + (nz * v2z);
 	b = (r < 0.0f) ? 1 : 0;
@@ -597,43 +578,41 @@ float	vBAx, vBAy, vBAz, dot, lam;
 		/****************************************************/
 		/* LINE INTERSECTS, SO CALCULATE INTERSECTION POINT */
 		/****************************************************/
-			
+
 				/* CALC LINE SEGMENT VECTOR BA */
-				
+
 	vBAx = v2x - v1x;
 	vBAy = v2y - v1y;
 	vBAz = v2z - v1z;
-	
+
 			/* DOT OF PLANE NORMAL & LINE SEGMENT VECTOR */
-			
+
 	dot = (nx * vBAx) + (ny * vBAy) + (nz * vBAz);
-	
+
 			/* IF VALID, CALC INTERSECTION POINT */
-			
+
 	if (dot)
 	{
 		lam = planeConst;
 		lam -= (nx * v1x) + (ny * v1y) + (nz * v1z);		// calc dot product of plane normal & 1st vertex
 		lam /= dot;											// div by previous dot for scaling factor
-		
+
 		outPoint->x = v1x + (lam * vBAx);					// calc intersect point
 		outPoint->y = v1y + (lam * vBAy);
 		outPoint->z = v1z + (lam * vBAz);
 		return(true);
 	}
-	
+
 		/* IF DOT == 0, THEN LINE IS PARALLEL TO PLANE THUS NO INTERSECTION */
-		
+
 	else
 		return(false);
 }
 
 
-
-
 /*********** INTERSECTION OF Y AND PLANE FUNCTION ********************/
 //
-// INPUT:	
+// INPUT:
 //			x/z		:	xz coords of point
 //			p		:	ptr to the plane
 //
@@ -648,7 +627,6 @@ float IntersectionOfYAndPlane_Func(float x, float z, TQ3PlaneEquation *p)
 }
 
 
-
 /********************* MATRIX MULTIPLY *******************/
 //
 // Multiply matrix Mat1 by matrix Mat2, return result in Result
@@ -660,7 +638,7 @@ TQ3Matrix4x4	*r2,temp;
 unsigned short	i,j;
 
 		/* CODE TO ALLOW RESULT TO BE A SOURCE MATRIX */
-		
+
 	if (result == a)
 	{
 		r2 = a;
@@ -676,7 +654,7 @@ unsigned short	i,j;
 		r2 = nil;
 
 			/* DO IT */
-			
+
 	for (i = 0; i < 4; i++)
 	{
 		for (j = 0; j < 4; j++)
@@ -687,9 +665,9 @@ unsigned short	i,j;
 								 	a->value[i][3] * b->value[3][j];
 		}
 	}
-				
+
 	if (r2)								// see if copy over input matrix
-		*r2 = temp;			
+		*r2 = temp;
 }
 
 
@@ -706,7 +684,7 @@ TQ3Vector3D	lookAt,theXAxis;
 	m->value[2][0] = lookAt.x;
 	m->value[2][1] = lookAt.y;
 	m->value[2][2] = lookAt.z;
-	
+
 
 			/* CALC UP VECTOR */
 
@@ -716,16 +694,16 @@ TQ3Vector3D	lookAt,theXAxis;
 
 
 		/* CALC THE X-AXIS VECTOR */
-		
+
 	theXAxis.x = 	upVector->y * lookAt.z - lookAt.y * upVector->z;		// calc cross product
 	theXAxis.y =  -(upVector->x	* lookAt.z - lookAt.x * upVector->z);
-	theXAxis.z = 	upVector->x * lookAt.y - lookAt.x * upVector->y;		
-		
+	theXAxis.z = 	upVector->x * lookAt.y - lookAt.x * upVector->y;
+
 	m->value[0][0] = theXAxis.x;
 	m->value[0][1] = theXAxis.y;
 	m->value[0][2] = theXAxis.z;
-	
-	
+
+
 			/* SET OTHER THINGS */
 	m->value[0][3] =
 	m->value[1][3] = 
@@ -748,7 +726,7 @@ TQ3Vector3D	lookAt;
 	m->value[2][0] = lookAt.x;
 	m->value[2][1] = lookAt.y;
 	m->value[2][2] = lookAt.z;
-	
+
 
 			/* CALC UP VECTOR */
 
@@ -761,21 +739,20 @@ TQ3Vector3D	lookAt;
 
 	m->value[0][0] = 	upVector->y * lookAt.z - lookAt.y * upVector->z;		// calc cross product
 	m->value[0][1] =  -(upVector->x	* lookAt.z - lookAt.x * upVector->z);
-	m->value[0][2] = 	upVector->x * lookAt.y - lookAt.x * upVector->y;		
-	
-	
+	m->value[0][2] = 	upVector->x * lookAt.y - lookAt.x * upVector->y;
+
+
 			/* SET OTHER THINGS */
-			
+
 	m->value[0][3] =
 	m->value[1][3] = 
 	m->value[2][3] = 0;
-	
+
 	m->value[3][0] = from->x;					// set translate
 	m->value[3][1] = from->y;
 	m->value[3][2] = from->z;
 	m->value[3][3] = 1;
 }
-
 
 
 #pragma mark -
@@ -815,21 +792,21 @@ float					pX,pY;
 float					verts0x,verts0y;
 float					verts1x,verts1y;
 float					verts2x,verts2y;
-	
+
 	tmp = (float *)trianglePoints;
 	skip = sizeof(TQ3Point3D) / sizeof(float);
-	
-		
+
+
 			/*****************************************/
 			/* DETERMINE LONGEST COMPONENT OF NORMAL */
 			/*****************************************/
-				
+
 //	EiVector3D_MaximalComponent(normal,&maximalComponent,&maximalComponentNegative);
 
 	xComp = fabs(normal->x);
 	yComp = fabs(normal->y);
 	zComp = fabs(normal->z);
-	
+
 	if (xComp > yComp)
 	{
 		if (xComp > zComp)
@@ -845,18 +822,17 @@ float					verts2x,verts2y;
 			maximalComponent = VectorComponent_Z;
 	}
 
-	
-	
+
 				/* PROJECT 3D POINTS TO 2D */
 
 	switch(maximalComponent)
 	{
 		TQ3Point3D	*point;
-		
+
 		case	VectorComponent_X:
 				pX = point3D->y;
 				pY = point3D->z;
-				
+
 				point = (TQ3Point3D *)tmp;
 				verts0x = point->y;
 				verts0y = point->z;
@@ -873,7 +849,7 @@ float					verts2x,verts2y;
 		case	VectorComponent_Y:
 				pX = point3D->z;
 				pY = point3D->x;
-				
+
 				point = (TQ3Point3D *)tmp;
 				verts0x = point->z;
 				verts0y = point->x;
@@ -890,7 +866,7 @@ float					verts2x,verts2y;
 		case	VectorComponent_Z:
 				pX = point3D->x;
 				pY = point3D->y;
-				
+
 				point = (TQ3Point3D *)tmp;
 				verts0x = point->x;
 				verts0y = point->y;
@@ -908,11 +884,11 @@ float					verts2x,verts2y;
 				DoFatalAlert("IsPointInTriangle3D: unknown component");
 				return false;
 	}
-	
-	
+
+
 			/* NOW DO 2D POINT-IN-TRIANGLE CHECK */
-				
-	return ((Boolean)IsPointInTriangle(pX, pY, verts0x, verts0y, verts1x, verts1y, verts2x, verts2y));	
+
+	return ((Boolean)IsPointInTriangle(pX, pY, verts0x, verts0y, verts1x, verts1y, verts2x, verts2y));
 }
 
 #pragma mark -
@@ -1004,8 +980,6 @@ double 	denom, offset, num;     				// Intermediate values
 }
 
 
-
-
 /********************* CALC LINE NORMAL 2D *************************/
 //
 // INPUT: 	p0, p1 = 2 points on the line
@@ -1020,17 +994,17 @@ void CalcLineNormal2D(float p0x, float p0y, float p1x, float p1y,
 TQ3Vector2D		normalA, normalB;
 float			temp,x,y;
 
-	
+
 		/* CALC NORMALIZED VECTOR FROM ENDPOINT TO ENDPOINT */
-			
+
 	FastNormalizeVector2D(p0x - p1x, p0y - p1y, &normalA);
 	 
 	 
 		/* CALC NORMALIZED VECTOR FROM REF POINT TO ENDPOINT 0 */
 
 	FastNormalizeVector2D(px - p0x, py - p0y, &normalB);
-	
-	
+
+
 	temp = -((normalB.x * normalA.y) - (normalA.x * normalB.y));
 	x =   -(temp * normalA.y);
 	y =   normalA.x * temp;
@@ -1057,17 +1031,14 @@ float			temp,x,y;
 		/* CALC NORMALIZED VECTOR FROM REF POINT TO ENDPOINT 0 */
 
 	FastNormalizeVector2D(px - p0x, py - p0y, &normalB);
-	
-	
+
+
 	temp = -((normalB.x * vec->y) - (vec->x * normalB.y));
 	x =   -(temp * vec->y);
 	y =   vec->x * temp;
 
 	FastNormalizeVector2D(x, y, normal);					// normalize the result
 }
-
-
-
 
 
 /*********************** REFLECT VECTOR 2D *************************/
@@ -1091,48 +1062,38 @@ float	mag,oneOverM;
 	y = theVector->y;
 
 			/* CALC LENGTH AND NORMALIZE INPUT VECTOR */
-			
-	mag = sqrt(x*x + y*y);							// calc magnitude of input vector;	
+
+	mag = sqrt(x*x + y*y);							// calc magnitude of input vector;
 	if (mag != 0.0f)
-		oneOverM = 1.0f / mag;	
+		oneOverM = 1.0f / mag;
 	else
 		oneOverM = 0;
 	x *= oneOverM;									// normalize
 	y *= oneOverM;
-	
+
 
 	normalX = N->x;
 	normalY = N->y;
-							
+
 	/* compute NxV */
 	dotProduct = normalX * x;
 	dotProduct += normalY * y;
-	
+
 	/* compute 2(NxV) */
 	dotProduct += dotProduct;
-	
+
 	/* compute final vector */
 	reflectedX = normalX * dotProduct - x;
 	reflectedY = normalY * dotProduct - y;
-	
+
 	/* Normalize the result */
-		
+
 	FastNormalizeVector2D(reflectedX,reflectedY, theVector);
-	
+
 			/* SCALE TO ORIGINAL MAGNITUDE */
-			
-	theVector->x *= -mag;	
+
+	theVector->x *= -mag;
 	theVector->y *= -mag;
 }
-
-
-
-
-
-
-
-
-
-
 
 

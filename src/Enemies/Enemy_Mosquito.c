@@ -40,7 +40,7 @@ static void UpdateMosquito(ObjNode *theNode);
 
 #define	MAX_MOSQUITO_RANGE			(MOSQUITO_CHASE_RANGE+800.0f)	// max distance this enemy can go from init coord
 
-#define	MOSQUITO_HEALTH				1.0f		
+#define	MOSQUITO_HEALTH				1.0f
 #define	MOSQUITO_DAMAGE				0.04f
 #define	MOSQUITO_SCALE				.8f
 #define	MOSQUITO_FLIGHT_HEIGHT		350.0f
@@ -72,7 +72,6 @@ enum
 #define	MOSQUITO_KNOCKDOWN_SPEED	1400.0f		// speed ball needs to go to knock this down
 
 
-
 /*********************/
 /*    VARIABLES      */
 /*********************/
@@ -98,35 +97,35 @@ ObjNode	*newObj;
 		return(false);
 
 				/* MAKE DEFAULT SKELETON ENEMY */
-				
+
 	newObj = MakeEnemySkeleton(SKELETON_TYPE_MOSQUITO,x,z,MOSQUITO_SCALE);
 	if (newObj == nil)
 		return(false);
 	newObj->TerrainItemPtr = itemPtr;
 
 	SetSkeletonAnim(newObj->Skeleton, MOSQUITO_ANIM_FLY);
-	
+
 
 				/* SET BETTER INFO */
-			
-	newObj->Coord.y 	+= MOSQUITO_FLIGHT_HEIGHT;			
+
+	newObj->Coord.y 	+= MOSQUITO_FLIGHT_HEIGHT;
 	newObj->MoveCall 	= MoveMosquito;							// set move call
 	newObj->Health 		= MOSQUITO_HEALTH;
 	newObj->Damage 		= MOSQUITO_DAMAGE;
 	newObj->Kind 		= ENEMY_KIND_MOSQUITO;
 	newObj->CType		|= CTYPE_KICKABLE|CTYPE_AUTOTARGET;		// these can be kicked
 	newObj->CBits		= CBITS_NOTTOP;
-	
+
 	newObj->Mode		= MOSQUITO_MODE_WAITING;
 	newObj->HonorRange	= true;
-	
+
 				/* SET COLLISION INFO */
-				
+
 	SetObjectCollisionBounds(newObj, 70,-40,-40,40,40,-40);
 
 
 				/* MAKE SHADOW */
-				
+
 	AttachShadowToObject(newObj, 7, 7, false);
 
 	newObj->InitCoord = newObj->Coord;							// remember where started
@@ -138,9 +137,6 @@ ObjNode	*newObj;
 	gNumEnemyOfKind[ENEMY_KIND_MOSQUITO]++;
 	return(true);
 }
-
-
-
 
 
 /********************* MOVE MOSQUITO **************************/
@@ -163,7 +159,7 @@ static	void(*myMoveTable[])(ObjNode *) =
 	}
 
 	GetObjectInfo(theNode);
-	
+
 	myMoveTable[theNode->Skeleton->AnimNum](theNode);
 }
 
@@ -178,11 +174,10 @@ float	r;
 	theNode->Skeleton->AnimSpeed = 2.0f;
 
 				/* SEE IF SWITCH TO NON-FULL FLYING ANIM */
-				
+
 	if (theNode->StatusBits & STATUS_BIT_ISCULLED)
 		if (theNode->Skeleton->AnimNum == MOSQUITO_ANIM_FLYFULL)
 			SetSkeletonAnim(theNode->Skeleton, MOSQUITO_ANIM_FLY);
-
 
 
 	switch(theNode->Mode)
@@ -190,23 +185,23 @@ float	r;
 			/*********************/
 			/* GO UP TO TARGET Y */
 			/*********************/
-	
+
 		case	MOSQUITO_MODE_REALIGN:
 				if (gCoord.y < GetTerrainHeightAtCoord(gCoord.x, gCoord.z, FLOOR) + MOSQUITO_FLIGHT_HEIGHT + MosquitoWobbleOff)
 					gCoord.y += 150.0f *fps;
 				else
 					theNode->Mode = MOSQUITO_MODE_GOHOME;
 				break;
-	
+
 			/*****************************/
 			/* JUST HOVERING AND WAITING */
 			/*****************************/
-			
+
 		case	MOSQUITO_MODE_WAITING:
-				TurnObjectTowardTarget(theNode, &gCoord, gMyCoord.x, gMyCoord.z, MOSQUITO_TURN_SPEED, false);			
-				
+				TurnObjectTowardTarget(theNode, &gCoord, gMyCoord.x, gMyCoord.z, MOSQUITO_TURN_SPEED, false);
+
 					/* SEE IF CLOSE ENOUGH TO ATTACK */
-					
+
 				if (CalcQuickDistance(gCoord.x, gCoord.z, gMyCoord.x, gMyCoord.z) < MOSQUITO_CHASE_RANGE)
 				{
 					theNode->Mode = MOSQUITO_MODE_CHASE;
@@ -216,69 +211,68 @@ float	r;
 				gCoord.y = GetTerrainHeightAtCoord(gCoord.x, gCoord.z, FLOOR) + MOSQUITO_FLIGHT_HEIGHT;	// calc y coord
 				gCoord.y += MosquitoWobbleOff;
 				break;
-	
-				
+
+
 				/*****************/
 				/* FLY BACK HOME */
 				/*****************/
-				
+
 		case	MOSQUITO_MODE_GOHOME:
-		
+
 						/* MOVE TOWARD HOME */
-						
+
 				TurnObjectTowardTarget(theNode, &gCoord, theNode->InitCoord.x, theNode->InitCoord.z, MOSQUITO_TURN_SPEED, false);
 
 				r = theNode->Rot.y;
 				gDelta.x = sin(r) * -MOSQUITO_CHASE_SPEED;
 				gDelta.z = cos(r) * -MOSQUITO_CHASE_SPEED;
-				
+
 				gCoord.x += gDelta.x * fps;
 				gCoord.z += gDelta.z * fps;
 				gCoord.y = GetTerrainHeightAtCoord(gCoord.x, gCoord.z, FLOOR) + MOSQUITO_FLIGHT_HEIGHT;	// calc y coord
 				gCoord.y += MosquitoWobbleOff;
 
 						/* SEE IF THERE */
-						
+
 				if (CalcQuickDistance(gCoord.x, gCoord.z, theNode->InitCoord.x, theNode->InitCoord.z) < 150.0f)
 					theNode->Mode = MOSQUITO_MODE_WAITING;
 				break;
-				
-		
-		
+
+
 				/**************/
 				/* CHASE MODE */
 				/**************/
-				
+
 		default:
-		
+
 						/* MOVE TOWARD PLAYER */
-						
-				TurnObjectTowardTarget(theNode, &gCoord, gMyCoord.x, gMyCoord.z, MOSQUITO_TURN_SPEED, false);			
+
+				TurnObjectTowardTarget(theNode, &gCoord, gMyCoord.x, gMyCoord.z, MOSQUITO_TURN_SPEED, false);
 
 				r = theNode->Rot.y;
 				gDelta.x = sin(r) * -MOSQUITO_CHASE_SPEED;
 				gDelta.z = cos(r) * -MOSQUITO_CHASE_SPEED;
-				
+
 				gCoord.x += gDelta.x * fps;
 				gCoord.z += gDelta.z * fps;
 				gCoord.y = GetTerrainHeightAtCoord(gCoord.x, gCoord.z, FLOOR) + MOSQUITO_FLIGHT_HEIGHT;	// calc y coord
 				gCoord.y += MosquitoWobbleOff;
-		
-				
+
+
 				/* SEE IF CLOSE ENOUGH TO BITE */
-					
+
 				if (CalcQuickDistance(gCoord.x, gCoord.z, gMyCoord.x, gMyCoord.z) < MOSQUITO_BITE_RANGE)
 				{
 					MorphToSkeletonAnim(theNode->Skeleton, MOSQUITO_ANIM_BITE, 3.0);
 					theNode->StuckInGround = false;
 				}
-				
+
 					/* SEE IF TOO FAR AWAY AND NEED TO FLY BACK HOME */
-					
+
 				if (theNode->HonorRange)								// see if we care about range
 				{
 					if (CalcQuickDistance(theNode->InitCoord.x, theNode->InitCoord.z, gCoord.x, gCoord.z) > MAX_MOSQUITO_RANGE)
-						theNode->Mode = MOSQUITO_MODE_GOHOME;				
+						theNode->Mode = MOSQUITO_MODE_GOHOME;
 				}
 	}
 
@@ -289,12 +283,12 @@ float	r;
 	if (gLevelType == LEVEL_TYPE_POND)									// make sure not underwater
 		if (gCoord.y < (WATER_Y+150))
 			gCoord.y = WATER_Y+150;
-				
+
 	if (DoEnemyCollisionDetect(theNode,DEFAULT_ENEMY_COLLISION_CTYPES))
 		return;
 
-	UpdateMosquito(theNode);		
-	
+	UpdateMosquito(theNode);
+
 }
 
 
@@ -317,13 +311,13 @@ TQ3Point3D	tipPt;
 			theNode->Mode = MOSQUITO_MODE_REALIGN;
 		}
 	}
-	else	
+	else
 	{
 					/**********************/
 					/* MOVE TOWARD PLAYER */
 					/**********************/
-							
-		TurnObjectTowardTarget(theNode, &gCoord, gMyCoord.x, gMyCoord.z, MOSQUITO_TURN_SPEED, false);			
+
+		TurnObjectTowardTarget(theNode, &gCoord, gMyCoord.x, gMyCoord.z, MOSQUITO_TURN_SPEED, false);
 
 		r = theNode->Rot.y;
 		gDelta.x = sin(r) * -MOSQUITO_CHASE_SPEED;
@@ -335,7 +329,7 @@ TQ3Point3D	tipPt;
 		gCoord.z += gDelta.z * fps;
 
 				/* SEE IF HIT WATER */
-				
+
 		if (gLevelType == LEVEL_TYPE_POND)						// make sure not underwater
 			if (gCoord.y < (WATER_Y+150))
 			{
@@ -345,15 +339,15 @@ TQ3Point3D	tipPt;
 			}
 
 				/* UPDATE BASE MATRIX */
-				
-		theNode->Coord = gCoord;		
+
+		theNode->Coord = gCoord;
 		UpdateObjectTransforms(theNode);					// make sure base matrix is up-to-date!
 
-		
+
 				/*********************/
 				/* SEE IF HIT GROUND */
 				/*********************/
-				
+
 		FindCoordOnJoint(theNode, MOSQUITO_HEAD_JOINT, &gTipOffset, &tipPt);		// get coord of tip of stinger
 		y = GetTerrainHeightAtCoord(tipPt.x, tipPt.z, FLOOR);					// get ground y at tip pt
 		if (tipPt.y <= y)														// see if hit ground
@@ -365,56 +359,56 @@ TQ3Point3D	tipPt;
 			theNode->StuckInGround = true;
 			theNode->StuckTimer = 1.1f;
 		}
-		
+
 				/*********************/
 				/* SEE IF HIT PLAYER */
 				/*********************/
-				
+
 		if (!theNode->StuckInGround)
 		{
 			if (DoSimplePointCollision(&tipPt, CTYPE_PLAYER))
 			{
 				PlayEffect3D(EFFECT_SLURP, &gCoord);
-			
-				MorphToSkeletonAnim(theNode->Skeleton, MOSQUITO_ANIM_SUCK, 6);	
-				
-				if (gPlayerMode == PLAYER_MODE_BALL)				
+
+				MorphToSkeletonAnim(theNode->Skeleton, MOSQUITO_ANIM_SUCK, 6);
+
+				if (gPlayerMode == PLAYER_MODE_BALL)
 					InitPlayer_Bug(gPlayerObj, &gPlayerObj->Coord, gPlayerObj->Rot.y, PLAYER_ANIM_BLOODSUCK);
-				else												
-					MorphToSkeletonAnim(gPlayerObj->Skeleton, PLAYER_ANIM_BLOODSUCK, 7);	
-					
+				else
+					MorphToSkeletonAnim(gPlayerObj->Skeleton, PLAYER_ANIM_BLOODSUCK, 7);
+
 				gPlayerObj->Delta.x = 
 				gPlayerObj->Delta.y = 
 				gPlayerObj->Delta.z = 0;
-					
+
 						/* HURT PLAYER & VERIFY */
-						
+
 				PlayerGotHurt(nil, .2, true, false, false, 2.0);					// make invincible for 2 seconds
 				if (gPlayerGotKilledFlag)
 				{
-					MorphToSkeletonAnim(theNode->Skeleton, MOSQUITO_ANIM_FLY, 6);	
+					MorphToSkeletonAnim(theNode->Skeleton, MOSQUITO_ANIM_FLY, 6);
 					theNode->Mode = MOSQUITO_MODE_REALIGN;
 					goto update;
 				}
-					
+
 					/* CALL THIS TO ALIGN STUFF RIGHT NOW */
-					
+
 				MoveMosquito_Sucking(theNode);
 				return;
 			}
 		}
-	}		
+	}
 
 				/**********************/
 				/* DO ENEMY COLLISION */
 				/**********************/
-				
+
 	if (DoEnemyCollisionDetect(theNode,DEFAULT_ENEMY_COLLISION_CTYPES))
 		return;
 
 update:
-	UpdateMosquito(theNode);		
-	
+	UpdateMosquito(theNode);
+
 }
 
 
@@ -423,10 +417,10 @@ update:
 static void  MoveMosquito_Death(ObjNode *theNode)
 {
 				/* GET INFO */
-				
+
 	GetObjectInfo(theNode);
-	
-	
+
+
 	if (theNode->StatusBits & STATUS_BIT_ISCULLED)		// if was culled on last frame and is far enough away, then delete it
 	{
 		if (CalcQuickDistance(gCoord.x, gCoord.z, gMyCoord.x, gMyCoord.z) > 600.0f)
@@ -438,7 +432,7 @@ static void  MoveMosquito_Death(ObjNode *theNode)
 
 
 				/* MOVE IT */
-				
+
 	if (theNode->StatusBits & STATUS_BIT_ONGROUND)			// if on ground, add friction
 		ApplyFrictionToDeltas(60.0,&gDelta);
 	gDelta.y -= ENEMY_GRAVITY*gFramesPerSecondFrac;			// add gravity
@@ -446,14 +440,14 @@ static void  MoveMosquito_Death(ObjNode *theNode)
 
 
 				/* DO ENEMY COLLISION */
-				
+
 	if (DoEnemyCollisionDetect(theNode,DEATH_ENEMY_COLLISION_CTYPES))
 		return;
 
 
 				/* UPDATE */
-			
-	UpdateMosquito(theNode);		
+
+	UpdateMosquito(theNode);
 }
 
 /********************** MOVE MOSQUITO: SUCKING ******************************/
@@ -465,20 +459,20 @@ static const TQ3Point3D headOffset = {0,18,-17};
 
 
 				/* CALC COORDS OF TIP & HEAD */
-				
-	FindCoordOnJoint(theNode, MOSQUITO_HEAD_JOINT, &gTipOffset, &tipPt);		
-	FindCoordOnJoint(gPlayerObj, BUG_LIMB_NUM_HEAD, &headOffset, &headPt);		
+
+	FindCoordOnJoint(theNode, MOSQUITO_HEAD_JOINT, &gTipOffset, &tipPt);
+	FindCoordOnJoint(gPlayerObj, BUG_LIMB_NUM_HEAD, &headOffset, &headPt);
 
 
 			/* CALC OFFSET TO PUT STINGER INTO HEAD */
-			
+
 	gCoord.x = headPt.x - (tipPt.x - gCoord.x);
 	gCoord.y = headPt.y - (tipPt.y - gCoord.y);
 	gCoord.z = headPt.z - (tipPt.z - gCoord.z);
 
 
 			/* SEE IF DONE */
-			
+
 	if (theNode->Skeleton->AnimHasStopped)
 	{
 		MorphToSkeletonAnim(theNode->Skeleton, MOSQUITO_ANIM_FLYFULL, 5);
@@ -486,8 +480,8 @@ static const TQ3Point3D headOffset = {0,18,-17};
 		MorphToSkeletonAnim(gPlayerObj->Skeleton, PLAYER_ANIM_STAND, 7);
 		gPlayerObj->CType = CTYPE_PLAYER;
 	}
-	
-	UpdateMosquito(theNode);			
+
+	UpdateMosquito(theNode);
 }
 
 
@@ -503,7 +497,7 @@ static void UpdateMosquito(ObjNode *theNode)
 			Update3DSoundChannel(EFFECT_BUZZ, &theNode->EffectChannel, &theNode->Coord);
 	}
 
-	UpdateEnemy(theNode);			
+	UpdateEnemy(theNode);
 
 }
 
@@ -519,29 +513,29 @@ float			x,z,placement;
 
 			/* GET SPLINE INFO */
 
-	placement = itemPtr->placement;	
+	placement = itemPtr->placement;
 	GetCoordOnSpline(&(*gSplineList)[splineNum], placement, &x, &z);
 
 
 				/* MAKE DEFAULT SKELETON ENEMY */
-				
+
 	newObj = MakeEnemySkeleton(SKELETON_TYPE_MOSQUITO,x,z, MOSQUITO_SCALE);
 	if (newObj == nil)
 		return(false);
-		
+
 	DetachObject(newObj);									// detach this object from the linked list
-		
+
 	newObj->SplineItemPtr = itemPtr;
 	newObj->SplineNum = splineNum;
-	
+
 	SetSkeletonAnim(newObj->Skeleton, MOSQUITO_ANIM_FLY);
-	
+
 
 				/* SET BETTER INFO */
-			
+
 	newObj->StatusBits		|= STATUS_BIT_ONSPLINE;
 	newObj->SplinePlacement = placement;
-	newObj->Coord.y 		+= MOSQUITO_FLIGHT_HEIGHT;			
+	newObj->Coord.y 		+= MOSQUITO_FLIGHT_HEIGHT;
 	newObj->SplineMoveCall 	= MoveMosquitoOnSpline;				// set move call
 	newObj->Health 			= MOSQUITO_HEALTH;
 	newObj->Damage 			= MOSQUITO_DAMAGE;
@@ -551,20 +545,20 @@ float			x,z,placement;
 
 	newObj->Wobble = 0;
 
-	
+
 				/* SET COLLISION INFO */
-				
+
 	SetObjectCollisionBounds(newObj, 70,-40,-40,40,40,-40);
 
 
 				/* MAKE SHADOW */
-				
+
 	shadowObj = AttachShadowToObject(newObj, 7, 7, false);
 	DetachObject(shadowObj);									// detach this object from the linked list
 
 
 			/* ADD SPLINE OBJECT TO SPLINE OBJECT LIST */
-			
+
 	AddToSplineObjectList(newObj);
 
 	return(true);
@@ -596,18 +590,18 @@ float	fps = gFramesPerSecondFrac;
 			/***************************/
 			/* UPDATE STUFF IF VISIBLE */
 			/***************************/
-			
+
 	if (isVisible)
 	{
 			/* START/UPDATE BUZZ */
-	
+
 		if (theNode->EffectChannel == -1)
 			theNode->EffectChannel = PlayEffect3D(EFFECT_BUZZ, &theNode->Coord);
 		else
 			Update3DSoundChannel(EFFECT_BUZZ, &theNode->EffectChannel, &theNode->Coord);
-	
+
 		theNode->Rot.y = CalcYAngleFromPointToPoint(theNode->Rot.y, theNode->OldCoord.x, theNode->OldCoord.z,			// calc y rot aim
-												theNode->Coord.x, theNode->Coord.z);		
+												theNode->Coord.x, theNode->Coord.z);
 
 		theNode->Coord.y = GetTerrainHeightAtCoord(theNode->Coord.x, theNode->Coord.z, FLOOR) + MOSQUITO_FLIGHT_HEIGHT;	// calc y coord
 		theNode->Coord.y += MosquitoWobbleOff;															// do wobble
@@ -618,30 +612,30 @@ float	fps = gFramesPerSecondFrac;
 
 		UpdateObjectTransforms(theNode);																// update transforms
 		CalcObjectBoxFromNode(theNode);																	// update collision box
-		UpdateShadow(theNode);																			// update shadow		
-		
+		UpdateShadow(theNode);																			// update shadow
+
 				/*********************************/
 				/* SEE IF CLOSE ENOUGH TO ATTACK */
 				/*********************************/
-				
+
 		if (CalcQuickDistance(theNode->Coord.x, theNode->Coord.z, gMyCoord.x, gMyCoord.z) < MOSQUITO_CHASE_RANGE)
 		{
 					/* REMOVE FROM SPLINE */
-					
+
 			DetachEnemyFromSpline(theNode, MoveMosquito);
 
 			theNode->Mode		= MOSQUITO_MODE_CHASE;
 			theNode->HonorRange = false;
-		}		
+		}
 	}
-	
+
 			/* NOT VISIBLE */
 	else
 	{
 		StopObjectStreamEffect(theNode);
-	
+
 //		if (theNode->ShadowNode)									// hide shadow
-//			theNode->ShadowNode->StatusBits |= STATUS_BIT_HIDDEN;	
+//			theNode->ShadowNode->StatusBits |= STATUS_BIT_HIDDEN;
 	}
 }
 
@@ -661,14 +655,14 @@ Boolean	killed = false;
 				/************************/
 				/* HURT & KNOCK ON BUTT */
 				/************************/
-				
+
 	if (me->Speed > MOSQUITO_KNOCKDOWN_SPEED)
-	{	
+	{
 		KillMosquito(enemy, me->Delta.x*.5f, 400, me->Delta.z*.5f);
    		killed = true;
 		PlayEffect_Parms3D(EFFECT_POUND, &gCoord, kMiddleC+2, 2.0);
 	}
-	
+
 	return(killed);
 }
 
@@ -689,47 +683,39 @@ Boolean KillMosquito(ObjNode *theNode, float dx, float dy, float dz)
 	}
 
 		/* STOP BUZZ */
-		
+
 	if (theNode->EffectChannel != -1)
 		StopAChannel(&theNode->EffectChannel);
-	
+
 		/* IF ON SPLINE, DETACH */
-		
+
 	DetachEnemyFromSpline(theNode, MoveMosquito);
 
 
 			/* DEACTIVATE */
-			
+
 	theNode->TerrainItemPtr = nil;									// dont ever come back
 	theNode->CType = CTYPE_MISC;
 	theNode->BottomOff = 0;
-	
+
 			/* NUKE SHADOW */
-			
+
 	if (theNode->ShadowNode)
 	{
 		DeleteObject(theNode->ShadowNode);
-		theNode->ShadowNode = nil;	
+		theNode->ShadowNode = nil;
 	}
-	
+
 		/* DO DEATH ANIM */
-			
+
 	if (theNode->Skeleton->AnimNum != MOSQUITO_ANIM_DEATH)
 		SetSkeletonAnim(theNode->Skeleton, MOSQUITO_ANIM_DEATH);
-		
-	theNode->Delta.x = dx;	
-	theNode->Delta.y = dy;	
-	theNode->Delta.z = dz;	
-	
+
+	theNode->Delta.x = dx;
+	theNode->Delta.y = dy;
+	theNode->Delta.z = dz;
+
 	return(false);
 }
-
-
-
-
-
-
-
-
 
 

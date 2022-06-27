@@ -25,7 +25,7 @@ static void SetSlugCollisionInfo(ObjNode *theNode);
 /*    CONSTANTS             */
 /****************************/
 
-#define	SLUG_HEALTH		1.0f		
+#define	SLUG_HEALTH		1.0f
 #define	SLUG_DAMAGE		0.1f
 
 #define	SLUG_SCALE		3.0f
@@ -55,37 +55,37 @@ float			x,z,placement;
 
 			/* GET SPLINE INFO */
 
-	placement = itemPtr->placement;	
+	placement = itemPtr->placement;
 	GetCoordOnSpline(&(*gSplineList)[splineNum], placement, &x, &z);
 
 
 				/* MAKE DEFAULT SKELETON ENEMY */
-				
+
 	newObj = MakeEnemySkeleton(SKELETON_TYPE_SLUG,x,z, SLUG_SCALE);
 	if (newObj == nil)
 		return(false);
-		
+
 	DetachObject(newObj);									// detach this object from the linked list
-	
+
 	Q3Matrix4x4_SetIdentity(&newObj->BaseTransformMatrix);	// we are going to do some manual transforms on the skeleton joints
 	newObj->Skeleton->JointsAreGlobal = true;
-		
+
 	newObj->SplineItemPtr = itemPtr;
 	newObj->SplineNum = splineNum;
-	
+
 	SetSkeletonAnim(newObj->Skeleton, SLUG_ANIM_INCH);
 
 				/* SET BETTER INFO */
-			
+
 	newObj->StatusBits		|= STATUS_BIT_ONSPLINE;
 	newObj->SplinePlacement = placement;
-	newObj->Coord.y 		-= FOOT_OFFSET;			
+	newObj->Coord.y 		-= FOOT_OFFSET;
 	newObj->SplineMoveCall 	= MoveSlugOnSpline;				// set move call
 	newObj->Health 			= SLUG_HEALTH;
 	newObj->Damage 			= SLUG_DAMAGE;
 	newObj->Kind 			= ENEMY_KIND_SLUG;
 	newObj->BoundingSphere.radius *= 1.5f;					// Source port fix: enlarge bounding sphere, otherwise tail gets culled early
-	
+
 				/* SET COLLISION INFO */
 
 	newObj->CType			|= CTYPE_SPIKED|CTYPE_BLOCKCAMERA;
@@ -95,7 +95,7 @@ float			x,z,placement;
 
 
 			/* ADD SPLINE OBJECT TO SPLINE OBJECT LIST */
-			
+
 	AddToSplineObjectList(newObj);
 	return(true);
 }
@@ -111,10 +111,10 @@ SkeletonDefType		*skeletonDef;
 	skeletonDef = skeleton->skeletonDefinition;
 
 	theNode->CBits = CBITS_TOUCHABLE;
-	
+
 		/* ALLOCATE MEMORY FOR THE COLLISION BOXES */
-				
-	AllocateCollisionBoxMemory(theNode, skeletonDef->NumBones);	
+
+	AllocateCollisionBoxMemory(theNode, skeletonDef->NumBones);
 }
 
 
@@ -136,11 +136,11 @@ long	index;
 			/***************************/
 			/* UPDATE STUFF IF VISIBLE */
 			/***************************/
-			
+
 	if (isVisible)
 	{
 			/* UPDATE SKELETON & COLLISION INFO */
-			
+
 		SetSlugJointTransforms(theNode, index);
 	}
 	else
@@ -182,15 +182,15 @@ CollisionBoxType *boxPtr;
 			/***************************************/
 			/* TRANSFORM EACH JOINT TO WORLD-SPACE */
 			/***************************************/
-		
+
 	scale = SLUG_SCALE;
-			
-	for (jointNum = 0; jointNum < skeletonDef->NumBones; jointNum++)		
+
+	for (jointNum = 0; jointNum < skeletonDef->NumBones; jointNum++)
 	{
 		TQ3Point3D	coord,prevCoord;
-		
+
 				/* GET COORDS OF THIS SEGMENT */
-				
+
 		coord.x = points[index].x;
 		coord.z = points[index].z;
 		coord.y = GetTerrainHeightAtCoord(coord.x, coord.z, FLOOR) - FOOT_OFFSET;
@@ -204,10 +204,10 @@ CollisionBoxType *boxPtr;
 		boxPtr[jointNum].bottom = coord.y - SLUG_COLLISIONBOX_SIZE;
 		boxPtr[jointNum].front 	= coord.z + SLUG_COLLISIONBOX_SIZE;
 		boxPtr[jointNum].back 	= coord.z - SLUG_COLLISIONBOX_SIZE;
-		
+
 
 			/* GET PREVIOUS SPLINE COORD FOR ROTATION CALCULATION */
-				
+
 		if (index >= 30)
 		{
 			prevCoord.x = points[index-30].x;
@@ -222,7 +222,7 @@ CollisionBoxType *boxPtr;
 
 
 				/* TRANSFORM JOINT'S MATRIX TO WORLD COORDS */
-	
+
 		jointMatrix = &skeleton->jointTransformMatrix[jointNum];		// get ptr to joint's xform matrix which was set during regular animation functions
 
 		Q3Matrix4x4_SetScale(&m, scale, scale, scale);
@@ -232,34 +232,19 @@ CollisionBoxType *boxPtr;
 
 		Q3Matrix4x4_SetTranslate(&m, coord.x, coord.y, coord.z);
 		MatrixMultiplyFast(&m3, &m, jointMatrix);
-				
+
 
 				/* INC INDEX FOR NEXT SEGMENT */
-				
+
 		index -= 30;
 		if (index < 0)
 			index += numPointsInSpline;
-			
+
 		theNode->SpecialF[0] -= gFramesPerSecondFrac * .8f;
 		scale += sin(theNode->SpecialF[0] + (float)jointNum*1.6f) * .3f;
-			
+
 	}
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

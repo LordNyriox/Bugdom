@@ -14,6 +14,3 @@ Boolean AddRollingBoulder(TerrainItemEntryType *itemPtr, long  x, long z);
 Boolean AddFloorSpike(TerrainItemEntryType *itemPtr, long  x, long z);
 
 
-
-
-
