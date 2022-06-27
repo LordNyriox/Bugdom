@@ -273,7 +273,7 @@ void InitInfobar(void)
 			/* CREATE TEXTURE */
 
 	gInfobarTextureName = Render_LoadTexture(
-			GL_RGB,
+			GL_RGBA,
 			1024,
 			128,
 			GL_BGRA,
@@ -297,7 +297,7 @@ void InitInfobar(void)
 			uMult * 640,
 			vMult * 62
 	);
-	gInfobarTopMesh->texturingMode = kQ3TexturingModeOpaque;
+	gInfobarTopMesh->texturingMode = kQ3TexturingModeAlphaBlend;
 	gInfobarTopMesh->glTextureName = gInfobarTextureName;
 
 			/* CREATE BOTTOM MESH */
@@ -323,7 +323,7 @@ void InitInfobar(void)
 				uMult * 640,
 				vMult * (BOTTOM_BAR_Y_IN_TEXTURE + 60));
 	}
-	gInfobarBottomMesh->texturingMode = kQ3TexturingModeOpaque;
+	gInfobarBottomMesh->texturingMode = kQ3TexturingModeAlphaBlend;
 	gInfobarBottomMesh->glTextureName = gInfobarTextureName;
 
 
