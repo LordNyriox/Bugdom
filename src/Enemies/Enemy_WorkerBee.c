@@ -34,7 +34,7 @@ static void  MoveWorkerBee_Pound(ObjNode *theNode);
 /*    CONSTANTS             */
 /****************************/
 
-#define	MAX_WORKERBEES					4
+#define	MAX_WORKERBEES					8
 
 #define	WORKERBEE_SPLINE_SPEED			100.0f
 

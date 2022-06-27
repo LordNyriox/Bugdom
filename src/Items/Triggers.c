@@ -397,11 +397,18 @@ void KickNut(ObjNode *kickerObj, ObjNode *nutObj)
 
 static void CreateNutContents(ObjNode *theNut)
 {
-		/* SPECIAL CHECK FOR BUDDY BUG IF ALREADY HAVE BUDDY BUG */
+		/* REPLACE BUDDY BUG IF ALREADY HAVE BUDDY BUG */
 
 	if ((theNut->NutContents == NUT_CONTENTS_BUDDY) && (gMyBuddy))
 	{
 		theNut->NutContents = NUT_CONTENTS_GREENCLOVER;		// put green clover in there instead of Buddy Bug
+	}
+
+		/* REPLACE GREEN CLOVER IF NOT HAVE BUDDY BUG */
+
+	if ((theNut->NutContents == NUT_CONTENTS_GREENCLOVER) && !(gMyBuddy))
+	{
+		theNut->NutContents = NUT_CONTENTS_BUDDY;			// put Buddy Bug in there instead of green clover
 	}
 
 
@@ -1012,8 +1019,6 @@ static const Byte	keyTypes[NUM_LEVEL_TYPES] =
 				break;
 
 		case	NUT_CONTENTS_MONEY:
-//				if (gMoney > 0)								// if already have $$ then turn this into a green clover
-//					goto clover;
 				group = POND_MGroupNum_Money;
 				type = POND_MObjType_Money;
 				break;

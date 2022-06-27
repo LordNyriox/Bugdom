@@ -37,7 +37,7 @@ static void MoveSpiderOnSpline(ObjNode *theNode);
 /*    CONSTANTS             */
 /****************************/
 
-#define	MAX_SPIDER				5
+#define	MAX_SPIDER				10
 
 #define	SPIDER_DROP_DIST		700.0f
 

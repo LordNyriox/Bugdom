@@ -28,7 +28,7 @@ static void UpdateBoxerFly(ObjNode *theNode);
 /*    CONSTANTS             */
 /****************************/
 
-#define	MAX_BOXERFLY				4
+#define	MAX_BOXERFLY				8
 
 #define	BOXERFLY_CHASE_RANGE		700.0f
 #define	BOXERFLY_PUNCH_RANGE		200.0f

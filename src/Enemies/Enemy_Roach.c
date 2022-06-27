@@ -32,7 +32,7 @@ static void  MoveRoach_OnButt(ObjNode *theNode);
 /*    CONSTANTS             */
 /****************************/
 
-#define	MAX_ROACHS					8
+#define	MAX_ROACHS					10
 
 #define	ROACH_SCALE					1.7f
 
@@ -85,11 +85,10 @@ Boolean AddEnemy_Roach(TerrainItemEntryType *itemPtr, long x, long z)
 {
 ObjNode	*newObj;
 
-//	if (gNumEnemies >= MAX_ENEMIES)								// keep from getting absurd
-//		return(false);
-
 	if (!(itemPtr->parm[3] & 1))								// see if always add
 	{
+		if (gNumEnemies >= MAX_ENEMIES)							// keep from getting absurd
+			return(false);
 		if (gNumEnemyOfKind[ENEMY_KIND_ROACH] >= MAX_ROACHS)
 			return(false);
 	}

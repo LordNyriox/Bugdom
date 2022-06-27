@@ -29,7 +29,7 @@ static void UpdateMosquito(ObjNode *theNode);
 /*    CONSTANTS             */
 /****************************/
 
-#define	MAX_MOSQUITO				4
+#define	MAX_MOSQUITO				8
 
 #define	MOSQUITO_CHASE_RANGE		400.0f
 #define	MOSQUITO_BITE_RANGE			160.0f

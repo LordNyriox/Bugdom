@@ -27,7 +27,7 @@ static void MoveSkippyOnSpline(ObjNode *theNode);
 /*    CONSTANTS             */
 /****************************/
 
-#define	MAX_SKIPPY				5
+#define	MAX_SKIPPY				10
 
 #define	SKIPPY_CHASE_RANGE		500.0f
 
@@ -65,6 +65,8 @@ Boolean AddEnemy_Skippy(TerrainItemEntryType *itemPtr, long x, long z)
 ObjNode	*newObj;
 
 	if (gNumEnemies >= MAX_ENEMIES)								// keep from getting absurd
+		return(false);
+	if (gNumEnemyOfKind[ENEMY_KIND_SKIPPY] >= MAX_SKIPPY)
 		return(false);
 
 				/* MAKE DEFAULT SKELETON ENEMY */
