@@ -113,12 +113,12 @@ static const bool	gLevelHasCeiling[NUM_LEVEL_TYPES] =
 
 static const Byte	gLevelSuperTileActiveRange[NUM_LEVEL_TYPES] =
 {
-	5,						// garden
-	4,						// boat
-	5,						// dragonfly
-	4,						// hive
-	4,						// night
-	4						// anthill
+	20,						// garden
+	16,						// boat
+	20,						// dragonfly
+	8,						// hive
+	16,						// night
+	8						// anthill
 };
 
 static const float	gLevelFogStart[NUM_LEVEL_TYPES] =
@@ -144,11 +144,11 @@ static const float	gLevelFogEnd[NUM_LEVEL_TYPES] =
 
 static const float	gLevelAutoFadeStart[NUM_LEVEL_TYPES] =
 {
-	YON_DISTANCE+400,		// garden
+	YON_DISTANCE+5500,		// garden
 	0,						// boat
 	0,						// dragonfly
 	0,						// hive
-	YON_DISTANCE-250,		// night
+	YON_DISTANCE+4000,		// night
 	0,						// anthill
 };
 
@@ -197,8 +197,8 @@ static const TQ3ColorRGBA	gLevelFogColor[NUM_LEVEL_TYPES] =
 // Source port addition: on rare occasions you get to see the void "above" the cyclorama.
 // To camouflage this, we make the clear color roughly match the color at the top of the cyc.
 // This is not necessarily the same color as the fog!
-// NOTE: If there's no cyc in a level, this value is ignored and the fog color is used instead.
-static const TQ3ColorRGBA	gLevelClearColorWithCyc[NUM_LEVEL_TYPES] =
+// NOTE: If there's no cyc in a level, this value is still used.
+static const TQ3ColorRGBA	gLevelClearColor[NUM_LEVEL_TYPES] =
 {
 	{ 0.352f, 0.380f, 1.000f, 1.000f },				// garden		(DIFFERENT FROM FOG)
 	{ 0.900f, 0.900f, 0.850f, 1.000f },				// boat			(same)
@@ -466,15 +466,22 @@ QD3DSetupInputType	viewDef;
 	gBestCheckPoint			= -1;								// no checkpoint yet
 
 
-	if (gSuperTileActiveRange == 5)								// set yon clipping value
+	switch (gLevelType)											// set yon clipping value
 	{
-		gCurrentYon = YON_DISTANCE + 1700;
-		gCycScale = 81;
-	}
-	else
-	{
-		gCurrentYon = YON_DISTANCE;
-		gCycScale = 50;
+		case LEVEL_TYPE_LAWN:									// high visibility outdoor levels
+		case LEVEL_TYPE_FOREST:
+			gCurrentYon = YON_DISTANCE + 10000;
+			gCycScale = 300;									// gCycScale = (0.02f * gCurrentYon)
+			break;
+		case LEVEL_TYPE_POND:									// low visibility outdoor levels
+		case LEVEL_TYPE_NIGHT:
+			gCurrentYon = YON_DISTANCE + 5000;
+			gCycScale = 200;
+			break;
+		default:												// indoor levels
+			gCurrentYon = YON_DISTANCE;
+			gCycScale = 100;
+			break;
 	}
 
 
@@ -552,11 +559,8 @@ QD3DSetupInputType	viewDef;
 	viewDef.lights.fogMode		= kQ3FogModePlaneBasedLinear;  // Source port note: plane-based linear fog accurately reproduces fog rendering on real Macs
 
 	// Source port addition: camouflage seam in sky with custom clear color that roughly matches top of cyc
-	if (gUseCyclorama)
-	{
-		viewDef.lights.useCustomFogColor = true;	// need this so fog color will be different from clear color
-		viewDef.view.clearColor = gLevelClearColorWithCyc[gLevelType];
-	}
+	viewDef.lights.useCustomFogColor = true;	// need this so fog color will be different from clear color
+	viewDef.view.clearColor = gLevelClearColor[gLevelType];
 
 //	if (gUseCyclorama && (gLevelType != LEVEL_TYPE_FOREST) && (gLevelType != LEVEL_TYPE_NIGHT))
 //		viewDef.view.dontClear		= true;

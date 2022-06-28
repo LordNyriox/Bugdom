@@ -65,7 +65,7 @@ enum
 
 #define	TERRAIN_SUPERTILE_UNIT_SIZE	(SUPERTILE_SIZE*TERRAIN_POLYGON_SIZE)		// world unit size of a supertile
 
-#define	MAX_SUPERTILE_ACTIVE_RANGE	5					// max value of gSuperTileActiveRange
+#define	MAX_SUPERTILE_ACTIVE_RANGE	20					// max value of gSuperTileActiveRange
 // The largest map in the game (Night.ter) is 50x40 supertiles == 2000 supertiles.
 // Therefore, the maximum useful value for MAX_SUPERTILE_ACTIVE_RANGE is 23 (because (23*2)**2 == 2116 supertiles)
 

@@ -199,7 +199,7 @@ extern	short						gMoney;
 extern	short						gNumBlueClovers;
 extern	short						gNumCollisions;
 extern	short						gNumEnemies;
-extern	short						gNumEnemyOfKind[];
+extern	int32_t						gNumEnemyOfKind[];
 extern	short						gNumGoldClovers;
 extern	short						gNumGreenClovers;
 extern	short						gNumLadyBugsThisArea;
