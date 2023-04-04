@@ -27,7 +27,7 @@ static void Calc3DEffectVolume(short effectNum, TQ3Point3D *where, float volAdju
 /*    CONSTANTS             */
 /****************************/
 
-#define		MAX_CHANNELS			14
+#define		MAX_CHANNELS			28
 
 
 typedef struct
@@ -47,7 +47,7 @@ typedef struct
 } LoadedEffect;
 
 
-#define	VOLUME_DISTANCE_FACTOR	.004f		// bigger == sound decays FASTER with dist, smaller = louder far away
+#define	VOLUME_DISTANCE_FACTOR	.005f		// bigger == sound decays FASTER with dist, smaller = louder far away
 
 
 enum
