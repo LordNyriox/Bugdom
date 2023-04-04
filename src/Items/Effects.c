@@ -26,8 +26,8 @@ static void MoveRipple(ObjNode *theNode);
 /*    CONSTANTS             */
 /****************************/
 
-#define	MAX_PARTICLE_GROUPS		50
-#define	MAX_PARTICLES			200		// (note change Byte below if > 255)
+#define	MAX_PARTICLE_GROUPS		255
+#define	MAX_PARTICLES			255		// (note change Byte below if > 255)
 #define	NUM_PARTICLE_TEXTURES	8
 
 _Static_assert(MAX_PARTICLES <= 255, "rewrite ParticleGroupType to support > 255 particles");
@@ -635,8 +635,10 @@ static const TQ3Vector3D up = {0,1,0};
 
 					/* CULL PARTICLE TO AVOID OVERDRAW (SOURCE PORT ADD) */
 
-			if (!IsSphereInFrustum_XYZ(coord, pg->baseScale))
+			if (!IsSphereInFrustum_XYZ(coord, 0))		// radius 0: cull somewhat aggressively
+			{											// (use negative radius to cull even more)
 				continue;
+			}
 
 					/* TRANSFORM PARTICLE VERTICES & ADD TO TRIMESH */
 
