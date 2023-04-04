@@ -5,7 +5,7 @@
 #include "terrain.h"
 #include "splineitems.h"
 
-#define	MAX_ENEMIES	11
+#define	MAX_ENEMIES	30				// does not scale with render distance
 
 #define	DEFAULT_ENEMY_COLLISION_CTYPES	(CTYPE_MISC|CTYPE_HURTENEMY|CTYPE_ENEMY|CTYPE_LIQUID)
 #define	DEATH_ENEMY_COLLISION_CTYPES	(CTYPE_MISC|CTYPE_ENEMY)
