@@ -1,6 +1,10 @@
 name: Make Release Builds
 
-on: [workflow_dispatch]
+on:
+  push:
+    branches:
+      - test
+  workflow_dispatch:
 
 jobs:
   build-linux-appimage:
@@ -10,6 +14,8 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: 'recursive'
+      - name: Update submodules from origin
+        run: git submodule update --recursive --remote
       - name: Get build dependencies for SDL from APT  # cf. https://github.com/libsdl-org/SDL/blob/main/docs/README-linux.md
         run: |
           sudo apt update
@@ -34,6 +40,8 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: 'recursive'
+      - name: Update submodules from origin
+        run: git submodule update --recursive --remote
       - run: python3 build.py --dependencies
       - run: python3 build.py --configure -G 'Visual Studio 17 2022'
       - run: python3 build.py --build
@@ -46,16 +54,18 @@ jobs:
   build-macos:
     runs-on: macos-11
     timeout-minutes: 15
-    env:
-      CODE_SIGN_IDENTITY: ${{ secrets.APPLE_CODE_SIGN_IDENTITY }}
+#    env:
+#      CODE_SIGN_IDENTITY: ${{ secrets.APPLE_CODE_SIGN_IDENTITY }}
     steps:
-      - uses: apple-actions/import-codesign-certs@v1
-        with:
-          p12-file-base64: ${{ secrets.APPLE_DEVELOPER_CERTIFICATE_P12_BASE64 }}
-          p12-password: ${{ secrets.APPLE_DEVELOPER_CERTIFICATE_PASSWORD }}
+#      - uses: apple-actions/import-codesign-certs@v1
+#        with:
+#          p12-file-base64: ${{ secrets.APPLE_DEVELOPER_CERTIFICATE_P12_BASE64 }}
+#          p12-password: ${{ secrets.APPLE_DEVELOPER_CERTIFICATE_PASSWORD }}
       - uses: actions/checkout@v3
         with:
           submodules: 'recursive'
+      - name: Update submodules from origin
+        run: git submodule update --recursive --remote
       - name: Get artifact name
         run: |
           ARTIFACT_NAME="$(python3 build.py --print-artifact-name)"
@@ -65,12 +75,12 @@ jobs:
       - run: python3 build.py --configure
       - run: python3 build.py --build
       - run: python3 build.py --package
-      - name: Notarize
-        run: |
-          xcrun notarytool store-credentials GameNotarizationProfile --apple-id ${{ secrets.APPLE_NOTARIZATION_USERNAME }} --password ${{ secrets.APPLE_NOTARIZATION_PASSWORD }} --team-id ${{ secrets.APPLE_DEVELOPMENT_TEAM }}
-          xcrun notarytool submit "dist/$ARTIFACT_NAME" --keychain-profile GameNotarizationProfile --wait
-      - name: Staple
-        run: xcrun stapler staple "dist/$ARTIFACT_NAME"
+#      - name: Notarize
+#        run: |
+#          xcrun notarytool store-credentials GameNotarizationProfile --apple-id ${{ secrets.APPLE_NOTARIZATION_USERNAME }} --password ${{ secrets.APPLE_NOTARIZATION_PASSWORD }} --team-id ${{ secrets.APPLE_DEVELOPMENT_TEAM }}
+#          xcrun notarytool submit "dist/$ARTIFACT_NAME" --keychain-profile GameNotarizationProfile --wait
+#      - name: Staple
+#        run: xcrun stapler staple "dist/$ARTIFACT_NAME"
       - uses: actions/upload-artifact@v3
         with:
           name: mac-build
