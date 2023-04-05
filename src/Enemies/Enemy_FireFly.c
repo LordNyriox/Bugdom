@@ -29,7 +29,7 @@ static void FireFlyGoAway(ObjNode *theNode);
 /*    CONSTANTS             */
 /****************************/
 
-#define	MAX_FIREFLY				4
+#define	MAX_FIREFLY				8
 
 #define	FIREFLY_SCALE				.6f
 #define	FLARE_SCALE					2.2f

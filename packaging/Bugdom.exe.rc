@@ -23,7 +23,7 @@ BEGIN
         BLOCK "040904b0" // US English cp1252 (hex)
         BEGIN
             VALUE "CompanyName",        "Pangea Software, Inc."
-            VALUE "FileDescription",    "Bugdom"
+            VALUE "FileDescription",    "Bugdom Extreme"
             VALUE "FileVersion",        PROJECT_VERSION
             VALUE "InternalName",       "Bugdom"
             VALUE "LegalCopyright",     "© 1999 Pangea Software, Inc. © 2023 Iliyas Jorio."

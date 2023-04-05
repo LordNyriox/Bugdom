@@ -28,10 +28,10 @@ static void  MoveFlyingBee_Dead(ObjNode *theNode);
 /*    CONSTANTS             */
 /****************************/
 
-#define	MAX_FLYINGBEE				4
-#define	MAX_FLYINGBEE2				8
+#define	MAX_FLYINGBEE				8
+#define	MAX_FLYINGBEE2				10
 
-#define	FLYINGNBEE_KNOCKDOWN_SPEED	1100.0f
+#define	FLYINGBEE_KNOCKDOWN_SPEED	1100.0f		// speed ball needs to go to knock this down
 
 #define	FLYINGBEE_CHASE_RANGE		2000.0f
 #define	FLYINGBEE_ATTACK_RANGE		450.0f
@@ -52,9 +52,6 @@ enum
 	FLYINGBEE_ANIM_FALL,
 	FLYINGBEE_ANIM_DEATH
 };
-
-
-#define	FLYINGBEE_KNOCKDOWN_SPEED	1400.0f		// speed ball needs to go to knock this down
 
 
 #define	BEE_ACCEL			1.7f
@@ -587,7 +584,7 @@ static void UpdateFlyingBee(ObjNode *theNode)
 
 Boolean BallHitFlyingBee(ObjNode *me, ObjNode *enemy)
 {
-	if (me->Speed > FLYINGNBEE_KNOCKDOWN_SPEED)
+	if (me->Speed > FLYINGBEE_KNOCKDOWN_SPEED)
 	{	
 		KillFlyingBee(enemy, gDelta.x * .3f, gDelta.y * .3f, gDelta.z * .3f);
 		PlayEffect_Parms3D(EFFECT_POUND, &gCoord, kMiddleC+2, 2.0);

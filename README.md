@@ -1,12 +1,12 @@
-# <p align="center" width="100%"><img alt="Bugdom" src="docs/bugtitle.png"></p>
+# <p align="center" width="100%"><img alt="Bugdom Extreme" src="docs/bugextreme.png"></p>
 
-[![release](https://img.shields.io/github/v/release/LordNyriox/Bugdom)](https://github.com/LordNyriox/Bugdom/releases/latest)
-[![license](https://img.shields.io/badge/license-CC_BY--NC--SA_4.0-lightgrey)](LICENSE.md)
-[![repo size](https://img.shields.io/github/repo-size/LordNyriox/Bugdom)](https://github.com/LordNyriox/Bugdom)
+[![release](https://img.shields.io/github/release/LordNyriox/Bugdom.svg)](https://github.com/LordNyriox/Bugdom/releases/latest)
+[![license](https://img.shields.io/badge/license-CC_BY--NC--SA_4.0-lightgrey.svg)](LICENSE.md)
+[![repo size](https://img.shields.io/github/repo-size/LordNyriox/Bugdom.svg)](https://github.com/LordNyriox/Bugdom)
 [![build](https://img.shields.io/github/actions/workflow/status/LordNyriox/Bugdom/FullCompileCheck.yml?branch=extreme)](https://github.com/LordNyriox/Bugdom/actions/workflows/FullCompileCheck.yml?query=branch%3Aextreme)
-[![last commit](https://img.shields.io/github/last-commit/LordNyriox/Bugdom/extreme)](https://github.com/LordNyriox/Bugdom/commits/extreme)
+[![last commit](https://img.shields.io/github/last-commit/LordNyriox/Bugdom/extreme.svg)](https://github.com/LordNyriox/Bugdom/commits/extreme)
 
-This is a fork of Pangea Software’s *Bugdom*, updated to run on modern operating systems.
+This is a fork of Pangea Software’s *Bugdom*, updated to run on modern operating systems. Named in honor of Pangea Software’s [*Nanosaur Extreme*](https://www.pangeasoft.net/nano/files.html), a 2002 update of *Nanosaur* which once did something similar.
 
 Forked from [**@jorio**](https://github.com/jorio)’s version, at [jorio/Bugdom](https://github.com/jorio/Bugdom), which is [approved by Pangea Software](https://pangeasoft.net/bug/register.html).
 
@@ -41,7 +41,7 @@ This fork aims to provide the best way to experience *Bugdom* today. It introduc
 
 *Bugdom* has been re-released at [jorio/Bugdom](https://github.com/jorio/Bugdom) under the [CC BY-NC-SA 4.0](https://github.com/jorio/Bugdom/blob/master/LICENSE.md) license with permission from Pangea Software, Inc.
 
-In compliance with the ShareAlike clause of said license, this fork is released under the [same](LICENSE.md) license.
+In compliance with the ShareAlike clause of said license, this fork is also released under the [CC BY-NC-SA 4.0](LICENSE.md) license.
 
 Bugdom® and Nanosaur™ are trademarks of Pangea Software, Inc.
 

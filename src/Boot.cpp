@@ -178,7 +178,7 @@ tryAgain:
 
 	// Create the window
 	gSDLWindow = SDL_CreateWindow(
-			"Bugdom " PROJECT_VERSION,
+			"Bugdom Extreme " PROJECT_VERSION,
 			SDL_WINDOWPOS_UNDEFINED_DISPLAY(display),
 			SDL_WINDOWPOS_UNDEFINED_DISPLAY(display),
 			initialWidth,

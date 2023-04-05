@@ -28,7 +28,7 @@ static void  MoveLarva_Dead(ObjNode *theNode);
 /*    CONSTANTS             */
 /****************************/
 
-#define	MAX_LARVA				5
+#define	MAX_LARVA				10
 
 #define	LARVA_CHASE_RANGE		700.0f
 

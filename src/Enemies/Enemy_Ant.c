@@ -47,7 +47,7 @@ static void MoveAntRock(ObjNode *theNode);
 /*    CONSTANTS             */
 /****************************/
 
-#define	MAX_ANTS				5						// max # allowed active at once
+#define	MAX_ANTS				10						// max # allowed active at once
 
 #define	ANT_SCALE				1.4f
 

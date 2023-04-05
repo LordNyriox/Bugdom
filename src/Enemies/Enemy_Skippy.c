@@ -27,7 +27,7 @@ static void MoveSkippyOnSpline(ObjNode *theNode);
 /*    CONSTANTS             */
 /****************************/
 
-#define	MAX_SKIPPY				5
+#define	MAX_SKIPPY				10
 
 #define	SKIPPY_CHASE_RANGE		500.0f
 
@@ -65,6 +65,8 @@ Boolean AddEnemy_Skippy(TerrainItemEntryType *itemPtr, long x, long z)
 ObjNode	*newObj;
 
 	if (gNumEnemies >= MAX_ENEMIES)								// keep from getting absurd
+		return(false);
+	if (gNumEnemyOfKind[ENEMY_KIND_SKIPPY] >= MAX_SKIPPY)
 		return(false);
 
 				/* MAKE DEFAULT SKELETON ENEMY */
@@ -194,6 +196,27 @@ float	r,s;
 
 static void  MoveSkippy_Death(ObjNode *theNode)
 {
+			/* GET INFO */
+
+	GetObjectInfo(theNode);
+
+			/* SEE IF GONE */
+
+	if (theNode->StatusBits & STATUS_BIT_ISCULLED)		// if was culled on last frame and is far enough away, then delete it
+	{
+		if (CalcQuickDistance(gCoord.x, gCoord.z, gMyCoord.x, gMyCoord.z) > 600.0f)
+		{
+			DeleteEnemy(theNode);
+			return;
+		}
+	}
+
+			/* DO ENEMY COLLISION */
+
+	if (DoEnemyCollisionDetect(theNode,DEATH_ENEMY_COLLISION_CTYPES))
+		return;
+
+			/* UPDATE */
 
 	UpdateSkippy(theNode);
 }

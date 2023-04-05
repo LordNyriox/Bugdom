@@ -34,6 +34,8 @@ static void UpdateFireAnt(ObjNode *theNode, Boolean updateFlame);
 /*    CONSTANTS             */
 /****************************/
 
+#define	MAX_FIREANTS				10						// max # allowed active at once
+
 #define	FIREANT_HEAD_LIMB			1						// joint # of head
 
 #define	FIREANT_SCALE				1.2f
@@ -90,13 +92,12 @@ Boolean AddEnemy_FireAnt(TerrainItemEntryType *itemPtr, long x, long z)
 ObjNode	*newObj;
 
 				/* SEE IF TOO MANY */
-				
-//	if (gNumEnemies >= MAX_ENEMIES)								// keep from getting absurd
-//		return(false);
-	
+
 	if (!(itemPtr->parm[3] & 1))								// see if always add
 	{
-		if (gNumEnemyOfKind[ENEMY_KIND_FIREANT] > MAX_ENEMIES)		// only care if too many of this kind
+		if (gNumEnemies >= MAX_ENEMIES)							// keep from getting absurd
+			return(false);
+		if (gNumEnemyOfKind[ENEMY_KIND_FIREANT] >= MAX_FIREANTS)
 			return(false);
 	}
 	

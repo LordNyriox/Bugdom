@@ -22,7 +22,7 @@ cache_dir = os.path.abspath("cache")
 dist_dir = os.path.abspath("dist")
 
 game_name           = "Bugdom"  # no spaces
-game_name_human     = "Bugdom"  # spaces and other special characters allowed
+game_name_human     = "Bugdom Extreme"  # spaces and other special characters allowed
 game_package        = "io.jor.bugdom"  # unique package identifier
 game_ver            = "1.3.3"
 
