@@ -514,9 +514,9 @@ QD3DSetupInputType	viewDef;
 	viewDef.camera.yon 				= gCurrentYon;
 	
 	viewDef.camera.fov 				= 1.1;
-	
-	viewDef.view.paneClip.top		=	62;
-	viewDef.view.paneClip.bottom	=	gGamePrefs.showBottomBar ? 60 : 0;
+
+	viewDef.view.paneClip.top		=	0;
+	viewDef.view.paneClip.bottom	=	0;
 	viewDef.view.paneClip.left		=	0;
 	viewDef.view.paneClip.right		=	0;
 
