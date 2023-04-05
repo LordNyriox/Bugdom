@@ -45,8 +45,8 @@ typedef struct RenderModifiers
 
 enum
 {
-	kDrawOrder_Terrain = -128,
-	kDrawOrder_Cyclorama,
+	kDrawOrder_Cyclorama = -128,	// give it a lower value than the terrain to draw it first
+	kDrawOrder_Terrain = -127,
 	kDrawOrder_Fences,
 	kDrawOrder_Shadows,
 	kDrawOrder_Default = 0,

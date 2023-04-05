@@ -29,7 +29,7 @@ static Boolean KillEnemy(ObjNode *theEnemy);
 /*    VARIABLES      */
 /*********************/
 
-short		gNumEnemyOfKind[NUM_ENEMY_KINDS];
+int32_t		gNumEnemyOfKind[NUM_ENEMY_KINDS];
 short		gNumEnemies;
 
 
