@@ -284,17 +284,6 @@ static void  MoveRoach_OnButt(ObjNode *theNode)
 
 static void  MoveRoach_Death(ObjNode *theNode)
 {
-			/* SEE IF GONE */
-			
-	if (theNode->StatusBits & STATUS_BIT_ISCULLED)		// if was culled on last frame and is far enough away, then delete it
-	{
-		if (CalcQuickDistance(gCoord.x, gCoord.z, gMyCoord.x, gMyCoord.z) > 1000.0f)
-		{
-			DeleteEnemy(theNode);
-			return;
-		}		
-	}
-
 
 				/* MOVE IT */
 				

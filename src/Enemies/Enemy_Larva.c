@@ -236,11 +236,8 @@ static void  MoveLarva_Squished(ObjNode *theNode)
 
 static void  MoveLarva_Dead(ObjNode *theNode)
 {
-	if (theNode->StatusBits & STATUS_BIT_ISCULLED)		// if was culled on last frame and is far enough away, then delete it
-	{
-		DeleteEnemy(theNode);
-		return;
-	}
+	UpdateEnemy(theNode);		
+
 }
 
 

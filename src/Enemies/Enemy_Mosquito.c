@@ -425,16 +425,6 @@ static void  MoveMosquito_Death(ObjNode *theNode)
 				/* GET INFO */
 				
 	GetObjectInfo(theNode);
-	
-	
-	if (theNode->StatusBits & STATUS_BIT_ISCULLED)		// if was culled on last frame and is far enough away, then delete it
-	{
-		if (CalcQuickDistance(gCoord.x, gCoord.z, gMyCoord.x, gMyCoord.z) > 600.0f)
-		{
-			DeleteEnemy(theNode);
-			return;
-		}
-	}
 
 
 				/* MOVE IT */

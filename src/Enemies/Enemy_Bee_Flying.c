@@ -472,14 +472,6 @@ float	fps = gFramesPerSecondFrac;
 static void  MoveFlyingBee_Dead(ObjNode *theNode)
 {	
 
-			/* SEE IF GONE */
-			
-	if (theNode->StatusBits & STATUS_BIT_ISCULLED)			// if was culled on last frame then delete it
-	{
-		DeleteEnemy(theNode);
-		return;	
-	}
-
 				/* MOVE IT */
 				
 	if (theNode->StatusBits & STATUS_BIT_ONGROUND)			// if on ground, add friction
