@@ -41,7 +41,7 @@ bool DoLevelSelect(void)
 	/* SETUP */
 	/*********/
 
-	SetupUIStuff(kUIBackground_White);
+	SetupUIStuff(kUIBackground_Cyclorama);
 	QD3D_CalcFramesPerSecond();
 
 	GLuint levelScreenshots[NUM_LEVELS];

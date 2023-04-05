@@ -2,7 +2,7 @@
 
 ## In main menu
 
-Hold down `F10` and click on the START icon to bring up a level select dialog.
+Click on the START icon to bring up a level select dialog.
 
 ## In game
 
@@ -12,10 +12,9 @@ The backtick key is just above Tab on a US keyboard layout.
 | Key combo       | What it does                    |
 |-----------------|---------------------------------|
 | `F8`            | cycle debug modes               |
-| backtick + `F1` | win this level                  |
-| backtick + `F2` | get shield                      |
-| backtick + `F3` | full health                     |
-| backtick + `F4` | full ball timer                 |
+| backtick + `F2` | get shield for 1 minute         |
+| backtick + `F3` | spawn buddy bug                 |
+| backtick + `F4` | full health and ball timer      |
 | backtick + `F5` | full inventory                  |
 | backtick + `F6` | toggle liquid invincibility     |
 | backtick + `F7` | hurt player                     |

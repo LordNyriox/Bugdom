@@ -267,18 +267,15 @@ static void PlayGame(void)
 	gGameOverFlag = false;
 
 
-			/* CHEAT: LET USER SELECT STARTING LEVEL & AREA */
+			/* LET USER SELECT STARTING LEVEL & AREA */
 
 	UpdateInput();
-	
-	if (GetKeyState_SDL(SDL_SCANCODE_F10))				// see if do level cheat
+
+	if (!gRestoringSavedGame)							// only select level if not restoring
 	{
 		if (!DoLevelSelect())
 			return;
 	}
-	else
-	if (!gRestoringSavedGame)							// otherwise start @ 0 if not restoring
-		gRealLevel = 0;
 
 			/**********************/
 			/* GO THRU EACH LEVEL */
@@ -704,25 +701,26 @@ static void DoDeathReset(void)
 static void CheckForCheats(void)
 {
 #if !(_DEBUG)	// in debug builds, expose cheats without needing command/control key
-	if (GetKeyState_SDL(SDL_SCANCODE_GRAVE))	// must hold down the help key
+	if (GetKeyState_SDL(SDL_SCANCODE_GRAVE))					// must hold down the help key
 #endif
 	{
-		if (GetNewKeyState_SDL(SDL_SCANCODE_F1))	// win the level!
-			gAreaCompleted = true;
+//		if (GetNewKeyState_SDL(SDL_SCANCODE_F1))				// win the level!
+//			gAreaCompleted = true;
 
-		if (GetNewKeyState_SDL(SDL_SCANCODE_F2))	// get shield
-			gShieldTimer = SHIELD_TIME;
+		if (GetNewKeyState_SDL(SDL_SCANCODE_F2))				// get shield for 1 minute
+			gShieldTimer = 60.0f;
 
-		if (GetKeyState_SDL(SDL_SCANCODE_F3))	// get full health
-			GetHealth(1.0);							
-			
-		if (GetKeyState_SDL(SDL_SCANCODE_F4))	// get full ball-time
+		if ((GetKeyState_SDL(SDL_SCANCODE_F3)) && !(gMyBuddy))	// spawn buddy bug
+			CreateMyBuddy(gMyCoord.x, gMyCoord.z);
+
+		if (GetKeyState_SDL(SDL_SCANCODE_F4))					// get full health and ball-time
 		{
+			GetHealth(1.0);							
 			gBallTimer = 1.0f;
 			gInfobarUpdateBits |= UPDATE_TIMER;	
 		}	
-		
-		if (GetKeyState_SDL(SDL_SCANCODE_F5))	// get full inventory
+
+		if (GetKeyState_SDL(SDL_SCANCODE_F5))					// get full inventory
 		{
 			GetMoney();
 			GetKey(0);
@@ -732,10 +730,10 @@ static void CheckForCheats(void)
 			GetKey(4);
 		}
 
-		if (GetNewKeyState_SDL(SDL_SCANCODE_F6))	// see if liquid invincible
+		if (GetNewKeyState_SDL(SDL_SCANCODE_F6))				// see if liquid invincible
 			gLiquidCheat = !gLiquidCheat;
 
-		if (GetKeyState_SDL(SDL_SCANCODE_F7))		// hurt player
+		if (GetKeyState_SDL(SDL_SCANCODE_F7))					// hurt player
 			PlayerGotHurt(NULL, 1/60.0f, 1.0f, false, true, 1/60.0f);
 
 	}
