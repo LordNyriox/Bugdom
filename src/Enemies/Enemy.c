@@ -272,8 +272,10 @@ float	d,minDist = 10000000;
 	{
 		if (thisNodePtr->Slot >= SLOT_OF_DUMB)					// see if reach end of usable list
 			break;
-	
-		if (thisNodePtr->CType & CTYPE_ENEMY)
+
+		if ((thisNodePtr->CType & CTYPE_ENEMY)
+		&& (thisNodePtr->Kind != ENEMY_KIND_SLUG) && (thisNodePtr->Kind != ENEMY_KIND_CATERPILLER)		// ignore unkillable enemies
+		&& (thisNodePtr->Kind != ENEMY_KIND_PONDFISH) && (thisNodePtr->Kind != ENEMY_KIND_WORKERBEE))
 		{
 			d = CalcQuickDistance(pt->x,pt->z,thisNodePtr->Coord.x, thisNodePtr->Coord.z);
 			if (d < minDist)
