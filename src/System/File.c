@@ -184,8 +184,7 @@ static void ReadDataFromSkeletonFile(
 		const FSSpec *fsSpec3DMF)
 {
 Handle				hand;
-short				i,k,j;
-long				numJoints,numAnims,numKeyframes;
+long				i,k,j,numJoints,numAnims,numKeyframes;
 AnimEventType		*animEventPtr;
 JointKeyframeType	*keyFramePtr;
 SkeletonFile_Header_Type	*headerPtr;
