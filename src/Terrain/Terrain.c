@@ -310,7 +310,7 @@ static	TQ3Param2D				uvs[NUM_VERTICES_IN_SUPERTILE];
 
 
 
-	gSupertileBudget = gSuperTileActiveRange * gSuperTileActiveRange * 4;		// calc # supertiles we will need
+	gSupertileBudget = (long)gSuperTileActiveRange * gSuperTileActiveRange * 4;		// calc # supertiles we will need
 
 	long upperBound = gNumSuperTilesDeep * gNumSuperTilesWide;					// if we have the budget to show the entire map at once,
 	if (gSupertileBudget > upperBound)											// cap supertile budget to # of supertiles in map
