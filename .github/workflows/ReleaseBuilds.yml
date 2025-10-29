@@ -1,6 +1,13 @@
 name: Make Release Builds
 
-on: [workflow_dispatch]
+on:
+  push:
+    branches:
+      - test
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   build-linux-appimage:
@@ -13,8 +20,10 @@ jobs:
           - { name: x86_64, os: ubuntu-22.04 }
           - { name: aarch64, os: ubuntu-22.04-arm }
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with: {submodules: 'recursive'}
+      - name: Update submodules from origin
+        run: git submodule update --recursive --remote
       - name: Get build dependencies from APT
         # cf. https://github.com/libsdl-org/SDL/blob/main/docs/README-linux.md
         # + desktop-file-utils for appimagetool
@@ -42,8 +51,10 @@ jobs:
     runs-on: windows-2022
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with: {submodules: 'recursive'}
+      - name: Update submodules from origin
+        run: git submodule update --recursive --remote
       - run: |
           $ARTIFACT_NAME = python3 build.py --print-artifact-name
           echo "ARTIFACT_NAME=$ARTIFACT_NAME" >> $env:GITHUB_ENV
@@ -60,27 +71,29 @@ jobs:
   build-macos:
     runs-on: macos-latest  # as of January 2025, this still supports the macOS 10.13 deployment target
     timeout-minutes: 15
-    env:
-      CODE_SIGN_IDENTITY: ${{ secrets.APPLE_CODE_SIGN_IDENTITY }}
+#    env:
+#      CODE_SIGN_IDENTITY: ${{ secrets.APPLE_CODE_SIGN_IDENTITY }}
     steps:
-      - uses: apple-actions/import-codesign-certs@v3
-        with:
-          p12-file-base64: ${{ secrets.APPLE_DEVELOPER_CERTIFICATE_P12_BASE64 }}
-          p12-password: ${{ secrets.APPLE_DEVELOPER_CERTIFICATE_PASSWORD }}
-      - uses: actions/checkout@v4
+#      - uses: apple-actions/import-codesign-certs@v3
+#        with:
+#          p12-file-base64: ${{ secrets.APPLE_DEVELOPER_CERTIFICATE_P12_BASE64 }}
+#          p12-password: ${{ secrets.APPLE_DEVELOPER_CERTIFICATE_PASSWORD }}
+      - uses: actions/checkout@v5
         with: {submodules: 'recursive'}
+      - name: Update submodules from origin
+        run: git submodule update --recursive --remote
       - name: Get artifact name
         run: echo "ARTIFACT_NAME=$(python3 build.py --print-artifact-name)" >> $GITHUB_ENV
       - run: python3 build.py --dependencies
       - run: python3 build.py --configure
       - run: python3 build.py --build
       - run: python3 build.py --package
-      - name: Notarize
-        run: |
-          xcrun notarytool store-credentials GameNotarizationProfile --apple-id ${{ secrets.APPLE_NOTARIZATION_USERNAME }} --password ${{ secrets.APPLE_NOTARIZATION_PASSWORD }} --team-id ${{ secrets.APPLE_DEVELOPMENT_TEAM }}
-          xcrun notarytool submit "dist/$ARTIFACT_NAME" --keychain-profile GameNotarizationProfile --wait
-      - name: Staple
-        run: xcrun stapler staple "dist/$ARTIFACT_NAME"
+#      - name: Notarize
+#        run: |
+#          xcrun notarytool store-credentials GameNotarizationProfile --apple-id ${{ secrets.APPLE_NOTARIZATION_USERNAME }} --password ${{ secrets.APPLE_NOTARIZATION_PASSWORD }} --team-id ${{ secrets.APPLE_DEVELOPMENT_TEAM }}
+#          xcrun notarytool submit "dist/$ARTIFACT_NAME" --keychain-profile GameNotarizationProfile --wait
+#      - name: Staple
+#        run: xcrun stapler staple "dist/$ARTIFACT_NAME"
       - uses: actions/upload-artifact@v4
         with:
           name: ${{env.ARTIFACT_NAME}}

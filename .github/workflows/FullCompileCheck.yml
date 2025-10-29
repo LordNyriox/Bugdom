@@ -1,6 +1,13 @@
 name: Full Compile Check
 
-on: [workflow_dispatch]
+on:
+  push:
+    branches:
+      - extreme
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   full-compile-check:
@@ -12,8 +19,8 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-          - { name: Linux/GCC, os: ubuntu-latest, extraflags: "--system-sdl" }
-          - { name: Linux/Clang, os: ubuntu-latest, extraflags: "--system-sdl", prefix: "CC=clang CXX=clang++"}
+          - { name: Linux/GCC, os: ubuntu-latest }
+          - { name: Linux/Clang, os: ubuntu-latest, prefix: "CC=clang CXX=clang++"}
           - { name: Windows/VS2022, os: windows-2022, extraflags: "-G 'Visual Studio 17 2022'" }
           - { name: Mac, os: macos-latest }
 
@@ -22,9 +29,17 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt update
-          sudo apt install libsdl3-dev
+          sudo apt install -y libasound2-dev libpulse-dev \
+            libaudio-dev libjack-dev libsndio-dev libx11-dev libxext-dev \
+            libxrandr-dev libxcursor-dev libxfixes-dev libxi-dev libxss-dev \
+            libxkbcommon-dev libdrm-dev libgbm-dev libgl1-mesa-dev libgles2-mesa-dev \
+            libegl1-mesa-dev libdbus-1-dev libibus-1.0-dev libudev-dev fcitx-libs-dev \
+            libpipewire-0.3-dev libwayland-dev libdecor-0-dev liburing-dev \
+            desktop-file-utils
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with: {submodules: 'recursive'}
+      - name: Update submodules from origin
+        run: git submodule update --recursive --remote
           
       - run: ${{matrix.platform.prefix}} python3 build.py --dependencies --configure --build ${{matrix.platform.extraflags}}
