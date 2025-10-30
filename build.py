@@ -32,17 +32,6 @@ def parse_metadata(version_dot_h):
 
 #----------------------------------------------------------------
 
-def validate_codesign_identity(identity):
-    # Basic validation: must be a nonempty string with allowed characters.
-    # Most identities are alphanumeric, spaces, optionally dashes, periods, and parentheses.
-    if not isinstance(identity, str) or not identity.strip():
-        return False
-    # Only allow reasonable characters to prevent shell/command injections.
-    import re
-    if not re.fullmatch(r"[\w\s().,-]+", identity):
-        return False
-    return True
-
 root_dir            = os.path.dirname(os.path.abspath(__file__))
 src_dir             = os.path.abspath(root_dir + "/src")
 libs_dir            = os.path.abspath(root_dir + "/extern")
@@ -345,10 +334,7 @@ class MacProject(Project):
             call(["hdiutil", "detach", mount_point, "-quiet"])
 
         if "CODE_SIGN_IDENTITY" in os.environ:
-            codesign_identity = os.environ["CODE_SIGN_IDENTITY"]
-            if not validate_codesign_identity(codesign_identity):
-                die("Invalid CODE_SIGN_IDENTITY environment variable: must be a nonempty string and contain only allowed characters.")
-            call(["codesign", "--force", "--timestamp", "--sign", codesign_identity, sdl3_framework_target_path])
+            call(["codesign", "--force", "--timestamp", "--sign", os.environ["CODE_SIGN_IDENTITY"], sdl3_framework_target_path])
         else:
             print("SDL will not be codesigned. Set the CODE_SIGN_IDENTITY environment variable if you want to sign it.")
 
