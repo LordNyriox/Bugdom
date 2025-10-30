@@ -269,7 +269,7 @@ long			realX,realZ;
 			type = itemPtr->type;								// get item #
 			if (type > MAX_ITEM_NUM)							// error check!
 			{
-				DoAlert("Illegal Map Item Type! (%d)", type);
+				DoAlert("Illegal Map Item Type! (%l)", type);
 			}
 
 			realX = itemPtr->x * MAP2UNIT_VALUE;				// calc & pass 3-space coords

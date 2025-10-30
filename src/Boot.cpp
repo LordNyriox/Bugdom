@@ -2,6 +2,8 @@
 // (C) 2025 Iliyas Jorio
 // This file is part of Bugdom. https://github.com/jorio/bugdom
 
+#include <time.h>		// srand
+
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 
@@ -91,6 +93,9 @@ static void Boot(int argc, char** argv)
 
 	// Load game prefs before starting
 	InitPrefs();
+
+	// generate seed for rand()
+	srand(time(NULL));
 
 retryVideo:
 	// Initialize SDL video subsystem

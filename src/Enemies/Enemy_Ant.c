@@ -10,6 +10,7 @@
 /****************************/
 
 #include "game.h"
+#include <stdlib.h>		// rand
 
 
 /****************************/
@@ -47,7 +48,7 @@ static void MoveAntRock(ObjNode *theNode);
 /*    CONSTANTS             */
 /****************************/
 
-#define	MAX_ANTS				5						// max # allowed active at once
+#define	MAX_ANTS				10						// Extreme: max # allowed active at once
 
 #define	ANT_SCALE				1.4f
 
@@ -146,7 +147,10 @@ Boolean	rockThrower;
 
 			/* MAKE ANT */
 			
-	rockThrower = itemPtr->parm[0] == 1;						// see if rock thrower
+	if (!(itemPtr->parm[0] & 1))								// Extreme: randomize rock thrower
+		rockThrower = (rand()>(RAND_MAX/2)?1:0);
+	else
+		rockThrower = itemPtr->parm[0] == 1;					// see if rock thrower
 			
 	newObj = MakeAntObject(x, z, true, rockThrower);
 	newObj->TerrainItemPtr = itemPtr;
@@ -618,7 +622,7 @@ float	fps = gFramesPerSecondFrac;
 			/***************/
 			/* SEE IF GONE */
 			/***************/
-			
+/*			
 	if (theNode->StatusBits & STATUS_BIT_ISCULLED)		// if was culled on last frame and is far enough away, then delete it
 	{
 		if (CalcQuickDistance(gCoord.x, gCoord.z, gMyCoord.x, gMyCoord.z) > 600.0f)
@@ -627,7 +631,7 @@ float	fps = gFramesPerSecondFrac;
 			return;
 		}
 	}
-
+*/
 				/***********/
 				/* MOVE IT */
 				/***********/
@@ -647,8 +651,8 @@ float	fps = gFramesPerSecondFrac;
 				/* SEE IF MAKE GHOST */
 				/*********************/
 
-	if (gLevelType == LEVEL_TYPE_ANTHILL
-		&& !theNode->MadeGhost
+	if (/*gLevelType == LEVEL_TYPE_ANTHILL						// Extreme: Spawn on all levels
+		&&*/ !theNode->MadeGhost
 		&& !(theNode->StatusBits & STATUS_BIT_UNDERWATER))		// avoid endless respawn if underwater (ghosts also die in water)
 	{
 		theNode->DeathTimer += fps;

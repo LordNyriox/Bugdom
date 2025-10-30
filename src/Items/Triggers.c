@@ -236,8 +236,8 @@ Boolean			canBlow;
 	id = itemPtr->parm[2];					// get detonator id
 	canBlow = itemPtr->parm[3] & (1<<1);	// see if can blow
 
-	if ((contents == NUT_CONTENTS_BUDDY) &&	gMyBuddy)	// dont add buddy nuts if buddy already active
-		return(false);
+//	if ((contents == NUT_CONTENTS_BUDDY) &&	gMyBuddy)	// dont add buddy nuts if buddy already active
+//		return(false);
 
 		/* SEE IF NUT HAS DETONATED */
 
@@ -397,11 +397,59 @@ void KickNut(ObjNode *kickerObj, ObjNode *nutObj)
 
 static void CreateNutContents(ObjNode *theNut)
 {
-		/* SPECIAL CHECK FOR BUDDY BUG IF ALREADY HAVE BUDDY BUG */
+		/* Extreme: REPLACE BUDDY BUG IF ALREADY HAVE BUDDY BUG */
 		
 	if ((theNut->NutContents == NUT_CONTENTS_BUDDY) && (gMyBuddy))
 	{
 		theNut->NutContents = NUT_CONTENTS_GREENCLOVER;		// put green clover in there instead of Buddy Bug
+	}
+
+		/* Extreme: REPLACE GREEN CLOVER IF NOT HAVE BUDDY BUG */
+	if ((theNut->NutContents == NUT_CONTENTS_GREENCLOVER) && !(gMyBuddy))
+	{
+		theNut->NutContents = NUT_CONTENTS_BUDDY;			// put Buddy Bug in there instead of green clover
+	}
+
+		/* Extreme: REPLACE M0NEY IF ALREADY HAVE M0NEY */
+
+	if ((theNut->NutContents == NUT_CONTENTS_MONEY) && (gMoney > 0))
+	{
+		theNut->NutContents = NUT_CONTENTS_FREELIFE;		// put free life in there instead of money
+	}
+
+		/* Extreme: REPLACE LIFE IF ALREADY HAVE THREE LIVES */
+
+	if ((theNut->NutContents == NUT_CONTENTS_FREELIFE) && (gNumLives > 3))
+	{
+		theNut->NutContents = NUT_CONTENTS_SHIELD;			// put shield in there instead of free life
+	}
+
+		/* Extreme: REPLACE SHIELD IF ALREADY HAVE SHIELD */
+
+	if ((theNut->NutContents == NUT_CONTENTS_SHIELD) && (gShieldTimer > 0.0f))	// see if shielded
+	{
+		theNut->NutContents = NUT_CONTENTS_BALLTIME;		// put mushroom in there instead of shield
+	}
+
+		/* Extreme: REPLACE BALL TIME IF ALREADY HAVE MAX BALL TIME */
+
+	if ((theNut->NutContents == NUT_CONTENTS_BALLTIME) && (gBallTimer >= 1.0f))
+	{
+		theNut->NutContents = NUT_CONTENTS_HEALTH;			// put berry in there instead of mushroom
+	}
+
+		/* Extreme: REPLACE HEALTH IF ALREADY HAVE MAX HEALTH */
+
+	if ((theNut->NutContents == NUT_CONTENTS_HEALTH) && (gMyHealth >= 1.0f))
+	{
+		theNut->NutContents = NUT_CONTENTS_BALLTIME;		// put mushroom in there instead of berry
+	}
+
+		/* Extreme: REPLACE HEALTH AND BALL TIME IF ALREADY HAVE MAX HEALTH AND BALL TIME */
+
+	if ((theNut->NutContents == NUT_CONTENTS_BALLTIME) && (gBallTimer >= 1.0f))
+	{
+		theNut->NutContents = NUT_CONTENTS_TICK;			// put tick in there instead of mushroom
 	}
 
 

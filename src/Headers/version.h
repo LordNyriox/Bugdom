@@ -1,7 +1,7 @@
 #pragma once
 
 #define GAME_NAME			"Bugdom"
-#define GAME_FULL_NAME		"Bugdom"
+#define GAME_FULL_NAME		"Bugdom Extreme"
 #define GAME_IDENTIFIER		"io.jor.bugdom"
 #define GAME_VERSION		"1.3.5"
 #define GAME_VERSION_MAJOR	1

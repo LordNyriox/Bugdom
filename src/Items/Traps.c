@@ -818,7 +818,7 @@ float	d;
 	theNode->PTimer -= gFramesPerSecondFrac;
 	if (theNode->PTimer < 0.0f)								// see if time to spew fire particles
 	{
-		theNode->PTimer = .06f;								// reset timer
+		theNode->PTimer = .12f;								// Extreme: reset timer
 
 				/* SEE IF MAKE NEW GROUP */
 

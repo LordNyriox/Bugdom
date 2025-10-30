@@ -28,7 +28,7 @@ static void  MoveLarva_Dead(ObjNode *theNode);
 /*    CONSTANTS             */
 /****************************/
 
-#define	MAX_LARVA				5
+#define	MAX_LARVA				10
 
 #define	LARVA_CHASE_RANGE		700.0f
 
@@ -236,11 +236,13 @@ static void  MoveLarva_Squished(ObjNode *theNode)
 
 static void  MoveLarva_Dead(ObjNode *theNode)
 {
-	if (theNode->StatusBits & STATUS_BIT_ISCULLED)		// if was culled on last frame and is far enough away, then delete it
+/*	if (theNode->StatusBits & STATUS_BIT_ISCULLED)		// if was culled on last frame and is far enough away, then delete it
 	{
 		DeleteEnemy(theNode);
 		return;
-	}
+	}*/
+	UpdateEnemy(theNode);		
+	
 }
 
 

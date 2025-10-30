@@ -111,12 +111,12 @@ static const bool	gLevelHasCeiling[NUM_LEVEL_TYPES] =
 
 static const Byte	gLevelSuperTileActiveRange[NUM_LEVEL_TYPES] =
 {
-	5,						// garden
-	4,						// boat
-	5,						// dragonfly
-	4,						// hive
-	4,						// night
-	4						// anthill
+	20,						// Extreme: garden
+	16,						// Extreme: boat
+	20,						// Extreme: dragonfly
+	8,						// Extreme: hive
+	16,						// Extreme: night
+	8						// Extreme: anthill
 };
 
 static const float	gLevelFogStart[NUM_LEVEL_TYPES] =
@@ -142,11 +142,11 @@ static const float	gLevelFogEnd[NUM_LEVEL_TYPES] =
 
 static const float	gLevelAutoFadeStart[NUM_LEVEL_TYPES] =
 {
-	YON_DISTANCE+400,		// garden
+	YON_DISTANCE+5500,		// Extreme: garden
 	0,						// boat
 	0,						// dragonfly
 	0,						// hive
-	YON_DISTANCE-250,		// night
+	YON_DISTANCE+4000,		// Extreme: night
 	0,						// anthill
 };
 
@@ -195,7 +195,7 @@ static const TQ3ColorRGBA	gLevelFogColor[NUM_LEVEL_TYPES] =
 // Source port addition: on rare occasions you get to see the void "above" the cyclorama.
 // To camouflage this, we make the clear color roughly match the color at the top of the cyc.
 // This is not necessarily the same color as the fog!
-// NOTE: If there's no cyc in a level, this value is ignored and the fog color is used instead.
+// NOTE: Extreme: If there's no cyc in a level, this value is still used.
 static const TQ3ColorRGBA	gLevelClearColorWithCyc[NUM_LEVEL_TYPES] =
 {
 	{ 0.352f, 0.380f, 1.000f, 1.000f },				// garden		(DIFFERENT FROM FOG)
@@ -468,16 +468,22 @@ QD3DSetupInputType	viewDef;
 	gBestCheckPoint			= -1;								// no checkpoint yet
 
 		
-	if (gSuperTileActiveRange == 5)								// set yon clipping value
+	switch (gLevelType)											// Extreme: set yon clipping value
 	{
-		gCurrentYon = YON_DISTANCE + 1700;
-		gCycScale = 81;
+		case LEVEL_TYPE_LAWN:									// high visibility outdoor levels
+		case LEVEL_TYPE_FOREST:
+			gCurrentYon = YON_DISTANCE + 10000;
+			break;
+		case LEVEL_TYPE_POND:									// low visibility outdoor levels
+		case LEVEL_TYPE_NIGHT:
+			gCurrentYon = YON_DISTANCE + 5000;
+			break;
+		default:												// indoor levels
+			gCurrentYon = YON_DISTANCE;
+			break;
 	}
-	else
-	{
-		gCurrentYon = YON_DISTANCE;
-		gCycScale = 50;
-	}
+
+	gCycScale = gCurrentYon * 0.02f;							// Extreme: scale cyclorama to current yon
 
 
 
@@ -503,8 +509,8 @@ QD3DSetupInputType	viewDef;
 	
 	viewDef.camera.fov 				= 1.1;
 	
-	viewDef.view.paneClip.top		=	62;
-	viewDef.view.paneClip.bottom	=	gGamePrefs.showBottomBar ? 60 : 0;
+	viewDef.view.paneClip.top		=	0;
+	viewDef.view.paneClip.bottom	=	0;
 	viewDef.view.paneClip.left		=	0;
 	viewDef.view.paneClip.right		=	0;
 
@@ -555,7 +561,7 @@ QD3DSetupInputType	viewDef;
 	viewDef.lights.fogMode		= kQ3FogModePlaneBasedLinear;  // Source port note: plane-based linear fog accurately reproduces fog rendering on real Macs
 
 	// Source port addition: camouflage seam in sky with custom clear color that roughly matches top of cyc
-	if (gUseCyclorama)
+	//if (gUseCyclorama)
 	{
 		viewDef.lights.useCustomFogColor = true;	// need this so fog color will be different from clear color
 		viewDef.view.clearColor = gLevelClearColorWithCyc[gLevelType];
@@ -700,25 +706,26 @@ static void DoDeathReset(void)
 static void CheckForCheats(void)
 {
 #if !(_DEBUG)	// in debug builds, expose cheats without needing command/control key
-	if (GetKeyState_SDL(SDL_SCANCODE_GRAVE))	// must hold down the help key
+	if (GetKeyState_SDL(SDL_SCANCODE_GRAVE))					// must hold down the help key
 #endif
 	{
-		if (GetNewKeyState_SDL(SDL_SCANCODE_F1))	// win the level!
-			gAreaCompleted = true;
+//		if (GetNewKeyState_SDL(SDL_SCANCODE_F1))				// win the level!
+//			gAreaCompleted = true;
 
-		if (GetNewKeyState_SDL(SDL_SCANCODE_F2))	// get shield
-			gShieldTimer = SHIELD_TIME;
+		if (GetNewKeyState_SDL(SDL_SCANCODE_F2))				// Extreme: get shield for 1 minute
+			gShieldTimer = 60.0f;
 
-		if (GetKeyState_SDL(SDL_SCANCODE_F3))	// get full health
-			GetHealth(1.0);							
+		if ((GetKeyState_SDL(SDL_SCANCODE_F3)) && !(gMyBuddy))	// Extreme: spawn buddy bug
+			CreateMyBuddy(gMyCoord.x, gMyCoord.z);
 			
-		if (GetKeyState_SDL(SDL_SCANCODE_F4))	// get full ball-time
+		if (GetKeyState_SDL(SDL_SCANCODE_F4))					// Extreme: get full health and ball-time
 		{
+			GetHealth(1.0);							
 			gBallTimer = 1.0f;
 			gInfobarUpdateBits |= UPDATE_TIMER;	
 		}	
 		
-		if (GetKeyState_SDL(SDL_SCANCODE_F5))	// get full inventory
+		if (GetKeyState_SDL(SDL_SCANCODE_F5))					// get full inventory
 		{
 			GetMoney();
 			GetKey(0);
@@ -728,10 +735,10 @@ static void CheckForCheats(void)
 			GetKey(4);
 		}
 
-		if (GetNewKeyState_SDL(SDL_SCANCODE_F6))	// see if liquid invincible
+		if (GetNewKeyState_SDL(SDL_SCANCODE_F6))				// see if liquid invincible
 			gLiquidCheat = !gLiquidCheat;
 
-		if (GetKeyState_SDL(SDL_SCANCODE_F7))		// hurt player
+		if (GetKeyState_SDL(SDL_SCANCODE_F7))					// hurt player
 			PlayerGotHurt(NULL, 1/60.0f, 1.0f, false, true, 1/60.0f);
 
 	}

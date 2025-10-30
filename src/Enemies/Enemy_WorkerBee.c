@@ -34,7 +34,7 @@ static void  MoveWorkerBee_Pound(ObjNode *theNode);
 /*    CONSTANTS             */
 /****************************/
 
-#define	MAX_WORKERBEES					4
+#define	MAX_WORKERBEES					8
 
 #define	WORKERBEE_SPLINE_SPEED			100.0f
 
@@ -365,7 +365,7 @@ static void  MoveWorkerBee_Death(ObjNode *theNode)
 {
 	
 			/* SEE IF GONE */
-			
+/*			
 	if (TrackTerrainItem(theNode))						// just check to see if it's gone
 	{
 nukeit:	
@@ -378,7 +378,7 @@ nukeit:
 		if (CalcQuickDistance(gCoord.x, gCoord.z, gMyCoord.x, gMyCoord.z) > 900.0f)
 			goto nukeit;
 	}
-
+*/
 
 				/* MOVE IT */
 				

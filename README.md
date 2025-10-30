@@ -1,11 +1,14 @@
-# Bugdom
+# <p align="center" width="100%"><img alt="Bugdom Extreme" src="docs/bugextreme.png"></p>
+
+> [!WARNING]  
+> *Bugdom Extreme* is a **fork** of the original port. In addition to the changes described below, this version also includes gameplay changes (such as [increased draw distance](https://github.com/jorio/Bugdom/issues/24) and Buddy Bug tweaks) that are out of scope for [Iliyas Jorio](https://github.com/jorio)'s project.
+> 
+> If you prefer an experience closer to the original game, please use the [**official port**](https://github.com/jorio/bugdom) instead.
 
 This is Pangea Software's **Bugdom** updated to run on modern operating systems.
 This version, at https://github.com/jorio/bugdom, is approved by Pangea Software.
 
 **Download the game for macOS, Windows and Linux here:** https://github.com/jorio/bugdom/releases
-
-![Bugdom Screenshot](docs/screenshot.webp)
 
 ## About this port
 

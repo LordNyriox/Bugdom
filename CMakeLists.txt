@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.21)
 
 set(GAME_TARGET				"Bugdom")
-set(GAME_FULL_NAME			"Bugdom")
+set(GAME_FULL_NAME			"Bugdom Extreme")
 set(GAME_VERSION			"1.3.5")
 set(GAME_IDENTIFIER			"io.jor.bugdom")
 set(GAME_COPYRIGHT			"© 1999 Pangea Software, Inc., © 2025 Iliyas Jorio.")
