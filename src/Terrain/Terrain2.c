@@ -26,7 +26,7 @@ static Boolean NilAdd(TerrainItemEntryType *itemPtr,long x, long z);
 /*     VARIABLES      */
 /**********************/
 
-int						gMaxItemsAllocatedInAPass = 0;			// used for debug
+long					gMaxItemsAllocatedInAPass = 0;			// used for debug
 short	  				gNumTerrainItems;
 TerrainItemEntryType	**gTerrainItemLookupTableX = nil;
 TerrainItemEntryType 	**gMasterItemList = nil;

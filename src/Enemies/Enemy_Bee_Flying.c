@@ -28,10 +28,10 @@ static void  MoveFlyingBee_Dead(ObjNode *theNode);
 /*    CONSTANTS             */
 /****************************/
 
-#define	MAX_FLYINGBEE				8
-#define	MAX_FLYINGBEE2				10
+#define	MAX_FLYINGBEE				(4 * gDistanceSquared)
+#define	MAX_FLYINGBEE2				(8 * gDistanceSquared)
 
-#define	FLYINGBEE_KNOCKDOWN_SPEED	1100.0f		// speed ball needs to go to knock this down
+#define	FLYINGBEE_KNOCKDOWN_SPEED	1100.0f
 
 #define	FLYINGBEE_CHASE_RANGE		2000.0f
 #define	FLYINGBEE_ATTACK_RANGE		450.0f
@@ -76,6 +76,8 @@ Boolean AddEnemy_FlyingBee(TerrainItemEntryType *itemPtr, long x, long z)
 {
 ObjNode	*newObj;
 
+	if (gNumEnemies >= MAX_ENEMIES)							// keep from getting absurd
+		return(false);
 	if (gRealLevel == LEVEL_NUM_HIVE)
 	{
 		if (gNumEnemyOfKind[ENEMY_KIND_FLYINGBEE] >= MAX_FLYINGBEE)						// keep from getting absurd

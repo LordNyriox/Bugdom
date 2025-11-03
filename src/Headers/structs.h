@@ -326,10 +326,15 @@ typedef struct
 	Byte	mouseSensitivityLevel;
 	Byte	dragonflyControl;
 	Boolean lowDetail;
+	Boolean lensFlare;
+	Boolean useCyclorama;
+	Boolean customClearColor;
+	Byte	fogMode;
 	Boolean	showBottomBar;
 	Boolean	force4x3AspectRatio;
 	Boolean fullscreen;
 	Byte	vsync;
 	Byte	antialiasingLevel;
+	Byte	distanceScale;
 	Byte	displayNumMinus1;
 }PrefsType;

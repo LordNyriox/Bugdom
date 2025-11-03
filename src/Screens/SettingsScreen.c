@@ -18,6 +18,11 @@ static const char* GenerateKiddieModeSubtitle(void);
 static const char* GenerateDetailSubtitle(void);
 static const char* GenerateMSAASubtitle(void);
 
+static const char* GenerateLensFlareSubtitle(void);
+static const char* GenerateCycloramaSubtitle(void);
+static const char* GenerateClearColorSubtitle(void);
+static const char* GenerateFogModeSubtitle(void);
+
 static void OnChangeFullscreenMode(void)
 {
 	SetFullscreenMode(true);
@@ -154,6 +159,49 @@ static SettingEntry gVideoMenu[] =
 
 	{
 		.kind = kCycler,
+		.ptr = &gGamePrefs.lensFlare,
+		.label = "Lens flare",
+		.subtitle = GenerateLensFlareSubtitle,
+		.nChoices = 2,
+		.choices = {"Hidden", "Visible"},
+	},
+
+	{
+		.kind = kCycler,
+		.ptr = &gGamePrefs.useCyclorama,
+		.label = "Cyclorama",
+		.subtitle = GenerateCycloramaSubtitle,
+		.nChoices = 2,
+		.choices = {"Hidden", "Visible"},
+	},
+
+	{
+		.kind = kCycler,
+		.ptr = &gGamePrefs.customClearColor,
+		.label = "Custom Clear Color",
+		.subtitle = GenerateClearColorSubtitle,
+		.nChoices = 2,
+		.choices = {"No", "Yes"},
+	},
+
+	{
+		.kind = kCycler,
+		.ptr = &gGamePrefs.fogMode,
+		.label = "Fog Mode",
+		.subtitle = GenerateFogModeSubtitle,
+		.nChoices = 5,
+		.choices =
+		{
+			"Linear",
+			"Exponential",
+			"Exponential Squared",
+			"Alpha",
+			"Plane-Based Linear"
+		},
+	},
+
+	{
+		.kind = kCycler,
 		.ptr = &gGamePrefs.force4x3AspectRatio,
 		.label = "Aspect ratio",
 		.nChoices = 2,
@@ -167,6 +215,14 @@ static SettingEntry gVideoMenu[] =
 		.nChoices = 4,
 		.choices = {"None", "MSAA 2x", "MSAA 4x", "MSAA 8x"},
 		.subtitle = GenerateMSAASubtitle,
+	},
+
+	{
+		.kind = kCloverRange,
+		.ptr = &gGamePrefs.distanceScale,
+		.label = "Distance scale",
+		.nChoices = 8,
+		.choices = {"1","2","3","4","5","6","7","8"},
 	},
 
 	{
@@ -221,6 +277,26 @@ static const char* GenerateKiddieModeSubtitle(void)
 static const char* GenerateDetailSubtitle(void)
 {
 	return gGamePrefs.lowDetail ? "The \223ATI Rage II\224 look" : NULL;
+}
+
+static const char* GenerateLensFlareSubtitle(void)
+{
+	return gGamePrefs.lensFlare ? "Display lens flare effect" : NULL;
+}
+
+static const char* GenerateCycloramaSubtitle(void)
+{
+	return gGamePrefs.useCyclorama ? "Display cyclorama effect" : NULL;
+}
+
+static const char* GenerateClearColorSubtitle(void)
+{
+	return gGamePrefs.customClearColor ? "Match sky color to cyclorama" : NULL;
+}
+
+static const char* GenerateFogModeSubtitle(void)
+{
+	return gGamePrefs.fogMode ? "Formula used to render fog" : NULL;
 }
 
 static const char* GenerateMSAASubtitle(void)

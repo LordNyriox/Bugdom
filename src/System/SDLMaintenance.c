@@ -13,8 +13,8 @@ static char				gDebugTextBuffer[1024];
 
 static void UpdateDebugStats(void)
 {
-	uint32_t ticksNow = SDL_GetTicks();
-	uint32_t ticksElapsed = ticksNow - gDebugTextLastUpdatedAt;
+	uint64_t ticksNow = SDL_GetTicks();
+	uint64_t ticksElapsed = ticksNow - gDebugTextLastUpdatedAt;
 	if (ticksElapsed >= kDebugTextUpdateInterval)
 	{
 		float fps;

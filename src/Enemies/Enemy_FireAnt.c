@@ -34,7 +34,7 @@ static void UpdateFireAnt(ObjNode *theNode, Boolean updateFlame);
 /*    CONSTANTS             */
 /****************************/
 
-#define	MAX_FIREANTS				10						// Extreme: max # allowed active at once
+#define	MAX_FIREANTS				(5 * gDistanceSquared)
 
 #define	FIREANT_HEAD_LIMB			1						// joint # of head
 
@@ -94,7 +94,7 @@ ObjNode	*newObj;
 				
 	if (!(itemPtr->parm[3] & 1))								// see if always add
 	{
-		if (gNumEnemies >= MAX_ENEMIES)								// Extreme: keep from getting absurd
+		if (gNumEnemies >= MAX_ENEMIES)								// keep from getting absurd
 			return(false);
 		if (gNumEnemyOfKind[ENEMY_KIND_FIREANT] > MAX_FIREANTS)		// only care if too many of this kind
 			return(false);
@@ -433,7 +433,7 @@ static void  MoveFireAnt_Death(ObjNode *theNode)
 /*			
 	if (theNode->StatusBits & STATUS_BIT_ISCULLED)		// if was culled on last frame and is far enough away, then delete it
 	{
-		if (CalcQuickDistance(gCoord.x, gCoord.z, gMyCoord.x, gMyCoord.z) > 600.0f)
+		if (CalcQuickDistance(gCoord.x, gCoord.z, gMyCoord.x, gMyCoord.z) > (600.0f * gDistanceScale))
 		{
 			DeleteEnemy(theNode);
 			return;

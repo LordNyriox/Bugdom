@@ -397,7 +397,7 @@ void KickNut(ObjNode *kickerObj, ObjNode *nutObj)
 
 static void CreateNutContents(ObjNode *theNut)
 {
-		/* Extreme: REPLACE BUDDY BUG IF ALREADY HAVE BUDDY BUG */
+		/* REPLACE BUDDY BUG IF ALREADY HAVE BUDDY BUG */
 		
 	if ((theNut->NutContents == NUT_CONTENTS_BUDDY) && (gMyBuddy))
 	{
@@ -431,25 +431,18 @@ static void CreateNutContents(ObjNode *theNut)
 		theNut->NutContents = NUT_CONTENTS_BALLTIME;		// put mushroom in there instead of shield
 	}
 
-		/* Extreme: REPLACE BALL TIME IF ALREADY HAVE MAX BALL TIME */
-
-	if ((theNut->NutContents == NUT_CONTENTS_BALLTIME) && (gBallTimer >= 1.0f))
-	{
-		theNut->NutContents = NUT_CONTENTS_HEALTH;			// put berry in there instead of mushroom
-	}
-
-		/* Extreme: REPLACE HEALTH IF ALREADY HAVE MAX HEALTH */
-
-	if ((theNut->NutContents == NUT_CONTENTS_HEALTH) && (gMyHealth >= 1.0f))
-	{
-		theNut->NutContents = NUT_CONTENTS_BALLTIME;		// put mushroom in there instead of berry
-	}
-
 		/* Extreme: REPLACE HEALTH AND BALL TIME IF ALREADY HAVE MAX HEALTH AND BALL TIME */
 
-	if ((theNut->NutContents == NUT_CONTENTS_BALLTIME) && (gBallTimer >= 1.0f))
+	if (theNut->NutContents == NUT_CONTENTS_BALLTIME)
 	{
-		theNut->NutContents = NUT_CONTENTS_TICK;			// put tick in there instead of mushroom
+		if ((gBallTimer >= 1.0f) && (gMyHealth >= 1.0f))
+		{
+			theNut->NutContents = NUT_CONTENTS_TICK;		// put tick in there instead of mushroom
+		}
+		else if (gBallTimer >= 1.0f)
+		{
+			theNut->NutContents = NUT_CONTENTS_HEALTH;		// put berry in there instead of mushroom
+		}
 	}
 
 
@@ -755,7 +748,7 @@ ObjNode *plunger;
 			plunger->Coord.y -= 140.0f * gFramesPerSecondFrac;
 			if (plunger->Coord.y <= (theBox->Coord.y - PLUNGER_DOWN_YOFF))	// see if plunger all the way down
 			{
-				int	id;
+				long	id;
 				
 				plunger->Coord.y = theBox->Coord.y - PLUNGER_DOWN_YOFF;
 				plunger->IsPlunging = false;
@@ -928,7 +921,7 @@ static void MoveLawnDoor(ObjNode *theNode)
 
 static Boolean DoTrig_LawnDoor(ObjNode *theNode, ObjNode *whoNode, Byte sideBits)
 {
-int	keyNum;
+long	keyNum;
 
 	(void) whoNode;
 	(void) sideBits;

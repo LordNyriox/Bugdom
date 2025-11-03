@@ -27,7 +27,7 @@ static void MoveSkippyOnSpline(ObjNode *theNode);
 /*    CONSTANTS             */
 /****************************/
 
-#define	MAX_SKIPPY				10
+#define	MAX_SKIPPY				(5 * gDistanceSquared)
 
 #define	SKIPPY_CHASE_RANGE		500.0f
 
@@ -66,7 +66,7 @@ ObjNode	*newObj;
 
 	if (gNumEnemies >= MAX_ENEMIES)								// keep from getting absurd
 		return(false);
-	if (gNumEnemyOfKind[ENEMY_KIND_SKIPPY] >= MAX_SKIPPY)		// Extreme: check if too many of this kind
+	if (gNumEnemyOfKind[ENEMY_KIND_SKIPPY] >= MAX_SKIPPY)
 		return(false);
 
 				/* MAKE DEFAULT SKELETON ENEMY */
@@ -196,11 +196,11 @@ float	r,s;
 
 static void  MoveSkippy_Death(ObjNode *theNode)
 {
-			/* Extreme: GET INFO */
+			/* GET INFO */
 
 	GetObjectInfo(theNode);
 
-			/* Extreme: DO ENEMY COLLISION */
+			/* DO ENEMY COLLISION */
 
 	if (DoEnemyCollisionDetect(theNode,DEATH_ENEMY_COLLISION_CTYPES))
 		return;

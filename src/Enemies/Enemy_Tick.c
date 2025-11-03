@@ -23,7 +23,7 @@ static void MoveTick(ObjNode *theNode);
 /*    CONSTANTS             */
 /****************************/
 
-#define	MAX_TICK				8
+#define	MAX_TICK				(4 * gDistanceSquared)
 
 #define	TICK_CHASE_RANGE		700.0f
 

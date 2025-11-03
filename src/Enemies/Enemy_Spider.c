@@ -37,7 +37,7 @@ static void MoveSpiderOnSpline(ObjNode *theNode);
 /*    CONSTANTS             */
 /****************************/
 
-#define	MAX_SPIDER				10
+#define	MAX_SPIDER				(5 * gDistanceSquared)
 
 #define	SPIDER_DROP_DIST		700.0f
 
@@ -398,7 +398,7 @@ static void  MoveSpider_Death(ObjNode *theNode)
 /*
 	if (theNode->StatusBits & STATUS_BIT_ISCULLED)		// if was culled on last frame and is far enough away, then delete it
 	{
-		if (CalcQuickDistance(gCoord.x, gCoord.z, gMyCoord.x, gMyCoord.z) > 600.0f)
+		if (CalcQuickDistance(gCoord.x, gCoord.z, gMyCoord.x, gMyCoord.z) > (600.0f * gDistanceScale))
 		{
 			DeleteEnemy(theNode);
 			return;

@@ -34,7 +34,7 @@ static void  MoveWorkerBee_Pound(ObjNode *theNode);
 /*    CONSTANTS             */
 /****************************/
 
-#define	MAX_WORKERBEES					8
+#define	MAX_WORKERBEES					(4 * gDistanceSquared)
 
 #define	WORKERBEE_SPLINE_SPEED			100.0f
 
@@ -375,7 +375,7 @@ nukeit:
 
 	if (theNode->StatusBits & STATUS_BIT_ISCULLED)		// if was culled on last frame and is far enough away, then delete it
 	{
-		if (CalcQuickDistance(gCoord.x, gCoord.z, gMyCoord.x, gMyCoord.z) > 900.0f)
+		if (CalcQuickDistance(gCoord.x, gCoord.z, gMyCoord.x, gMyCoord.z) > (900.0f * gDistanceScale))
 			goto nukeit;
 	}
 */

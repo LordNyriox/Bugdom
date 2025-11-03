@@ -42,7 +42,7 @@ typedef struct
 /*    VARIABLES             */
 /****************************/
 
-static LevelType	gLevelTable[NUM_LEVELS] =
+static const LevelType	gLevelTable[NUM_LEVELS] =
 {
 	{ LEVEL_TYPE_LAWN,		0,	false },			// 0: training
 	{ LEVEL_TYPE_LAWN,		1,	false },			// 1: lawn
@@ -68,6 +68,11 @@ u_short		gLevelTypeMask = 0;
 int			gDebugMode = DEBUG_MODE_OFF;
 Boolean		gLiquidCheat = false;
 Boolean		gUseCyclorama;
+Boolean		gUseCustomClearColor;
+Boolean		gDrawLensFlare;
+short		gFogMode;
+Byte		gDistanceScale;
+Byte		gDistanceSquared;
 float		gCurrentYon;
 
 u_long		gAutoFadeStatusBits;
@@ -111,12 +116,12 @@ static const bool	gLevelHasCeiling[NUM_LEVEL_TYPES] =
 
 static const Byte	gLevelSuperTileActiveRange[NUM_LEVEL_TYPES] =
 {
-	20,						// Extreme: garden
-	16,						// Extreme: boat
-	20,						// Extreme: dragonfly
-	8,						// Extreme: hive
-	16,						// Extreme: night
-	8						// Extreme: anthill
+	5,						// garden
+	4,						// boat
+	5,						// dragonfly
+	4,						// hive
+	4,						// night
+	4						// anthill
 };
 
 static const float	gLevelFogStart[NUM_LEVEL_TYPES] =
@@ -142,11 +147,11 @@ static const float	gLevelFogEnd[NUM_LEVEL_TYPES] =
 
 static const float	gLevelAutoFadeStart[NUM_LEVEL_TYPES] =
 {
-	YON_DISTANCE+5500,		// Extreme: garden
+	YON_DISTANCE*1.16f,		// Scaling: garden
 	0,						// boat
 	0,						// dragonfly
 	0,						// hive
-	YON_DISTANCE+4000,		// Extreme: night
+	YON_DISTANCE*0.9f,		// Scaling: night
 	0,						// anthill
 };
 
@@ -195,7 +200,7 @@ static const TQ3ColorRGBA	gLevelFogColor[NUM_LEVEL_TYPES] =
 // Source port addition: on rare occasions you get to see the void "above" the cyclorama.
 // To camouflage this, we make the clear color roughly match the color at the top of the cyc.
 // This is not necessarily the same color as the fog!
-// NOTE: Extreme: If there's no cyc in a level, this value is still used.
+// NOTE: If there's no cyc in a level, this value is ignored and the fog color is used instead.
 static const TQ3ColorRGBA	gLevelClearColorWithCyc[NUM_LEVEL_TYPES] =
 {
 	{ 0.352f, 0.380f, 1.000f, 1.000f },				// garden		(DIFFERENT FROM FOG)
@@ -237,11 +242,16 @@ void InitPrefs(void)
 	gGamePrefs.mouseSensitivityLevel= DEFAULT_MOUSE_SENSITIVITY_LEVEL;
 	gGamePrefs.dragonflyControl		= 0;
 	gGamePrefs.lowDetail			= false;
+	gGamePrefs.lensFlare			= true;
+	gGamePrefs.useCyclorama			= true;
+	gGamePrefs.customClearColor		= true;
+	gGamePrefs.fogMode				= 4;
 	gGamePrefs.showBottomBar		= true;
 	gGamePrefs.force4x3AspectRatio	= false;
 	gGamePrefs.fullscreen			= true;
 	gGamePrefs.vsync				= true;
 	gGamePrefs.antialiasingLevel	= 0;
+	gGamePrefs.distanceScale		= 2;
 	gGamePrefs.displayNumMinus1		= 0;
 
 	LoadPrefs(&gGamePrefs);							// attempt to read from prefs file		
@@ -450,13 +460,18 @@ QD3DSetupInputType	viewDef;
 	gPlayerMode 			= PLAYER_MODE_BUG;						// init this here so infobar looks correct
 	gPlayerObj 				= nil;
 
-	gUseCyclorama			= !gGamePrefs.lowDetail && gLevelHasCyc[gLevelType];
-	gAutoFadeStartDist		= gUseCyclorama ? gLevelAutoFadeStart[gLevelType] : 0;
+	gDistanceScale 			= (gGamePrefs.distanceScale > 0) ? gGamePrefs.distanceScale : 1;
+	gDistanceSquared		= (gDistanceScale * gDistanceScale);
+
+	gUseCyclorama			= gGamePrefs.useCyclorama && gLevelHasCyc[gLevelType];
+	gUseCustomClearColor	= gGamePrefs.customClearColor;
+	gAutoFadeStartDist		= gUseCyclorama ? (gLevelAutoFadeStart[gLevelType] * gDistanceScale) : 0;
 	gDoAutoFade				= gAutoFadeStartDist > 0.0f;
-	gDrawLensFlare			= !gGamePrefs.lowDetail && gLevelHasLensFlare[gLevelType];
+	gDrawLensFlare			= gGamePrefs.lensFlare && gLevelHasLensFlare[gLevelType];
+	gFogMode				= (short) gGamePrefs.fogMode;
 
 	gDoCeiling				= gLevelHasCeiling[gLevelType];
-	gSuperTileActiveRange	= gLevelSuperTileActiveRange[gLevelType];
+	gSuperTileActiveRange	= (gLevelSuperTileActiveRange[gLevelType] * gDistanceScale);
 	
 		
 	gAmbientColor 			= gLevelLightColors[gLevelType][0];
@@ -468,22 +483,31 @@ QD3DSetupInputType	viewDef;
 	gBestCheckPoint			= -1;								// no checkpoint yet
 
 		
+	/*if (gSuperTileActiveRange >= 5)							// Scaling: set yon clipping value
+	{
+		gCurrentYon = YON_DISTANCE * gDistanceScale * 1.68f;
+	}
+	else
+	{
+		gCurrentYon = YON_DISTANCE * gDistanceScale;
+	}*/
+
 	switch (gLevelType)											// Extreme: set yon clipping value
 	{
 		case LEVEL_TYPE_LAWN:									// high visibility outdoor levels
 		case LEVEL_TYPE_FOREST:
-			gCurrentYon = YON_DISTANCE + 10000;
+			gCurrentYon = YON_DISTANCE * gDistanceScale * 1.68f * 1.68f;
 			break;
 		case LEVEL_TYPE_POND:									// low visibility outdoor levels
 		case LEVEL_TYPE_NIGHT:
-			gCurrentYon = YON_DISTANCE + 5000;
+			gCurrentYon = YON_DISTANCE * gDistanceScale * 1.68f;
 			break;
 		default:												// indoor levels
-			gCurrentYon = YON_DISTANCE;
+			gCurrentYon = YON_DISTANCE * gDistanceScale;
 			break;
 	}
 
-	gCycScale = gCurrentYon * 0.02f;							// Extreme: scale cyclorama to current yon
+	gCycScale = gCurrentYon * 0.02f;							// Scaling: cyclorama to current yon
 
 
 
@@ -558,10 +582,10 @@ QD3DSetupInputType	viewDef;
 	viewDef.lights.fogStart 	= gLevelFogStart[gLevelType];
 	viewDef.lights.fogEnd	 	= gLevelFogEnd[gLevelType];
 	viewDef.lights.fogDensity 	= 1.0;	
-	viewDef.lights.fogMode		= kQ3FogModePlaneBasedLinear;  // Source port note: plane-based linear fog accurately reproduces fog rendering on real Macs
+	viewDef.lights.fogMode		= gFogMode;  // Extreme: allow user configuration
 
 	// Source port addition: camouflage seam in sky with custom clear color that roughly matches top of cyc
-	//if (gUseCyclorama)
+	if (gUseCustomClearColor)
 	{
 		viewDef.lights.useCustomFogColor = true;	// need this so fog color will be different from clear color
 		viewDef.view.clearColor = gLevelClearColorWithCyc[gLevelType];
@@ -706,10 +730,10 @@ static void DoDeathReset(void)
 static void CheckForCheats(void)
 {
 #if !(_DEBUG)	// in debug builds, expose cheats without needing command/control key
-	if (GetKeyState_SDL(SDL_SCANCODE_GRAVE))					// must hold down the help key
+	if (GetKeyState_SDL(SDL_SCANCODE_GRAVE))	// must hold down the help key
 #endif
 	{
-//		if (GetNewKeyState_SDL(SDL_SCANCODE_F1))				// win the level!
+//		if (GetNewKeyState_SDL(SDL_SCANCODE_F1))	// win the level!
 //			gAreaCompleted = true;
 
 		if (GetNewKeyState_SDL(SDL_SCANCODE_F2))				// Extreme: get shield for 1 minute
@@ -725,7 +749,7 @@ static void CheckForCheats(void)
 			gInfobarUpdateBits |= UPDATE_TIMER;	
 		}	
 		
-		if (GetKeyState_SDL(SDL_SCANCODE_F5))					// get full inventory
+		if (GetKeyState_SDL(SDL_SCANCODE_F5))	// get full inventory
 		{
 			GetMoney();
 			GetKey(0);
@@ -735,10 +759,10 @@ static void CheckForCheats(void)
 			GetKey(4);
 		}
 
-		if (GetNewKeyState_SDL(SDL_SCANCODE_F6))				// see if liquid invincible
+		if (GetNewKeyState_SDL(SDL_SCANCODE_F6))	// see if liquid invincible
 			gLiquidCheat = !gLiquidCheat;
 
-		if (GetKeyState_SDL(SDL_SCANCODE_F7))					// hurt player
+		if (GetKeyState_SDL(SDL_SCANCODE_F7))		// hurt player
 			PlayerGotHurt(NULL, 1/60.0f, 1.0f, false, true, 1/60.0f);
 
 	}

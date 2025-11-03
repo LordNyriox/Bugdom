@@ -37,7 +37,7 @@ long		gNumEnemies;
 
 void InitEnemyManager(void)
 {
-long	i;
+short	i;
 
 	gTheQueen = nil;
 	gAntKingObj = nil;

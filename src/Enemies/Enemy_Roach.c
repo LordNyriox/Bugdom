@@ -32,7 +32,7 @@ static void  MoveRoach_OnButt(ObjNode *theNode);
 /*    CONSTANTS             */
 /****************************/
 
-#define	MAX_ROACHS					10
+#define	MAX_ROACHS					(8 * gDistanceSquared)
 
 #define	ROACH_SCALE					1.7f
 
@@ -86,7 +86,7 @@ ObjNode	*newObj;
 
 	if (!(itemPtr->parm[3] & 1))								// see if always add
 	{
-		if (gNumEnemies >= MAX_ENEMIES)							// Extreme: keep from getting absurd
+		if (gNumEnemies >= MAX_ENEMIES)							// keep from getting absurd
 			return(false);
 		if (gNumEnemyOfKind[ENEMY_KIND_ROACH] >= MAX_ROACHS)
 			return(false);
@@ -287,7 +287,7 @@ static void  MoveRoach_Death(ObjNode *theNode)
 /*			
 	if (theNode->StatusBits & STATUS_BIT_ISCULLED)		// if was culled on last frame and is far enough away, then delete it
 	{
-		if (CalcQuickDistance(gCoord.x, gCoord.z, gMyCoord.x, gMyCoord.z) > 1000.0f)
+		if (CalcQuickDistance(gCoord.x, gCoord.z, gMyCoord.x, gMyCoord.z) > (1000.0f * gDistanceScale))
 		{
 			DeleteEnemy(theNode);
 			return;

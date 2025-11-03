@@ -29,7 +29,7 @@ static void FireFlyGoAway(ObjNode *theNode);
 /*    CONSTANTS             */
 /****************************/
 
-#define	MAX_FIREFLY				8
+#define	MAX_FIREFLY				(4 * gDistanceSquared)
 
 #define	FIREFLY_SCALE				.6f
 #define	FLARE_SCALE					2.2f
@@ -83,6 +83,9 @@ ObjNode	*newObj,*glow;
 
 	if (gLevelType != LEVEL_TYPE_NIGHT)
 		DoFatalAlert("AddFireFly: not on this level, bud!");
+
+	if (gNumEnemyOfKind[ENEMY_KIND_FIREFLY] >= MAX_FIREFLY)
+		return(false);
 
 			/************************/
 			/* MAKE SKELETON OBJECT */

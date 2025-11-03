@@ -38,7 +38,7 @@ static void InitLensFlares(void);
 /*********************/
 
 
-Boolean				gDrawLensFlare;
+extern Boolean		gDrawLensFlare;
 
 TQ3Matrix4x4		gCameraWorldToFrustumMatrix;
 TQ3Matrix4x4		gCameraWorldToViewMatrix;

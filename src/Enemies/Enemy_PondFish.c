@@ -28,7 +28,7 @@ static void PondFish_ContinueEatingPlayer(ObjNode *fish);
 /*    CONSTANTS             */
 /****************************/
 
-#define	MAX_PONDFISH			6
+#define	MAX_PONDFISH			(3 * gDistanceSquared)
 
 #define	PONDFISH_Y				(WATER_Y-240.0f)
 

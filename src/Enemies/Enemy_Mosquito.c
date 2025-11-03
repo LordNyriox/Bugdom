@@ -29,7 +29,7 @@ static void UpdateMosquito(ObjNode *theNode);
 /*    CONSTANTS             */
 /****************************/
 
-#define	MAX_MOSQUITO				8
+#define	MAX_MOSQUITO				(4 * gDistanceSquared)
 
 #define	MOSQUITO_CHASE_RANGE		400.0f
 #define	MOSQUITO_BITE_RANGE			160.0f
@@ -95,6 +95,8 @@ Boolean AddEnemy_Mosquito(TerrainItemEntryType *itemPtr, long x, long z)
 ObjNode	*newObj;
 
 	if (gNumEnemies >= MAX_ENEMIES)								// keep from getting absurd
+		return(false);
+	if (gNumEnemyOfKind[ENEMY_KIND_MOSQUITO] >= MAX_MOSQUITO)
 		return(false);
 
 				/* MAKE DEFAULT SKELETON ENEMY */
@@ -429,13 +431,13 @@ static void  MoveMosquito_Death(ObjNode *theNode)
 /*	
 	if (theNode->StatusBits & STATUS_BIT_ISCULLED)		// if was culled on last frame and is far enough away, then delete it
 	{
-		if (CalcQuickDistance(gCoord.x, gCoord.z, gMyCoord.x, gMyCoord.z) > 600.0f)
+		if (CalcQuickDistance(gCoord.x, gCoord.z, gMyCoord.x, gMyCoord.z) > (600.0f * gDistanceScale))
 		{
 			DeleteEnemy(theNode);
 			return;
 		}
 	}
-/*
+*/
 
 				/* MOVE IT */
 				

@@ -778,7 +778,7 @@ Byte	r;
 
 static void MoveFireWall(ObjNode *theNode)
 {
-int		id,l,n;
+long	id,l,n;
 Byte	rot;
 float	d;
 

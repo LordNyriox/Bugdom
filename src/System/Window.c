@@ -61,12 +61,12 @@ void GammaFadeOut(Boolean fadeSound)
 	duration = .05f;
 #endif
 
-	Uint32 startTicks = SDL_GetTicks();
+	Uint64 startTicks = SDL_GetTicks();
 //	gGammaFadeFactor = 1.0f;
 
 	while (gGammaFadeFactor > 0)
 	{
-		Uint32 ticks = SDL_GetTicks();
+		Uint64 ticks = SDL_GetTicks();
 		gGammaFadeFactor = 1.0f - ((ticks - startTicks) / 1000.0f / duration);
 		if (gGammaFadeFactor < 0.0f)
 			gGammaFadeFactor = 0.0f;

@@ -48,7 +48,7 @@ static void MoveAntRock(ObjNode *theNode);
 /*    CONSTANTS             */
 /****************************/
 
-#define	MAX_ANTS				10						// Extreme: max # allowed active at once
+#define	MAX_ANTS				(5 * gDistanceSquared)
 
 #define	ANT_SCALE				1.4f
 
@@ -625,7 +625,7 @@ float	fps = gFramesPerSecondFrac;
 /*			
 	if (theNode->StatusBits & STATUS_BIT_ISCULLED)		// if was culled on last frame and is far enough away, then delete it
 	{
-		if (CalcQuickDistance(gCoord.x, gCoord.z, gMyCoord.x, gMyCoord.z) > 600.0f)
+		if (CalcQuickDistance(gCoord.x, gCoord.z, gMyCoord.x, gMyCoord.z) > (600.0f * gDistanceScale))
 		{
 			DeleteEnemy(theNode);
 			return;
@@ -651,7 +651,7 @@ float	fps = gFramesPerSecondFrac;
 				/* SEE IF MAKE GHOST */
 				/*********************/
 
-	if (/*gLevelType == LEVEL_TYPE_ANTHILL						// Extreme: Spawn on all levels
+	if (/*gLevelType == LEVEL_TYPE_ANTHILL
 		&&*/ !theNode->MadeGhost
 		&& !(theNode->StatusBits & STATUS_BIT_UNDERWATER))		// avoid endless respawn if underwater (ghosts also die in water)
 	{
