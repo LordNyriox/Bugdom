@@ -12,7 +12,7 @@ permissions:
 jobs:
   build-linux-appimage:
     runs-on: ${{ matrix.platform.os }}
-    timeout-minutes: 5
+    timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
@@ -21,7 +21,9 @@ jobs:
           - { name: aarch64, os: ubuntu-22.04-arm }
     steps:
       - uses: actions/checkout@v5
-        with: {submodules: 'recursive'}
+        with:
+          fetch-depth: 1
+          submodules: 'recursive'
       - name: Update submodules from origin
         run: git submodule update --recursive --remote
       - name: Get build dependencies from APT
@@ -41,18 +43,20 @@ jobs:
       - run: python3 build.py --configure
       - run: python3 build.py --build
       - run: python3 build.py --package
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: ${{env.ARTIFACT_NAME}}
           path: dist/
           compression-level: 0
 
   build-windows:
-    runs-on: windows-2022
-    timeout-minutes: 5
+    runs-on: windows-latest  # as of October 2025, this still supports Visual Studio 2022
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v5
-        with: {submodules: 'recursive'}
+        with:
+          fetch-depth: 1
+          submodules: 'recursive'
       - name: Update submodules from origin
         run: git submodule update --recursive --remote
       - run: |
@@ -62,7 +66,7 @@ jobs:
       - run: python3 build.py --configure -G 'Visual Studio 17 2022'
       - run: python3 build.py --build
       - run: python3 build.py --package
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: ${{env.ARTIFACT_NAME}}
           path: dist/
@@ -79,7 +83,9 @@ jobs:
 #          p12-file-base64: ${{ secrets.APPLE_DEVELOPER_CERTIFICATE_P12_BASE64 }}
 #          p12-password: ${{ secrets.APPLE_DEVELOPER_CERTIFICATE_PASSWORD }}
       - uses: actions/checkout@v5
-        with: {submodules: 'recursive'}
+        with:
+          fetch-depth: 1
+          submodules: 'recursive'
       - name: Update submodules from origin
         run: git submodule update --recursive --remote
       - name: Get artifact name
@@ -94,7 +100,7 @@ jobs:
 #          xcrun notarytool submit "dist/$ARTIFACT_NAME" --keychain-profile GameNotarizationProfile --wait
 #      - name: Staple
 #        run: xcrun stapler staple "dist/$ARTIFACT_NAME"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: ${{env.ARTIFACT_NAME}}
           path: dist/
