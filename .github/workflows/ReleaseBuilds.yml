@@ -9,6 +9,10 @@ on:
 permissions:
   contents: read
 
+concurrency:  # Cancel running jobs if new commits are pushed
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-linux-appimage:
     runs-on: ${{ matrix.platform.os }}
@@ -23,6 +27,7 @@ jobs:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 1
+          persist-credentials: false
           submodules: 'recursive'
       - name: Update submodules from origin
         run: git submodule update --recursive --remote
@@ -56,6 +61,7 @@ jobs:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 1
+          persist-credentials: false
           submodules: 'recursive'
       - name: Update submodules from origin
         run: git submodule update --recursive --remote
@@ -85,6 +91,7 @@ jobs:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 1
+          persist-credentials: false
           submodules: 'recursive'
       - name: Update submodules from origin
         run: git submodule update --recursive --remote
